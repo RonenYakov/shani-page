@@ -1,29 +1,27 @@
-import Hero from "@/components/Hero";
-import Services from "@/components/Services";
+import HeroWorking from "@/components/HeroWorking";
+import About from "@/components/About";
 import ProcessTimeline from "@/components/ProcessTimeline";
-import ValueProps from "@/components/ValueProps";
-import WorkCategories from "@/components/WorkCategories";
-import CaseStudies from "@/components/CaseStudies";
+import BrandsVideoCarousel from "@/components/BrandsVideoCarousel";
+import WeddingsVideoGallery from "@/components/WeddingsVideoGallery";
+import ResultsReel from "@/components/ResultsReel";
 import Testimonials from "@/components/Testimonials";
-import LeadMagnet from "@/components/LeadMagnet";
 import FAQ from "@/components/FAQ";
 import ContactBlock from "@/components/ContactBlock";
 import StickyWhatsApp from "@/components/StickyWhatsApp";
 import Analytics from "@/components/Analytics";
 import Footer from "@/components/Footer";
 
-const Index = () => {
+const IndexTest = () => {
   return (
     <div className="min-h-screen">
       <Analytics />
-      <Hero />
-      <Services />
+      <HeroWorking />
+      <About />
+      <BrandsVideoCarousel />
+      <WeddingsVideoGallery />
+      <ResultsReel />
       <ProcessTimeline />
-      <ValueProps />
-      <WorkCategories />
-      <CaseStudies />
       <Testimonials />
-      <LeadMagnet />
       <FAQ />
       <ContactBlock />
       <StickyWhatsApp />
@@ -32,4 +30,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default IndexTest;

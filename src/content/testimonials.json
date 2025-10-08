@@ -1,0 +1,53 @@
+[
+  {
+    "id": "sarah-wedding",
+    "name": {
+      "he": "שרה כהן",
+      "en": "Sarah Cohen"
+    },
+    "role": {
+      "he": "כלה",
+      "en": "Bride"
+    },
+    "content": {
+      "he": "שני הפכה את החתונה שלנו לסיפור שמרגש אנשים עד היום. היא לא רק צילמה - היא הבינה בדיוק איך להעביר את הרגש.",
+      "en": "Shani turned our wedding into a story that still moves people today. She didn't just film - she understood exactly how to convey the emotion."
+    },
+    "rating": 5,
+    "image": "/testimonials/sarah.jpg"
+  },
+  {
+    "id": "david-restaurant",
+    "name": {
+      "he": "דוד לוי",
+      "en": "David Levy"
+    },
+    "role": {
+      "he": "בעל מסעדה",
+      "en": "Restaurant Owner"
+    },
+    "content": {
+      "he": "בתוך שלושה חודשים עם שני המסעדה שלנו הפכה לחובה בשכונה. הסרטונים שלה פשוט גורמים לאנשים לרצות להגיע.",
+      "en": "Within three months with Shani, our restaurant became the neighborhood must-visit. Her videos just make people want to come."
+    },
+    "rating": 5,
+    "image": "/testimonials/david.jpg"
+  },
+  {
+    "id": "maya-events",
+    "name": {
+      "he": "מאיה רוזן",
+      "en": "Maya Rosen"
+    },
+    "role": {
+      "he": "מארגנת אירועים",
+      "en": "Event Planner"
+    },
+    "content": {
+      "he": "עבדתי עם הרבה יוצרי תוכן, אבל שני יודעת בדיוק איך לתפוס את הרגעים הכי אמיתיים. הלקוחות שלי תמיד מתרגשים מהתוצאות.",
+      "en": "I've worked with many content creators, but Shani knows exactly how to capture the most authentic moments. My clients are always thrilled with the results."
+    },
+    "rating": 5,
+    "image": "/testimonials/maya.jpg"
+  }
+]

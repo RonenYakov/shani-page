@@ -1,73 +1,156 @@
-# Welcome to your Lovable project
+# Shani Social Media - Bilingual SMM Landing Page
 
-## Project info
+A modern, conversion-focused social media management landing page with bilingual support (Hebrew/English), built with React + TypeScript + Tailwind CSS.
 
-**URL**: https://lovable.dev/projects/63cc176a-57ff-4df0-a0a5-d21454b1a718
+## 🚀 Features
 
-## How can I edit this code?
+- **Bilingual Support**: Hebrew (default) and English with RTL/LTR switching
+- **Mobile-First Design**: Optimized for mobile with sticky WhatsApp CTA
+- **Conversion Optimized**: Lead magnet, service packages, case studies, testimonials
+- **Video Integration**: Modal video player for case studies and portfolio
+- **Analytics Ready**: Facebook Pixel, TikTok Pixel, Google Analytics support
+- **SEO Optimized**: Proper meta tags, structured data, OG tags
 
-There are several ways of editing your application.
+## 🛠 Tech Stack
 
-**Use Lovable**
+- **Frontend**: React 18, TypeScript, Vite
+- **Styling**: Tailwind CSS, Framer Motion
+- **UI Components**: shadcn/ui
+- **Deployment**: Ready for Vercel/Netlify
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/63cc176a-57ff-4df0-a0a5-d21454b1a718) and start prompting.
+## 📁 Project Structure
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
+src/
+├── components/          # All React components
+│   ├── Hero.tsx        # Hero section with video background
+│   ├── Services.tsx    # Service packages (retainers)
+│   ├── WorkCategories.tsx  # Portfolio with video modal
+│   ├── CaseStudies.tsx # Mini case studies
+│   ├── Testimonials.tsx # Client testimonials
+│   ├── LeadMagnet.tsx  # Lead capture form
+│   ├── FAQ.tsx         # Frequently asked questions
+│   └── ...
+├── content/            # Content management
+│   ├── services.json   # Service packages data
+│   ├── caseStudies.json # Case studies data
+│   ├── testimonials.json # Testimonials data
+│   ├── faq.json       # FAQ data
+│   └── socials.ts     # Social media links
+├── i18n/              # Internationalization
+│   ├── he.json        # Hebrew translations
+│   ├── en.json        # English translations
+│   └── index.ts       # i18n system
+└── pages/
+    └── Index.tsx      # Main landing page
 ```
 
-**Edit a file directly in GitHub**
+## 🎨 How to Customize Content
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### 1. Update Services/Packages
+Edit `src/content/services.json`:
+```json
+{
+  "id": "starter",
+  "nameKey": "services.package.starter", 
+  "price": "₪2,500",
+  "deliverables": {
+    "he": ["8 פוסטים חודשיים", "..."],
+    "en": ["8 monthly posts", "..."]
+  }
+}
+```
 
-**Use GitHub Codespaces**
+### 2. Update Case Studies
+Edit `src/content/caseStudies.json`:
+```json
+{
+  "category": "Awareness",
+  "title": {"he": "כותרת בעברית", "en": "English title"},
+  "videoUrl": "/path/to/video.mov"
+}
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### 3. Update Text/Copy
+Edit translation files:
+- `src/i18n/he.json` - Hebrew text
+- `src/i18n/en.json` - English text
 
-## What technologies are used for this project?
+### 4. Update Contact Info
+Edit `src/content/socials.ts`:
+```typescript
+export const socials = {
+  whatsappUrl: "https://wa.me/YOUR_NUMBER",
+  calendlyUrl: "https://calendly.com/your-link", // optional
+  instagram: "https://instagram.com/your_handle"
+}
+```
 
-This project is built with:
+## 🔧 Development Setup
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```bash
+# Install dependencies
+npm install
 
-## How can I deploy this project?
+# Start development server
+npm run dev
 
-Simply open [Lovable](https://lovable.dev/projects/63cc176a-57ff-4df0-a0a5-d21454b1a718) and click on Share -> Publish.
+# Build for production
+npm run build
+```
 
-## Can I connect a custom domain to my Lovable project?
+## 📊 Analytics Setup
 
-Yes, you can!
+1. Copy `env.example` to `.env.local`
+2. Add your tracking IDs:
+```env
+VITE_META_PIXEL_ID=your_facebook_pixel_id
+VITE_TIKTOK_PIXEL_ID=your_tiktok_pixel_id
+VITE_GA_ID=your_google_analytics_id
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 🎯 Performance Checklist
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+- [x] Image optimization with lazy loading
+- [x] Video preloading with poster images
+- [x] Code splitting for heavy components
+- [x] Mobile-first responsive design
+- [x] Accessibility (ARIA labels, keyboard nav)
+- [x] SEO meta tags and structured data
+- [x] Core Web Vitals optimization
+
+## 🌍 Deployment
+
+### Assets Required
+Place these in `/public/`:
+- `/videos/hero.webm` & `/videos/hero.mp4` - Hero background video
+- `/images/hero-poster.jpg` - Hero video poster
+- `/images/og.jpg` - Social sharing image
+- Portfolio videos in `/assets/` folder
+
+### Environment Variables
+Set these in your deployment platform:
+- `VITE_META_PIXEL_ID`
+- `VITE_TIKTOK_PIXEL_ID` 
+- `VITE_GA_ID`
+
+## 📝 Content Management
+
+All content is managed through JSON files and TypeScript constants, making it easy to update without touching React code:
+
+- **Services**: `src/content/services.json`
+- **Case Studies**: `src/content/caseStudies.json`
+- **Testimonials**: `src/content/testimonials.json`
+- **FAQ**: `src/content/faq.json`
+- **Social Links**: `src/content/socials.ts`
+- **Copy/Text**: `src/i18n/he.json` & `src/i18n/en.json`
+
+## 🎨 Design System
+
+Built with a luxury/cinematic color palette:
+- **Primary**: Gold (#E6B325)
+- **Dark**: Cinematic Black (#0D0D0F)  
+- **Light**: Cream (#FDF8F2)
+- **Accent**: Light Brown (#C8A97E)
+
+Typography: Playfair Display (headings) + Inter (body)

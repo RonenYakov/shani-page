@@ -1,0 +1,94 @@
+[
+  {
+    "id": "starter",
+    "nameKey": "services.package.starter",
+    "price": "₪2,500",
+    "duration": "/חודש",
+    "priceEn": "$750",
+    "durationEn": "/month",
+    "targetAudience": {
+      "he": "עסקים קטנים שמתחילים בסושיאל",
+      "en": "Small businesses starting with social"
+    },
+    "deliverables": {
+      "he": [
+        "8 פוסטים חודשיים (mix של reels ו-stories)",
+        "כתיבת כיתובים מותאמות",
+        "תזמון ופרסום אוטומטי",
+        "מענה בסיסי להודעות",
+        "דוח חודשי קצר"
+      ],
+      "en": [
+        "8 monthly posts (mix of reels & stories)",
+        "Custom captions",
+        "Scheduling & automated posting", 
+        "Basic message responses",
+        "Monthly mini-report"
+      ]
+    },
+    "ctaKey": "cta.whatsapp"
+  },
+  {
+    "id": "growth",
+    "nameKey": "services.package.core",
+    "price": "₪4,200",
+    "duration": "/חודש",
+    "priceEn": "$1,250",
+    "durationEn": "/month",
+    "popular": true,
+    "targetAudience": {
+      "he": "עסקים שרוצים לצמוח ברצינות",
+      "en": "Businesses serious about growth"
+    },
+    "deliverables": {
+      "he": [
+        "12-16 פוסטים חודשיים",
+        "2 ימי צילום וביצוע",
+        "עריכה בסגנון UGC",
+        "מחקר hashtags וסאונדים",
+        "דוח שבועי קצר",
+        "הדרכה בסיסית לקידום ממומן"
+      ],
+      "en": [
+        "12-16 monthly posts",
+        "2 shooting sessions",
+        "UGC-style editing",
+        "Hashtag & sound research",
+        "Weekly metrics snapshot",
+        "Basic ad boost guidance"
+      ]
+    },
+    "ctaKey": "cta.whatsapp"
+  },
+  {
+    "id": "pro",
+    "nameKey": "services.package.pro",
+    "price": "₪6,800",
+    "duration": "/חודש",
+    "priceEn": "$2,000",
+    "durationEn": "/month",
+    "targetAudience": {
+      "he": "עסקים מבוססים עם יעדי צמיחה גבוהים",
+      "en": "Established businesses with high growth targets"
+    },
+    "deliverables": {
+      "he": [
+        "16-20 פוסטים חודשיים",
+        "3 ימי צילום וביצוע",
+        "UGC + קמפיינים מותגיים",
+        "ניהול קהילה מלא",
+        "סקירת אסטרטגיה חודשית",
+        "תמיכה בפרסום ממומן (הקמה וניהול קל)"
+      ],
+      "en": [
+        "16-20 monthly posts",
+        "3 sessions",
+        "UGC + brand campaigns",
+        "Full community management",
+        "Monthly strategy review",
+        "Ad support (setup & light management)"
+      ]
+    },
+    "ctaKey": "cta.whatsapp"
+  }
+]

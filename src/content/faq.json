@@ -1,0 +1,79 @@
+[
+  {
+    "id": "no-experience",
+    "question": {
+      "he": "עדיין לא ניהלתי חשבונות - איך מפחיתים סיכון?",
+      "en": "I haven't managed accounts yet - how do we reduce risk?"
+    },
+    "answer": {
+      "he": "אני מציעה חודש פיילוט במחיר מופחת עם יעדים ברורים. אם לא מרוצים - אפשר להפסיק ללא התחייבות נוספת.",
+      "en": "I offer a pilot month at reduced rate with clear deliverables. If you're not satisfied - you can stop with no further commitment."
+    }
+  },
+  {
+    "id": "results-timeline",
+    "question": {
+      "he": "כמה זמן לוקח לראות תוצאות?",
+      "en": "How soon will I see results?"
+    },
+    "answer": {
+      "he": "תוכן איכותי מתחיל להראות אינטראקציה תוך 2-3 שבועות. צמיחה משמעותית בעוקבים ובמכירות - בדרך כלל 2-3 חודשים של עבודה עקבית.",
+      "en": "Quality content starts showing engagement within 2-3 weeks. Significant growth in followers and sales - usually 2-3 months of consistent work."
+    }
+  },
+  {
+    "id": "revisions",
+    "question": {
+      "he": "מה כלול בתיקונים?",
+      "en": "What's included in revisions?"
+    },
+    "answer": {
+      "he": "כל חבילה כוללת עד 3 סיבובי תיקונים על תוכן. שינויים גדולים באסטרטגיה או בקונסט דורשים תיאום מראש.",
+      "en": "Each package includes up to 3 revision rounds on content. Major strategy or concept changes require advance coordination."
+    }
+  },
+  {
+    "id": "ads-management",
+    "question": {
+      "he": "אתם מנהלים גם פרסום ממומן?",
+      "en": "Do you run ads too?"
+    },
+    "answer": {
+      "he": "בחבילות Growth ו-Pro יש תמיכה בסיסית בפרסום ממומן. ניהול פרסום כבד יכול להיות תוספת נפרדת.",
+      "en": "Growth & Pro packages include basic ad support. Heavy ads management can be a separate add-on."
+    }
+  },
+  {
+    "id": "content-ownership",
+    "question": {
+      "he": "מי הבעלים על התוכן שנוצר?",
+      "en": "Who owns the created content?"
+    },
+    "answer": {
+      "he": "אתם הבעלים המלאים של כל התוכן שנוצר עבורכם. אני שומרת זכות להציג את העבודה בפורטפוליו שלי.",
+      "en": "You fully own all content created for you. I retain the right to showcase the work in my portfolio."
+    }
+  },
+  {
+    "id": "minimum-commitment",
+    "question": {
+      "he": "מה ההתחייבות המינימלית?",
+      "en": "What's the minimum commitment?"
+    },
+    "answer": {
+      "he": "ההתחייבות המינימלית היא 3 חודשים. זה הזמן הנדרש לבנות מומנטום אמיתי ברשתות חברתיות.",
+      "en": "Minimum commitment is 3 months. This is the time needed to build real momentum on social media."
+    }
+  },
+  {
+    "id": "shooting-location",
+    "question": {
+      "he": "איפה מתבצעים הצילומים?",
+      "en": "Where do shootings take place?"
+    },
+    "answer": {
+      "he": "אני מגיעה למיקום שלכם - בית עסק, אירוע, או כל מקום שרלוונטי לסיפור המותג. נסיעות מחוץ לגוש דן בתוספת תשלום.",
+      "en": "I come to your location - business, event, or anywhere relevant to your brand story. Travel outside Tel Aviv area requires additional fee."
+    }
+  }
+]
