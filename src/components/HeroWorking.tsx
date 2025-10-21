@@ -93,7 +93,7 @@ const HeroWorking = () => {
           transition={{ duration: 1.2, delay: 0.3 }}
         >
           {language === 'he' 
-            ? "ניהול סושיאל + וידאו שמביא תוצאות"
+            ? "ניהול סושיאל + צלמת סושיאל +וידאו שמביא תוצאות"
             : "Social + Video that drives results"
           }
         </motion.h1>

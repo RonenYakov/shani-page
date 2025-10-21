@@ -25,9 +25,11 @@ const WeddingsVideoGallery = () => {
 
   const weddingMedia = ([ 
     { file: 'סושיאל חתונה.mov', title: 'סושיאל חתונה', titleEn: 'Wedding Social', type: 'video' as const },
-    { file: 'SAVE THE DATE-W.mov', title: 'Save the Date', titleEn: 'Save the Date', type: 'video' as const },
+    { file: 'save the date-tal.mov', title: 'Save the Date', titleEn: 'Save the Date', type: 'video' as const },
+
     { file: 'proposel.mp4', title: 'הצעה', titleEn: 'Proposal', type: 'video' as const },
-    { file: 'חתונה-W.mov', title: 'חתונה', titleEn: 'Wedding', type: 'video' as const },
+    { file: 'SAVE THE DATE-W.mov', title: 'Save the Date', titleEn: 'Save the Date', type: 'video' as const },
+    { file: 'wedding-tal.mov', title: 'חתונה', titleEn: 'Wedding', type: 'video' as const },
     { file: 'gan.mov', title: 'מסיבת סיום גן', titleEn: 'Kindergarten Graduation', type: 'video' as const },
     { file: 'רגעים קטנים חתונה-W.mov', title: 'רגעים קטנים', titleEn: 'Little Moments', type: 'video' as const },
     { file: 'מסיבת אירוסין-W.mov', title: 'מסיבת אירוסין', titleEn: 'Engagement Party', type: 'video' as const },

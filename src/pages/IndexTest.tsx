@@ -19,8 +19,8 @@ const IndexTest = () => {
       <About />
       <BrandsVideoCarousel />
       <WeddingsVideoGallery />
-      <ResultsReel />
       <ProcessTimeline />
+      <ResultsReel />
       <Testimonials />
       <FAQ />
       <ContactBlock />

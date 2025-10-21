@@ -23,14 +23,16 @@ const BrandsVideoCarousel = () => {
   const srcFor = (file: string) => brandMap[`/src/assets/brands/${file}`] as string;
 
   const baseBrands: Array<{ file: string; title: string; titleEn: string; category: string; categoryEn: string; type: 'image' | 'video' }> = [
-    { file: 'סרטון תדמית מסעדה-B.mov', title: 'תדמית מסעדה', titleEn: 'Restaurant Brand Film', category: 'קמפיין', categoryEn: 'Campaign', type: 'video' as const },
+    { file: 'mahlevet evri.mov', title: 'תדמית מסעדה', titleEn: 'Restaurant Brand Film', category: 'קמפיין', categoryEn: 'Campaign', type: 'video' as const },
+
     { file: 'סרטון תדמית גלמפינג-B.mov', title: 'גלמפינג', titleEn: 'Glamping Brand Film', category: 'תדמית', categoryEn: 'Branding', type: 'video' as const },
-    { file: 'ניהול סושיאל עסק-B.mov', title: 'ניהול סושיאל', titleEn: 'Business Social Management', category: 'סושיאל', categoryEn: 'Social', type: 'video' as const },
-    { file: 'ניהול סושיאל שאלון רחוב-B.mp4', title: 'שאלון רחוב', titleEn: 'Street Interview', category: 'סושיאל עסק', categoryEn: 'Social', type: 'video' as const },
+    { file: 'streets.mov', title: 'שאלון רחוב', titleEn: 'Street Interview', category: 'סושיאל עסק', categoryEn: 'Social', type: 'video' as const },
+    { file: 'winery.mov', title: 'תדמית יקב', titleEn: 'Winery Brand Film', category: 'סושיאל עסק', categoryEn: 'Social', type: 'video' as const },
+    { file: 'סרטון תדמית מסעדה-B.mov', title: 'תדמית מסעדה', titleEn: 'Restaurant Brand Film', category: 'קמפיין', categoryEn: 'Campaign', type: 'video' as const },
     { file: 'סרטון תדמית מלון-B.mov', title: 'תדמית מלון', titleEn: 'Hotel Brand Film', category: 'תדמית', categoryEn: 'Branding', type: 'video' as const },
     { file: 'ugc-B.mov', title: 'UGC', titleEn: 'UGC Compilation', category: 'תוכן', categoryEn: 'Content', type: 'video' as const },
-    { file: 'שאלון רחוב-B.mov', title: 'שאלון רחוב', titleEn: 'Street Interview', category: 'סושיאל עסק', categoryEn: 'Social', type: 'video' as const },
-    { file: 'copy_FB85CCF4-6B17-4A86-AC33-7B10A686BA22.mov', title: 'עגלת קפה', titleEn: 'Coffee Cart', category: 'סושיאל עסק', categoryEn: 'Social', type: 'video' as const },
+    { file: 'streets-ask.mov', title: 'שאלון רחוב', titleEn: 'Street Interview', category: 'סושיאל עסק', categoryEn: 'Social', type: 'video' as const },
+    { file: 'agalt-cafe.mp4', title: 'עגלת קפה', titleEn: 'Coffee Cart', category: 'סושיאל עסק', categoryEn: 'Social', type: 'video' as const },
   ];
 
   const brands = baseBrands.map(b => ({ ...b, src: srcFor(b.file) }));
