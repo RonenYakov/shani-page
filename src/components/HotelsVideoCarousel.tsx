@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useWheelSnapScroll } from "@/hooks/useWheelSnapScroll";
@@ -6,42 +6,51 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useI18n } from "@/i18n/simple";
-const WeddingsVideoGallery = () => {
+
+
+const HotelsVideoCarousel = () => {
+  const { language, t } = useI18n();
   const [hoveredVideo, setHoveredVideo] = useState<string | null>(null);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeItem, setActiveItem] = useState<{ src: string; type: 'image' | 'video'; title: string } | null>(null);
   const videoRefs = useRef<Array<HTMLVideoElement | null>>([]);
   const hoverTimer = useRef<number | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const wrapperRef = useRef<HTMLDivElement>(null);
 
-  // Manual order + titles: edit this array freely
-  const weddingMap = useMemo(() => (
-    import.meta.glob('@/assets/weddings/*.{jpg,jpeg,png,webp,gif,mp4,mov,webm,HEIC,JPG,PNG}', { query: '?url', import: 'default', eager: true }) as Record<string, string>
+  // Allow assets to live in a dedicated hotels folder, but also gracefully
+  // fall back to the brands folder so you can reuse existing videos.
+  const hotelsMap = useMemo(() => (
+    import.meta.glob('@/assets/hotels/*.{jpg,jpeg,png,webp,gif,mp4,mov,webm,JPG,PNG}', { query: '?url', import: 'default', eager: true }) as Record<string, string>
+  ), []);
+  const brandsMap = useMemo(() => (
+    import.meta.glob('@/assets/brands/*.{jpg,jpeg,png,webp,gif,mp4,mov,webm,JPG,PNG}', { query: '?url', import: 'default', eager: true }) as Record<string, string>
   ), []);
 
-  const srcFor = (file: string) => weddingMap[`/src/assets/weddings/${file}`] as string;
+  const srcFor = (file: string) => {
+    const inHotels = hotelsMap[`/src/assets/hotels/${file}`] as string | undefined;
+    if (inHotels) return inHotels;
+    const inBrands = brandsMap[`/src/assets/brands/${file}`] as string | undefined;
+    return inBrands as string;
+  };
 
-  const weddingMedia = ([ 
-    { file: 'סושיאל חתונה.mov', title: 'סושיאל חתונה', titleEn: 'Wedding Social', type: 'video' as const },
-    { file: 'save the date-tal.mov', title: 'Save the Date', titleEn: 'Save the Date', type: 'video' as const },
-    { file: 'proposel.mp4', title: 'הצעה', titleEn: 'Proposal', type: 'video' as const },
-    { file: 'SAVE THE DATE-W.mov', title: 'Save the Date', titleEn: 'Save the Date', type: 'video' as const },
-    { file: 'gan.mov', title: 'מסיבת סיום גן', titleEn: 'Kindergarten Graduation', type: 'video' as const },
-    { file: 'רגעים קטנים חתונה-W.mov', title: 'רגעים קטנים', titleEn: 'Little Moments', type: 'video' as const },
-    { file: 'מסיבת אירוסין-W.mov', title: 'מסיבת אירוסין', titleEn: 'Engagement Party', type: 'video' as const },
-    { file: 'save the date.mov', title: 'Save the Date', titleEn: 'Save the Date', type: 'video' as const },
-    { file: 'חתונה-W.mov', title: 'חתונה', titleEn: 'Wedding', type: 'video' as const },
-    { file: 'סייב דה דייט.mov', title: 'סייב דה דייט', titleEn: 'Save the Date', type: 'video' as const },
-    { file: 'copy_4CB7BB16-8667-4394-9EFC-4820095F619E.mov', title: 'חתונה מיוחדת', titleEn: 'Special Wedding', type: 'video' as const },
-     ] as Array<{ file: string; title: string; titleEn: string; type: 'image' | 'video' }>).map(m => ({ ...m, src: srcFor(m.file) }));
+  // Easy to edit/add videos: drop files in /src/assets/hotels (or reuse brands)
+  // and append items below with title (he) + titleEn.
+  const baseItems: Array<{ file: string; title: string; titleEn: string; category: string; categoryEn: string; type: 'image' | 'video' }> = [
+    { file: 'v1c044g50000d2qrjgfog65q8kapaf30.mp4', title: 'תדמית מלון', titleEn: 'Dream Vacation', category: 'סקירה', categoryEn: 'Review', type: 'video' as const },
+    { file: 'v14044g50000d1ma62vog65k1sjdbu90.mp4', title: 'תדמית מלון', titleEn: 'Hotel Brand Film', category: 'סקירה', categoryEn: 'Review', type: 'video' as const },
+    { file: 'v14044g50000d1pk9hfog65ji0k9nub0.mp4', title: 'תדמית מלון', titleEn: 'Hotel Brand Film', category: 'סקירה', categoryEn: 'Review', type: 'video' as const },
+    { file: 'v14044g50000d1n6f7nog65tt3hootig.mp4', title: 'תדמית מלון', titleEn: 'Life style', category: 'סקירה', categoryEn: 'Review', type: 'video' as const },
+    { file: 'hotel drone shot.mov', title: 'תדמית מלון', titleEn: 'Hotel Brand Film', category: 'סקירה', categoryEn: 'Review', type: 'video' as const },
+    { file: 'ScreenRecording_11-09-2025 01-59-03_1.mp4', title: 'תדמית מלון', titleEn: 'Hotel Brand Film', category: 'סקירה', categoryEn: 'Review', type: 'video' as const },
+    { file: 'ScreenRecording_11-09-2025 02-02-15_1.mp4', title: 'תדמית מלון', titleEn: 'Hotel Brand Film', category: 'סקירה', categoryEn: 'Review', type: 'video' as const },
+    { file: 'סרטון תדמית גלמפינג-B.mov', title: 'גלמפינג יוקרתי', titleEn: 'Luxury Glamping', category: 'תוכן', categoryEn: 'Content', type: 'video' as const },
+  ];
+  const items = baseItems.map(b => ({ ...b, src: srcFor(b.file) }));
 
-  // Mouse-wheel snap between items when hovered
-  useWheelSnapScroll(containerRef, ".media-card");
+  const containerRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  useWheelSnapScroll(containerRef, ".hotel-card");
 
   const isMobile = useIsMobile();
-  const { language } = useI18n();
-
   const [arrowTopPx, setArrowTopPx] = useState<number | null>(null);
   const [hasMoreVideos, setHasMoreVideos] = useState(false);
   const lightboxContainerRef = useRef<HTMLDivElement | null>(null);
@@ -89,7 +98,7 @@ const WeddingsVideoGallery = () => {
     };
   }, []);
 
-  // Position arrows vertically aligned with the middle of the media (video/image) area
+  // Position arrows vertically aligned with the middle of the media area
   useEffect(() => {
     const updateArrowTop = () => {
       const wrapper = wrapperRef.current;
@@ -97,10 +106,10 @@ const WeddingsVideoGallery = () => {
       if (!wrapper || !container) return;
       const wrapRect = wrapper.getBoundingClientRect();
 
-      // Pick the card whose center x is nearest to container's center x
+      // Find the card whose center is closest to the container's viewport center
       const contRect = container.getBoundingClientRect();
       const containerCenterX = contRect.left + contRect.width / 2;
-      const cards = Array.from(container.querySelectorAll('.media-card')) as HTMLElement[];
+      const cards = Array.from(container.querySelectorAll('.hotel-card')) as HTMLElement[];
       let closestMedia: HTMLElement | null = null;
       let minDist = Number.POSITIVE_INFINITY;
       for (const card of cards) {
@@ -138,6 +147,7 @@ const WeddingsVideoGallery = () => {
       window.removeEventListener('scroll', updateArrowTop);
     };
   }, []);
+
   useEffect(() => {
     if (!lightboxOpen) return;
     const onKey = (e: KeyboardEvent) => {
@@ -150,19 +160,24 @@ const WeddingsVideoGallery = () => {
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   }, [lightboxOpen]);
+
   return (
-    <section id="videos-warm" dir="rtl" className="section-padding relative text-right">
-      <div className="max-w-7xl mx-auto relative px-6" ref={wrapperRef}>
+    <section id="videos-hotels" dir="rtl" className="section-padding relative overflow-hidden text-right bg-[#0a0d10]">
+      <div className="pointer-events-none absolute inset-0 opacity-40">
+        <div className="absolute -top-24 -left-24 w-[40rem] h-[40rem] rounded-full bg-[radial-gradient(circle_at_center,rgba(200,169,126,0.25),transparent_60%)]" />
+        <div className="absolute bottom-0 right-0 w-[36rem] h-[36rem] rounded-full bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.08),transparent_65%)]" />
+      </div>
+      <div className="max-w-8xl mx-auto relative px-6" ref={wrapperRef}>
         <motion.h2 
-          className="section-title text-center mb-2"
+          className="section-title--light text-center mb-2 drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]"
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
           viewport={{ once: true }}
         >
-          {language === 'he' ? 'חתונות ואירועים' : 'Wedding & Events'}
+          {language === 'he' ? 'מלונות יוקרה - סיפורי חופשה' : 'Luxury Hotels - Vacation Stories'}
         </motion.h2>
-        
+
         <motion.p 
           className="cinematic-text text-center max-w-3xl mx-auto mb-8"
           initial={{ opacity: 0, y: 30 }}
@@ -170,75 +185,73 @@ const WeddingsVideoGallery = () => {
           transition={{ duration: 1, delay: 0.2 }}
           viewport={{ once: true }}
         >
-          {language === 'he' ? 'הצעות, חתונות ורגעים משפחתיים — מצולם באהבה.' : 'Proposals, weddings and family moments — captured beautifully.'}
+          {language === 'he' 
+            ? 'סרטוני תדמית למלונות יוקרה, גלמפינג יוקרתי וחוויות אירוח ייחודיות'
+            : 'Brand films for luxury hotels, premium glamping, and exclusive hospitality experiences'}
         </motion.p>
 
-        {/* Smooth Horizontal Reel with snap + hover scale */}
-        <div
-          ref={containerRef}
-          dir="ltr"
-          className="relative overflow-x-auto overflow-y-hidden scrollbar-hide pb-10"
-          style={{ scrollSnapType: 'x mandatory', scrollBehavior: 'smooth' }}
-        >
+        <div ref={containerRef} dir="ltr" className="relative overflow-x-auto overflow-y-hidden scrollbar-hide pb-8" style={{ scrollSnapType: 'x mandatory', scrollBehavior: 'smooth' }}>
           {/* Gradient fade overlay on right side */}
           {hasMoreVideos && (
-            <div className="absolute right-0 top-0 bottom-10 w-32 pointer-events-none z-10 bg-gradient-to-l from-white to-transparent" />
+            <div className="absolute right-0 top-0 bottom-8 w-32 pointer-events-none z-10 bg-gradient-to-l from-[#0a0d10] to-transparent" />
           )}
           
-          <div className="flex gap-5 md:gap-7 lg:gap-10 min-w-max">
-            {weddingMedia.map((item, index) => {
+          <div className="flex gap-6 md:gap-8 lg:gap-10 min-w-max">
+            {items.map((item, index) => {
               // Progressive loading: first 2-3 videos eager, rest lazy
               const isPriorityItem = index < 3;
               const shouldPreload = isPriorityItem ? 'metadata' : 'metadata'; // Always load metadata to show first frame
               
               return (
-              <motion.article
+              <motion.div
                 key={index}
-                className="media-card bg-white rounded-3xl overflow-hidden shadow-warm ring-1 ring-black/5 snap-center w-[85vw] sm:w-[70vw] md:w-[48vw] lg:w-[30vw] xl:w-[26vw] will-change-transform cursor-pointer"
-                initial={{ opacity: 0, scale: 0.95, y: 26 }}
-                whileInView={{ opacity: 1, scale: 1.03, y: 0 }}
-                whileHover={{ scale: 1.08 }}
+                className="hotel-card bg-white rounded-3xl overflow-hidden shadow-warm ring-1 ring-black/5 snap-center w-[85vw] sm:w-[70vw] md:w-[48vw] lg:w-[30vw] xl:w-[26vw] will-change-transform cursor-pointer"
+                initial={{ opacity: 0, scale: 0.9, y: 30 }}
+                whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.6, delay: index * 0.05 }}
                 onHoverStart={() => {
-                  if (item.type === 'video') {
+                  setHoveredVideo(index.toString());
+                  if (item && item.type === 'video') {
                     if (hoverTimer.current) window.clearTimeout(hoverTimer.current);
                     hoverTimer.current = window.setTimeout(() => {
                       const v = videoRefs.current[index];
                       if (v) {
-                        v.muted = false;
-                        if (v.paused) {
-                          try { v.currentTime = 0; void v.play(); } catch {}
-                        }
+                        try {
+                          v.muted = false;
+                          v.currentTime = 0;
+                          void v.play();
+                        } catch {}
                       }
                     }, 1000);
                   }
                 }}
                 onHoverEnd={() => {
+                  setHoveredVideo(null);
                   if (hoverTimer.current) window.clearTimeout(hoverTimer.current);
                   const v = videoRefs.current[index];
                   if (v) {
                     v.muted = true;
-                    // Keep playing as a muted preview; if you prefer pause, uncomment:
-                    // v.pause();
+                    v.pause();
                   }
                 }}
                 onClick={() => { setActiveItem(item); setLightboxOpen(true); }}
               >
                 <div className="relative">
                   {item.type === 'image' ? (
-                  <img
-                    src={item.src}
-                    alt=""
-                    className="w-full aspect-video object-cover"
-                    loading="lazy"
-                  />
+                    <img
+                      src={item.src}
+                      alt=""
+                      className="w-full aspect-video object-cover"
+                      loading="lazy"
+                    />
                   ) : (
                     <video
                       src={item.src}
                       className="w-full aspect-video object-cover bg-gray-200"
                       autoPlay={!isMobile}
-                      loop
                       muted
+                      loop
                       playsInline
                       preload={shouldPreload}
                       onLoadedMetadata={(e) => {
@@ -256,11 +269,7 @@ const WeddingsVideoGallery = () => {
                         if (video.currentTime < 0.1) {
                           video.currentTime = 0.1;
                         }
-                        if (!isMobile) {
-                          try { video.play(); } catch {}
-                        }
                       }}
-                      aria-hidden="true"
                       ref={(el) => { 
                         videoRefs.current[index] = el;
                         if (el) {
@@ -276,97 +285,93 @@ const WeddingsVideoGallery = () => {
                       }}
                     />
                   )}
-                  <Badge className="absolute top-3 left-3 bg-gold text-cinematic-black font-semibold">{language === 'he' ? 'אירועים' : 'Events'}</Badge>
+                  <Badge className="absolute top-3 left-3 bg-gold text-cinematic-black font-semibold">{language === 'he' ? item.category : item.categoryEn}</Badge>
                 </div>
 
                 <div className="p-5">
-                  <h4 className="text-lg md:text-xl font-semibold text-cinematic-black mb-2 leading-tight">{language === 'he' ? item.title : item.titleEn}</h4>
+                  <h3 className="text-lg md:text-xl font-semibold text-cinematic-black mb-2 leading-tight">{language === 'he' ? item.title : item.titleEn}</h3>
                   <div className="flex flex-wrap gap-2 mb-3">
-                    <span className="px-2 py-1 text-xs bg-sand/60 text-cinematic-black rounded-full">{language==='he' ? 'אירוע' : 'Event'}</span>
-                    <span className="px-2 py-1 text-xs bg-sand/60 text-cinematic-black rounded-full">{language==='he' ? 'וידאו' : 'Video'}</span>
+                    <span className="px-2 py-1 text-xs bg-sand/60 text-cinematic-black rounded-full">{language==='he' ? '#מלון_יוקרה' : '#LuxuryHotel'}</span>
+                    <span className="px-2 py-1 text-xs bg-sand/60 text-cinematic-black rounded-full">{language==='he' ? '#וידאו_תדמית' : '#BrandVideo'}</span>
+                    <span className="px-2 py-1 text-xs bg-sand/60 text-cinematic-black rounded-full">{language==='he' ? '#אירוח_יוקרתי' : '#PremiumHospitality'}</span>
                   </div>
                   <Button className="w-full bg-cinematic-black text-white hover:bg-cinematic-black/90" onClick={(e) => { e.stopPropagation(); setActiveItem(item); setLightboxOpen(true); }}>
-                    {language === 'he' ? 'צפייה בסרטון' : 'Watch video'}
+                    {language === 'he' ? 'צפייה בסרטון' : 'Watch Video'}
                   </Button>
                 </div>
-              </motion.article>
+              </motion.div>
               );
             })}
           </div>
         </div>
-
-        {/* Scroll hint arrows */}
         <ScrollHintArrow containerRef={containerRef} direction="right" topPx={arrowTopPx} />
         <ScrollHintArrow containerRef={containerRef} direction="left" topPx={arrowTopPx} />
+      </div>
 
-        {/* Fullscreen Lightbox Viewer */}
-        <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
-          <DialogContent className="max-w-none w-screen h-screen p-0 bg-black border-0 m-0">
-            <div 
-              className="relative w-full h-full flex items-center justify-center"
-              onClick={() => setLightboxOpen(false)} // Click outside to close
+      <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
+        <DialogContent className="max-w-none w-screen h-screen p-0 bg-black border-0 m-0">
+          <div 
+            className="relative w-full h-full flex items-center justify-center"
+            onClick={() => setLightboxOpen(false)}
+          >
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setLightboxOpen(false);
+              }}
+              className="absolute top-4 right-4 z-50 text-white text-2xl bg-black/50 rounded-full w-12 h-12 flex items-center justify-center hover:bg-black/70 transition-colors touch-manipulation"
+              aria-label="Close video"
             >
-              {/* Close button - larger for mobile */}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setLightboxOpen(false);
-                }}
-                className="absolute top-4 right-4 z-50 text-white text-2xl bg-black/50 rounded-full w-12 h-12 flex items-center justify-center hover:bg-black/70 transition-colors touch-manipulation"
-                aria-label="Close video"
-              >
-                ✕
-              </button>
-              
-              {/* Additional close area for mobile - tap anywhere */}
-              <div className="absolute top-0 left-0 w-full h-16 z-40" onClick={() => setLightboxOpen(false)} />
-              
-              <div 
-                className="relative max-w-[92vw] max-h-[85vh] w-auto h-auto"
-                ref={lightboxContainerRef}
-                onClick={(e) => e.stopPropagation()} // Prevent closing when clicking video
-              >
-                {activeItem?.type === 'image' ? (
+              ✕
+            </button>
+
+            <button
+              onClick={(e) => { e.stopPropagation(); toggleFullscreen(); }}
+              className="absolute top-4 right-20 z-50 text-white text-2xl bg-black/50 rounded-full w-12 h-12 flex items-center justify-center hover:bg-black/70 transition-colors touch-manipulation"
+              aria-label="Toggle fullscreen"
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 9V4h5" />
+                <path d="M4 4l6 6" />
+                <path d="M20 15v5h-5" />
+                <path d="M20 20l-6-6" />
+              </svg>
+            </button>
+            
+            <div className="absolute top-0 left-0 w-full h-16 z-40" onClick={() => setLightboxOpen(false)} />
+            
+            <div 
+              className="relative max-w-[92vw] max-h-[85vh] w-auto h-auto"
+              ref={lightboxContainerRef}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {activeItem?.type === 'image' ? (
                 <img
                   src={activeItem.src}
                   alt={activeItem.title}
                   className="max-w-[92vw] max-h-[85vh] w-auto h-auto object-contain"
                 />
-                ) : (
-                  <video
-                    src={activeItem?.src}
-                    className="max-w-[92vw] max-h-[85vh] w-auto h-auto object-contain"
-                    controls
-                    autoPlay
-                    playsInline
-                    onDoubleClick={toggleFullscreen}
-                    ref={lightboxVideoRef}
-                  />
-                )}
-              </div>
-              <button
-                onClick={(e) => { e.stopPropagation(); toggleFullscreen(); }}
-                className="absolute top-4 right-20 z-50 text-white text-2xl bg-black/50 rounded-full w-12 h-12 flex items-center justify-center hover:bg-black/70 transition-colors touch-manipulation"
-                aria-label="Toggle fullscreen"
-              >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M4 9V4h5" />
-                  <path d="M4 4l6 6" />
-                  <path d="M20 15v5h-5" />
-                  <path d="M20 20l-6-6" />
-                </svg>
-              </button>
+              ) : (
+                <video
+                  src={activeItem?.src}
+                  className="max-w-[92vw] max-h-[85vh] w-auto h-auto object-contain"
+                  controls
+                  autoPlay
+                  playsInline
+                  onDoubleClick={toggleFullscreen}
+                  ref={lightboxVideoRef}
+                />
+              )}
             </div>
-          </DialogContent>
-        </Dialog>
-      </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
 
-export default WeddingsVideoGallery;
+export default HotelsVideoCarousel;
 
-// Elegant scroll hint arrow for horizontal reels
 const ScrollHintArrow = ({ containerRef, direction = 'right', topPx }: { containerRef: React.RefObject<HTMLDivElement>; direction?: 'left' | 'right'; topPx?: number | null }) => {
   const [show, setShow] = useState(false);
 
@@ -432,3 +437,5 @@ const ScrollHintArrow = ({ containerRef, direction = 'right', topPx }: { contain
     </motion.button>
   );
 };
+
+

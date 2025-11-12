@@ -42,29 +42,34 @@ const HeroWorking = () => {
         </div>
       </div>
 
-      {/* Poster background */}
-      <div 
-        className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: 'url(/story5.jpg)' }}
-      />
-
-      {/* Background Video with fade-in */}
+      {/* Hero Video */}
       <video
-        className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
+        className="absolute inset-0 w-full h-full object-cover z-0"
         autoPlay
         muted
         loop
         playsInline
+        preload="auto"
         poster="/story5.jpg"
-        style={{ opacity: 0 }}
-        onCanPlay={(e) => {
-          e.currentTarget.style.opacity = '1';
-          e.currentTarget.play().catch(() => {});
+        onError={(e) => {
+          console.error('Hero video failed to load:', e);
+        }}
+        onLoadedData={(e) => {
+          const video = e.currentTarget;
+          video.play().catch((err) => {
+            console.log('Autoplay prevented, user interaction required');
+          });
         }}
       >
+        <source src="/video-glam.webm" type="video/webm" />
         <source src="/video-glam.mov" type="video/mp4" />
-        <source src="/story.mov" type="video/mp4" />
       </video>
+      
+      {/* Fallback poster image - only shows if video fails to load */}
+      <div 
+        className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat z-[-1]"
+        style={{ backgroundImage: 'url(/story5.jpg)' }}
+      />
       
       {/* Dark overlay for text contrast */}
       <div className="absolute inset-0 bg-black/50" />

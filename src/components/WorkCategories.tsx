@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { useI18n } from "@/i18n/simple";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,11 +7,19 @@ import VideoModal from "./VideoModal";
 import caseStudiesData from "@/content/caseStudies.json";
 
 type Category = "Awareness" | "Consideration" | "Conversion";
+type CaseStudy = (typeof caseStudiesData)[number] & {
+  poster?: string;
+  videoBase?: string;
+};
+type SelectedVideo = {
+  url: string;
+  title: string;
+};
 
 const WorkCategories = () => {
   const { t, language } = useI18n();
   const [collection, setCollection] = useState<'brands' | 'events'>('brands');
-  const [selectedVideo, setSelectedVideo] = useState<{url: string, title: string} | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<SelectedVideo | null>(null);
 
   const categoryHe: Record<Category, string> = {
     Awareness: 'מודעות',
@@ -20,10 +27,13 @@ const WorkCategories = () => {
     Conversion: 'המרה'
   };
 
-  const filteredCaseStudies = caseStudiesData.filter(cs => (cs as any).collection === collection);
+  const filteredCaseStudies = (caseStudiesData as CaseStudy[]).filter(cs => (cs as any).collection === collection);
 
-  const handleVideoClick = (videoUrl: string, title: string) => {
-    setSelectedVideo({ url: videoUrl, title });
+  const handleVideoClick = (caseStudy: CaseStudy, title: string) => {
+    setSelectedVideo({
+      url: caseStudy.videoUrl,
+      title,
+    });
   };
 
   return (
@@ -63,7 +73,10 @@ const WorkCategories = () => {
           {filteredCaseStudies.map((caseStudy) => (
             <div key={caseStudy.id} className="bg-white rounded-2xl overflow-hidden shadow-warm">
               {/* Video preview */}
-              <div className="relative">
+              <div
+                className="relative group cursor-pointer"
+                onClick={() => handleVideoClick(caseStudy, caseStudy.title[language])}
+              >
                 <video
                   className="w-full aspect-video object-cover"
                   src={caseStudy.videoUrl}
@@ -71,9 +84,12 @@ const WorkCategories = () => {
                   loop
                   playsInline
                   autoPlay
-                  preload="metadata"
-                  onClick={() => handleVideoClick(caseStudy.videoUrl, caseStudy.title[language])}
+                  preload="none"
+                  onClick={() => handleVideoClick(caseStudy, caseStudy.title[language])}
                 />
+                <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/0 transition duration-300 group-hover:bg-black/40">
+                  <Play className="w-12 h-12 text-white opacity-0 transition-opacity duration-300 group-hover:opacity-90" />
+                </div>
                 <Badge className="absolute top-3 left-3 bg-gold text-cinematic-black">
                   {language==='he' ? categoryHe[caseStudy.category as Category] : caseStudy.category}
                 </Badge>
@@ -101,7 +117,7 @@ const WorkCategories = () => {
                 </div>
 
                 <Button
-                  onClick={() => handleVideoClick(caseStudy.videoUrl, caseStudy.title[language])}
+                  onClick={() => handleVideoClick(caseStudy, caseStudy.title[language])}
                   className="w-full mt-4 bg-cinematic-black text-white hover:bg-cinematic-black/90"
                 >
                   {language === 'he' ? 'צפייה בסרטון' : 'Watch video'}

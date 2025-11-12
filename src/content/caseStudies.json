@@ -19,6 +19,8 @@
       "he": "500% עלייה בעוקבים, תור של שבועיים להזמנות",
       "en": "500% follower increase, 2-week booking waitlist"
     },
+    "videoBase": "/videos/case-studies/restaurant-awareness",
+    "poster": "/videos/case-studies/restaurant-awareness/poster.jpg",
     "videoUrl": "/video-glam.mov",
     "tools": ["Instagram Reels", "TikTok", "User Generated Content"]
   },
@@ -42,6 +44,8 @@
       "he": "40% עלייה בפניות איכותיות, מחיר ממוצע גבוה יותר",
       "en": "40% increase in quality inquiries, higher average booking value"
     },
+    "videoBase": "/videos/case-studies/wedding-consideration",
+    "poster": "/videos/case-studies/wedding-consideration/poster.jpg",
     "videoUrl": "/story.mov",
     "tools": ["Instagram Stories", "Testimonials", "Emotional Storytelling"]
   },
@@ -65,6 +69,8 @@
       "he": "25% עלייה בהזמנות ישירות, פחות תלות בבוקינג",
       "en": "25% increase in direct bookings, less Booking.com dependency"
     },
+    "videoBase": "/videos/case-studies/hotel-conversion",
+    "poster": "/videos/case-studies/hotel-conversion/poster.jpg",
     "videoUrl": "/story4.mov",
     "tools": ["Instagram Ads", "Stories Countdown", "Direct Booking CTA"]
   },
@@ -88,6 +94,8 @@
       "he": "תכולת מדיה עשירה לחצי שנה + זיהוי מותג חזק",
       "en": "6 months of rich media content + strong brand recognition"
     },
+    "videoBase": "/videos/case-studies/glamping-social",
+    "poster": "/videos/case-studies/glamping-social/poster.jpg",
     "videoUrl": "/story8.mov",
     "tools": ["Cinematic Video", "Brand Storytelling", "Content Library"]
   }

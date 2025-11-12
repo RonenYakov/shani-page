@@ -11,6 +11,12 @@ const StoriesGalleryModal = ({ isOpen, onClose }: StoriesGalleryModalProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const stories = [
+    "/IMG_0763.jpg",
+    "/IMG_0765.jpg",
+    "/IMG_0767.jpg",
+    "/IMG_0768.jpg",
+    "/IMG_0778.jpg",
+    "/IMG_0780.jpg",
     "/story1.jpg",
     "/story2.jpg", 
     "/story3.JPG",

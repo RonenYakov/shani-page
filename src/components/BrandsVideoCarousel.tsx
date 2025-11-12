@@ -24,7 +24,6 @@ const BrandsVideoCarousel = () => {
 
   const baseBrands: Array<{ file: string; title: string; titleEn: string; category: string; categoryEn: string; type: 'image' | 'video' }> = [
     { file: 'mahlevet evri.mov', title: 'תדמית מסעדה', titleEn: 'Restaurant Brand Film', category: 'קמפיין', categoryEn: 'Campaign', type: 'video' as const },
-
     { file: 'סרטון תדמית גלמפינג-B.mov', title: 'גלמפינג', titleEn: 'Glamping Brand Film', category: 'תדמית', categoryEn: 'Branding', type: 'video' as const },
     { file: 'streets.mov', title: 'שאלון רחוב', titleEn: 'Street Interview', category: 'סושיאל עסק', categoryEn: 'Social', type: 'video' as const },
     { file: 'winery.mov', title: 'תדמית יקב', titleEn: 'Winery Brand Film', category: 'סושיאל עסק', categoryEn: 'Social', type: 'video' as const },
@@ -44,6 +43,51 @@ const BrandsVideoCarousel = () => {
 
   const isMobile = useIsMobile();
   const [arrowTopPx, setArrowTopPx] = useState<number | null>(null);
+  const [hasMoreVideos, setHasMoreVideos] = useState(false);
+  const lightboxContainerRef = useRef<HTMLDivElement | null>(null);
+  const lightboxVideoRef = useRef<HTMLVideoElement | null>(null);
+
+  const toggleFullscreen = () => {
+    const container: any = lightboxContainerRef.current;
+    if (!container) return;
+    const doc: any = document;
+    if (doc.fullscreenElement || doc.webkitFullscreenElement) {
+      if (doc.exitFullscreen) doc.exitFullscreen();
+      else if (doc.webkitExitFullscreen) doc.webkitExitFullscreen();
+    } else {
+      if (container.requestFullscreen) container.requestFullscreen();
+      else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
+    }
+  };
+
+  // Check if there are more videos to scroll
+  useEffect(() => {
+    const checkMoreVideos = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      const hasOverflow = container.scrollWidth > container.clientWidth;
+      const isAtEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth - 10;
+      
+      if (hasOverflow && !isAtEnd) {
+        setHasMoreVideos(true);
+      } else {
+        setHasMoreVideos(false);
+      }
+    };
+    
+    checkMoreVideos();
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener('scroll', checkMoreVideos);
+      window.addEventListener('resize', checkMoreVideos);
+    }
+    return () => {
+      if (container) {
+        container.removeEventListener('scroll', checkMoreVideos);
+        window.removeEventListener('resize', checkMoreVideos);
+      }
+    };
+  }, []);
 
   // Position arrows vertically aligned with the middle of the media (video/image) area
   useEffect(() => {
@@ -52,16 +96,31 @@ const BrandsVideoCarousel = () => {
       const container = containerRef.current;
       if (!wrapper || !container) return;
       const wrapRect = wrapper.getBoundingClientRect();
-      // Try to use first media element height to avoid padding offset
-      const mediaEl = container.querySelector('video, img') as HTMLElement | null;
+
+      // Choose the card whose center x is nearest to the container's center x
+      const contRect = container.getBoundingClientRect();
+      const containerCenterX = contRect.left + contRect.width / 2;
+      const cards = Array.from(container.querySelectorAll('.brand-card')) as HTMLElement[];
+      let closestMedia: HTMLElement | null = null;
+      let minDist = Number.POSITIVE_INFINITY;
+      for (const card of cards) {
+        const rect = card.getBoundingClientRect();
+        const cardCenterX = rect.left + rect.width / 2;
+        const dist = Math.abs(cardCenterX - containerCenterX);
+        if (dist < minDist) {
+          minDist = dist;
+          const media = (card.querySelector(':scope > .relative') as HTMLElement | null) || (card.querySelector('video, img') as HTMLElement | null);
+          closestMedia = media;
+        }
+      }
+
+      const mediaEl = closestMedia || (container.querySelector('video, img') as HTMLElement | null);
       if (mediaEl) {
         const mediaRect = mediaEl.getBoundingClientRect();
         const top = mediaRect.top - wrapRect.top + mediaRect.height / 2;
         setArrowTopPx(top);
         return;
       }
-      // Fallback to container center
-      const contRect = container.getBoundingClientRect();
       setArrowTopPx(contRect.top - wrapRect.top + contRect.height / 2);
     };
 
@@ -79,6 +138,19 @@ const BrandsVideoCarousel = () => {
       window.removeEventListener('scroll', updateArrowTop);
     };
   }, []);
+
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setLightboxOpen(false);
+      if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        toggleFullscreen();
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [lightboxOpen]);
   return (
     <section id="videos-brands" dir="rtl" className="section-padding relative overflow-hidden text-right bg-[#010407]">
       {/* Rich, premium background accents */}
@@ -110,9 +182,19 @@ const BrandsVideoCarousel = () => {
         </motion.p>
 
         {/* Horizontal reel with snap & hover scale */}
-        <div ref={containerRef} dir="ltr" className="overflow-x-auto overflow-y-hidden scrollbar-hide pb-8" style={{ scrollSnapType: 'x mandatory', scrollBehavior: 'smooth' }}>
+        <div ref={containerRef} dir="ltr" className="relative overflow-x-auto overflow-y-hidden scrollbar-hide pb-8" style={{ scrollSnapType: 'x mandatory', scrollBehavior: 'smooth' }}>
+          {/* Gradient fade overlay on right side */}
+          {hasMoreVideos && (
+            <div className="absolute right-0 top-0 bottom-8 w-32 pointer-events-none z-10 bg-gradient-to-l from-[#010407] to-transparent" />
+          )}
+          
           <div className="flex gap-6 md:gap-8 lg:gap-10 min-w-max">
-            {brands.map((item, index) => (
+            {brands.map((item, index) => {
+              // Progressive loading: first 2-3 videos eager, rest lazy
+              const isPriorityItem = index < 3;
+              const shouldPreload = isPriorityItem ? 'metadata' : 'metadata'; // Always load metadata to show first frame
+              
+              return (
               <motion.div
                 key={index}
                 className="brand-card bg-white rounded-3xl overflow-hidden shadow-warm ring-1 ring-black/5 snap-center w-[85vw] sm:w-[70vw] md:w-[48vw] lg:w-[30vw] xl:w-[26vw] will-change-transform cursor-pointer"
@@ -154,13 +236,41 @@ const BrandsVideoCarousel = () => {
                   ) : (
                     <video
                       src={item.src}
-                      className="w-full aspect-video object-cover"
+                      className="w-full aspect-video object-cover bg-gray-200"
                       autoPlay={!isMobile}
                       muted
                       loop
                       playsInline
-                      preload="metadata"
-                      ref={(el) => { videoRefs.current[index] = el; }}
+                      preload={shouldPreload}
+                      onLoadedMetadata={(e) => {
+                        const video = e.currentTarget;
+                        video.currentTime = 0.1;
+                      }}
+                      onLoadedData={(e) => {
+                        const video = e.currentTarget;
+                        if (video.currentTime < 0.1) {
+                          video.currentTime = 0.1;
+                        }
+                      }}
+                      onCanPlay={(e) => {
+                        const video = e.currentTarget;
+                        if (video.currentTime < 0.1) {
+                          video.currentTime = 0.1;
+                        }
+                      }}
+                      ref={(el) => { 
+                        videoRefs.current[index] = el;
+                        if (el) {
+                          const tryShowFrame = () => {
+                            if (el.readyState >= 2) {
+                              el.currentTime = 0.1;
+                            } else {
+                              setTimeout(tryShowFrame, 100);
+                            }
+                          };
+                          tryShowFrame();
+                        }
+                      }}
                     />
                   )}
                   <Badge className="absolute top-3 left-3 bg-gold text-cinematic-black font-semibold">{language === 'he' ? item.category : item.categoryEn}</Badge>
@@ -178,7 +288,8 @@ const BrandsVideoCarousel = () => {
                   </Button>
                 </div>
               </motion.div>
-            ))}
+              );
+            })}
           </div>
         </div>
         {/* Scroll hint arrows */}
@@ -208,21 +319,37 @@ const BrandsVideoCarousel = () => {
             <div className="absolute top-0 left-0 w-full h-16 z-40" onClick={() => setLightboxOpen(false)} />
             
             <div 
-              className="relative max-w-full max-h-full"
+              className="relative max-w-[92vw] max-h-[85vh] w-auto h-auto"
+              ref={lightboxContainerRef}
               onClick={(e) => e.stopPropagation()} // Prevent closing when clicking video
             >
               {activeItem?.type === 'image' ? (
-                <img src={activeItem.src} alt={activeItem.title} className="max-w-full max-h-full object-contain" />
+                <img src={activeItem.src} alt={activeItem.title} className="max-w-[92vw] max-h-[85vh] w-auto h-auto object-contain" />
               ) : (
                 <video
                   src={activeItem?.src}
-                  className="max-w-full max-h-full object-contain"
+                  className="max-w-[92vw] max-h-[85vh] w-auto h-auto object-contain"
                   controls
                   autoPlay
                   playsInline
+                  onDoubleClick={toggleFullscreen}
+                  ref={lightboxVideoRef}
                 />
               )}
             </div>
+
+            <button
+              onClick={(e) => { e.stopPropagation(); toggleFullscreen(); }}
+              className="absolute top-4 right-20 z-50 text-white text-2xl bg-black/50 rounded-full w-12 h-12 flex items-center justify-center hover:bg-black/70 transition-colors touch-manipulation"
+              aria-label="Toggle fullscreen"
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 9V4h5" />
+                <path d="M4 4l6 6" />
+                <path d="M20 15v5h-5" />
+                <path d="M20 20l-6-6" />
+              </svg>
+            </button>
           </div>
         </DialogContent>
       </Dialog>
@@ -232,7 +359,7 @@ const BrandsVideoCarousel = () => {
 
 export default BrandsVideoCarousel;
 
-// Yellow cartoon-like scroll hint arrow for horizontal reels
+// Elegant scroll hint arrow for horizontal reels
 const ScrollHintArrow = ({ containerRef, direction = 'right', topPx }: { containerRef: React.RefObject<HTMLDivElement>; direction?: 'left' | 'right'; topPx?: number | null }) => {
   const [show, setShow] = useState(false);
 
@@ -255,7 +382,7 @@ const ScrollHintArrow = ({ containerRef, direction = 'right', topPx }: { contain
       el.removeEventListener('scroll', update);
       ro.disconnect();
     };
-  }, [containerRef]);
+  }, [containerRef, direction]);
 
   if (!show) return null;
 
@@ -267,21 +394,35 @@ const ScrollHintArrow = ({ containerRef, direction = 'right', topPx }: { contain
   };
 
   return (
-    <button
+    <motion.button
       aria-label={direction === 'right' ? 'Scroll right for more videos' : 'Scroll left for more videos'}
       onClick={onClick}
-      className={`hidden md:flex items-center justify-center absolute ${direction === 'right' ? 'right-2' : 'left-2'} w-12 h-12 rounded-full bg-yellow-400 hover:bg-yellow-300 text-black shadow-lg ring-1 ring-black/10 transition`}
-      style={{ top: typeof topPx === 'number' ? topPx + 12 : 'calc(50% + 12px)', transform: 'translateY(-50%)' }}
+      className={`group flex items-center justify-center absolute ${direction === 'right' ? 'right-4' : 'left-4'} z-30`}
+      style={{ top: typeof topPx === 'number' ? topPx : '50%', transform: 'translateY(-50%)' }}
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.95 }}
+      transition={{ duration: 0.2 }}
     >
+      <div className="relative">
+        {/* Glow effect */}
+        <div className={`absolute inset-0 ${direction === 'right' ? 'bg-gradient-to-r' : 'bg-gradient-to-l'} from-gold/20 to-transparent blur-xl rounded-full`} />
+        
+        {/* Arrow container */}
+        <div className="relative w-12 h-12 rounded-full bg-gradient-to-br from-gold/90 to-amber-500/90 backdrop-blur-sm border-2 border-gold/50 shadow-lg shadow-gold/30 flex items-center justify-center group-hover:shadow-xl group-hover:shadow-gold/40 transition-all duration-300">
       {direction === 'right' ? (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M9 18l6-6-6-6" />
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="text-cinematic-black drop-shadow-sm">
+              <path d="M8 5l7 7-7 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:translate-x-0.5 transition-transform duration-300" />
         </svg>
       ) : (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M15 18l-6-6 6-6" />
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="text-cinematic-black drop-shadow-sm">
+              <path d="M16 5l-7 7 7 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:-translate-x-0.5 transition-transform duration-300" />
         </svg>
       )}
-    </button>
+        </div>
+      </div>
+    </motion.button>
   );
 };
+

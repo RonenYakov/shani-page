@@ -24,20 +24,20 @@ const Hero = () => {
         <LanguageSwitcher />
       </div>
 
-      {/* Background Poster Image */}
+      {/* Background Poster Image - Eager load for LCP */}
       <div 
         className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: 'url(/images/hero-poster.jpg)' }}
       />
       
-      {/* Hero Video */}
+      {/* Hero Video - High priority, auto preload */}
       <video
         className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
         autoPlay
         muted
         loop
         playsInline
-        preload="metadata"
+        preload="auto"
         poster="/images/hero-poster.jpg"
         style={{ opacity: 0 }}
         onCanPlay={(e) => {
