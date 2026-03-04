@@ -50,25 +50,18 @@ const HeroWorking = () => {
         loop
         playsInline
         preload="auto"
-        poster="/story5.jpg"
-        onError={(e) => {
-          console.error('Hero video failed to load:', e);
-        }}
+        poster="/story5.webp"
         onLoadedData={(e) => {
-          const video = e.currentTarget;
-          video.play().catch((err) => {
-            console.log('Autoplay prevented, user interaction required');
-          });
+          e.currentTarget.play().catch(() => {});
         }}
       >
-        <source src="/video-glam.webm" type="video/webm" />
-        <source src="/video-glam.mov" type="video/mp4" />
+        <source src="/video-glam.mp4" type="video/mp4" />
       </video>
       
       {/* Fallback poster image - only shows if video fails to load */}
       <div 
         className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat z-[-1]"
-        style={{ backgroundImage: 'url(/story5.jpg)' }}
+        style={{ backgroundImage: 'url(/story5.webp)' }}
       />
       
       {/* Dark overlay for text contrast */}
@@ -83,10 +76,10 @@ const HeroWorking = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9 }}
         >
-          <img 
-            src="/shani-logo2.png" 
-            alt="Shani Social Media" 
-            className="mx-auto h-28 md:h-40 lg:h-48 xl:h-56 drop-shadow-2xl" 
+          <img
+            src="/shani-logo2.webp"
+            alt="Shani Social Media"
+            className="mx-auto h-28 md:h-40 lg:h-48 xl:h-56 drop-shadow-2xl"
           />
         </motion.div>
         

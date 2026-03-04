@@ -3,7 +3,7 @@ import { MessageCircle } from "lucide-react";
 import { socials } from "@/content/socials";
 
 const StickyWhatsApp = () => {
-  const { t, language } = useI18n();
+  const { language } = useI18n();
 
   const handleClick = () => {
     window.open(socials.whatsappUrl, '_blank');

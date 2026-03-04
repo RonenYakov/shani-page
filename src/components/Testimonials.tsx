@@ -3,6 +3,15 @@ import { useI18n } from "@/i18n/simple";
 import { Quote } from "lucide-react";
 import testimonialsData from "@/content/testimonials.json";
 
+type Testimonial = {
+  id: string;
+  name: { he: string; en: string };
+  role: { he: string; en: string };
+  content: { he: string; en: string };
+  rating: number;
+  image: string;
+};
+
 // Eagerly import all screenshot images from the recommendations folder
 const recommendationImages = Object.values(
   import.meta.glob("@/assets/recomendations/*.{png,jpg,jpeg,webp}", {
@@ -43,7 +52,7 @@ const Testimonials = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {showEnglishTestimonials ? (
             // Show JSON testimonials for English
-            (testimonialsData as any[]).map((testimonial, index) => (
+            (testimonialsData as Testimonial[]).map((testimonial, index) => (
               <motion.div
                 key={testimonial.id}
                 className="bg-white rounded-2xl p-6 md:p-8 shadow-warm hover:shadow-cinematic transition-all duration-500 hover:-translate-y-2 relative"

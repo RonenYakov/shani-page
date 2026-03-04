@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useI18n } from "@/i18n/simple";
 const WeddingsVideoGallery = () => {
-  const [hoveredVideo, setHoveredVideo] = useState<string | null>(null);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeItem, setActiveItem] = useState<{ src: string; type: 'image' | 'video'; title: string } | null>(null);
   const videoRefs = useRef<Array<HTMLVideoElement | null>>([]);
@@ -22,18 +21,18 @@ const WeddingsVideoGallery = () => {
 
   const srcFor = (file: string) => weddingMap[`/src/assets/weddings/${file}`] as string;
 
-  const weddingMedia = ([ 
-    { file: 'סושיאל חתונה.mov', title: 'סושיאל חתונה', titleEn: 'Wedding Social', type: 'video' as const },
-    { file: 'save the date-tal.mov', title: 'Save the Date', titleEn: 'Save the Date', type: 'video' as const },
+  const weddingMedia = ([
+    { file: 'סושיאל חתונה.mp4', title: 'סושיאל חתונה', titleEn: 'Wedding Social', type: 'video' as const },
+    { file: 'save the date-tal.mp4', title: 'Save the Date', titleEn: 'Save the Date', type: 'video' as const },
     { file: 'proposel.mp4', title: 'הצעה', titleEn: 'Proposal', type: 'video' as const },
-    { file: 'SAVE THE DATE-W.mov', title: 'Save the Date', titleEn: 'Save the Date', type: 'video' as const },
-    { file: 'gan.mov', title: 'מסיבת סיום גן', titleEn: 'Kindergarten Graduation', type: 'video' as const },
-    { file: 'רגעים קטנים חתונה-W.mov', title: 'רגעים קטנים', titleEn: 'Little Moments', type: 'video' as const },
-    { file: 'מסיבת אירוסין-W.mov', title: 'מסיבת אירוסין', titleEn: 'Engagement Party', type: 'video' as const },
-    { file: 'save the date.mov', title: 'Save the Date', titleEn: 'Save the Date', type: 'video' as const },
-    { file: 'חתונה-W.mov', title: 'חתונה', titleEn: 'Wedding', type: 'video' as const },
-    { file: 'סייב דה דייט.mov', title: 'סייב דה דייט', titleEn: 'Save the Date', type: 'video' as const },
-    { file: 'copy_4CB7BB16-8667-4394-9EFC-4820095F619E.mov', title: 'חתונה מיוחדת', titleEn: 'Special Wedding', type: 'video' as const },
+    { file: 'SAVE THE DATE-W.mp4', title: 'Save the Date', titleEn: 'Save the Date', type: 'video' as const },
+    { file: 'gan.mp4', title: 'מסיבת סיום גן', titleEn: 'Kindergarten Graduation', type: 'video' as const },
+    { file: 'רגעים קטנים חתונה-W.mp4', title: 'רגעים קטנים', titleEn: 'Little Moments', type: 'video' as const },
+    { file: 'מסיבת אירוסין-W.mp4', title: 'מסיבת אירוסין', titleEn: 'Engagement Party', type: 'video' as const },
+    { file: 'save the date.mp4', title: 'Save the Date', titleEn: 'Save the Date', type: 'video' as const },
+    { file: 'חתונה-W.mp4', title: 'חתונה', titleEn: 'Wedding', type: 'video' as const },
+    { file: 'סייב דה דייט.mp4', title: 'סייב דה דייט', titleEn: 'Save the Date', type: 'video' as const },
+    { file: 'copy_4CB7BB16-8667-4394-9EFC-4820095F619E.mp4', title: 'חתונה מיוחדת', titleEn: 'Special Wedding', type: 'video' as const },
      ] as Array<{ file: string; title: string; titleEn: string; type: 'image' | 'video' }>).map(m => ({ ...m, src: srcFor(m.file) }));
 
   // Mouse-wheel snap between items when hovered
@@ -187,16 +186,12 @@ const WeddingsVideoGallery = () => {
           
           <div className="flex gap-5 md:gap-7 lg:gap-10 min-w-max">
             {weddingMedia.map((item, index) => {
-              // Progressive loading: first 2-3 videos eager, rest lazy
-              const isPriorityItem = index < 3;
-              const shouldPreload = isPriorityItem ? 'metadata' : 'metadata'; // Always load metadata to show first frame
-              
               return (
               <motion.article
                 key={index}
                 className="media-card bg-white rounded-3xl overflow-hidden shadow-warm ring-1 ring-black/5 snap-center w-[85vw] sm:w-[70vw] md:w-[48vw] lg:w-[30vw] xl:w-[26vw] will-change-transform cursor-pointer"
                 initial={{ opacity: 0, scale: 0.95, y: 26 }}
-                whileInView={{ opacity: 1, scale: 1.03, y: 0 }}
+                whileInView={{ opacity: 1, scale: 1, y: 0 }}
                 whileHover={{ scale: 1.08 }}
                 transition={{ duration: 0.6, delay: index * 0.05 }}
                 onHoverStart={() => {
@@ -240,7 +235,7 @@ const WeddingsVideoGallery = () => {
                       loop
                       muted
                       playsInline
-                      preload={shouldPreload}
+                      preload="metadata"
                       onLoadedMetadata={(e) => {
                         const video = e.currentTarget;
                         video.currentTime = 0.1;
@@ -261,13 +256,15 @@ const WeddingsVideoGallery = () => {
                         }
                       }}
                       aria-hidden="true"
-                      ref={(el) => { 
+                      ref={(el) => {
                         videoRefs.current[index] = el;
                         if (el) {
+                          let attempts = 0;
                           const tryShowFrame = () => {
                             if (el.readyState >= 2) {
                               el.currentTime = 0.1;
-                            } else {
+                            } else if (attempts < 20) {
+                              attempts++;
                               setTimeout(tryShowFrame, 100);
                             }
                           };

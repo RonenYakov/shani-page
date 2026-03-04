@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -9,27 +9,35 @@ interface StoriesGalleryModalProps {
 
 const StoriesGalleryModal = ({ isOpen, onClose }: StoriesGalleryModalProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Auto-focus the modal so keyboard navigation works immediately
+  useEffect(() => {
+    if (isOpen) {
+      containerRef.current?.focus();
+    }
+  }, [isOpen]);
 
   const stories = [
-    "/IMG_0763.jpg",
-    "/IMG_0765.jpg",
-    "/IMG_0767.jpg",
-    "/IMG_0768.jpg",
-    "/IMG_0778.jpg",
-    "/IMG_0780.jpg",
-    "/story1.jpg",
-    "/story2.jpg", 
-    "/story3.JPG",
-    "/story5.jpg",
-    "/story6.jpg",
-    "/story7.JPG",
-    "/story9.jpg",
-    "/story10.jpg",
-    "/story11.jpg",
-    "/story12.JPG",
-    "/story13.JPG",
-    "/story14.JPG",
-    "/story15.jpg"
+    "/IMG_0763.webp",
+    "/IMG_0765.webp",
+    "/IMG_0767.webp",
+    "/IMG_0768.webp",
+    "/IMG_0778.webp",
+    "/IMG_0780.webp",
+    "/story1.webp",
+    "/story2.webp",
+    "/story3.webp",
+    "/story5.webp",
+    "/story6.webp",
+    "/story7.webp",
+    "/story9.webp",
+    "/story10.webp",
+    "/story11.webp",
+    "/story12.webp",
+    "/story13.webp",
+    "/story14.webp",
+    "/story15.webp"
   ];
 
   const nextStory = () => {
@@ -50,7 +58,8 @@ const StoriesGalleryModal = ({ isOpen, onClose }: StoriesGalleryModalProps) => {
   return (
     <AnimatePresence>
       {isOpen && (
-        <div 
+        <div
+          ref={containerRef}
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
           onKeyDown={handleKeyDown}
           tabIndex={0}

@@ -49,12 +49,12 @@ const ResultsReel = () => {
           <video
             ref={videoRef}
             className="w-full aspect-video object-cover"
-            src="/recomendations.mov"
+            src="/recomendations.mp4"
             autoPlay
             muted={isMuted}
             loop
             playsInline
-            preload="auto"
+            preload="metadata"
           />
           <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
             <div className="text-white text-xl md:text-2xl font-semibold">

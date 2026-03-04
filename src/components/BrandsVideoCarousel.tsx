@@ -9,7 +9,6 @@ import { useI18n } from "@/i18n/simple";
 
 const BrandsVideoCarousel = () => {
   const { language, t } = useI18n();
-  const [hoveredVideo, setHoveredVideo] = useState<string | null>(null);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeItem, setActiveItem] = useState<{ src: string; type: 'image' | 'video'; title: string } | null>(null);
   const videoRefs = useRef<Array<HTMLVideoElement | null>>([]);
@@ -23,20 +22,19 @@ const BrandsVideoCarousel = () => {
   const srcFor = (file: string) => brandMap[`/src/assets/brands/${file}`] as string;
 
   const baseBrands: Array<{ file: string; title: string; titleEn: string; category: string; categoryEn: string; type: 'image' | 'video' }> = [
-    { file: 'mahlevet evri.mov', title: 'תדמית מסעדה', titleEn: 'Restaurant Brand Film', category: 'קמפיין', categoryEn: 'Campaign', type: 'video' as const },
-    { file: 'סרטון תדמית גלמפינג-B.mov', title: 'גלמפינג', titleEn: 'Glamping Brand Film', category: 'תדמית', categoryEn: 'Branding', type: 'video' as const },
-    { file: 'streets.mov', title: 'שאלון רחוב', titleEn: 'Street Interview', category: 'סושיאל עסק', categoryEn: 'Social', type: 'video' as const },
-    { file: 'winery.mov', title: 'תדמית יקב', titleEn: 'Winery Brand Film', category: 'סושיאל עסק', categoryEn: 'Social', type: 'video' as const },
-    { file: 'סרטון תדמית מסעדה-B.mov', title: 'תדמית מסעדה', titleEn: 'Restaurant Brand Film', category: 'קמפיין', categoryEn: 'Campaign', type: 'video' as const },
-    { file: 'סרטון תדמית מלון-B.mov', title: 'תדמית מלון', titleEn: 'Hotel Brand Film', category: 'תדמית', categoryEn: 'Branding', type: 'video' as const },
-    { file: 'ugc-B.mov', title: 'UGC', titleEn: 'UGC Compilation', category: 'תוכן', categoryEn: 'Content', type: 'video' as const },
-    { file: 'streets-ask.mov', title: 'שאלון רחוב', titleEn: 'Street Interview', category: 'סושיאל עסק', categoryEn: 'Social', type: 'video' as const },
+    { file: 'mahlevet evri.mp4', title: 'תדמית מסעדה', titleEn: 'Restaurant Brand Film', category: 'קמפיין', categoryEn: 'Campaign', type: 'video' as const },
+    { file: 'סרטון תדמית גלמפינג-B.mp4', title: 'גלמפינג', titleEn: 'Glamping Brand Film', category: 'תדמית', categoryEn: 'Branding', type: 'video' as const },
+    { file: 'streets.mp4', title: 'שאלון רחוב', titleEn: 'Street Interview', category: 'סושיאל עסק', categoryEn: 'Social', type: 'video' as const },
+    { file: 'winery.mp4', title: 'תדמית יקב', titleEn: 'Winery Brand Film', category: 'סושיאל עסק', categoryEn: 'Social', type: 'video' as const },
+    { file: 'סרטון תדמית מסעדה-B.mp4', title: 'תדמית מסעדה', titleEn: 'Restaurant Brand Film', category: 'קמפיין', categoryEn: 'Campaign', type: 'video' as const },
+    { file: 'סרטון תדמית מלון-B.mp4', title: 'תדמית מלון', titleEn: 'Hotel Brand Film', category: 'תדמית', categoryEn: 'Branding', type: 'video' as const },
+    { file: 'ugc-B.mp4', title: 'UGC', titleEn: 'UGC Compilation', category: 'תוכן', categoryEn: 'Content', type: 'video' as const },
+    { file: 'streets-ask.mp4', title: 'שאלון רחוב', titleEn: 'Street Interview', category: 'סושיאל עסק', categoryEn: 'Social', type: 'video' as const },
     { file: 'agalt-cafe.mp4', title: 'עגלת קפה', titleEn: 'Coffee Cart', category: 'סושיאל עסק', categoryEn: 'Social', type: 'video' as const },
   ];
 
   const brands = baseBrands.map(b => ({ ...b, src: srcFor(b.file) }));
 
-  // wheel snap on hoverבית'פ
   const containerRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   useWheelSnapScroll(containerRef, ".brand-card");
@@ -190,10 +188,6 @@ const BrandsVideoCarousel = () => {
           
           <div className="flex gap-6 md:gap-8 lg:gap-10 min-w-max">
             {brands.map((item, index) => {
-              // Progressive loading: first 2-3 videos eager, rest lazy
-              const isPriorityItem = index < 3;
-              const shouldPreload = isPriorityItem ? 'metadata' : 'metadata'; // Always load metadata to show first frame
-              
               return (
               <motion.div
                 key={index}
@@ -203,7 +197,6 @@ const BrandsVideoCarousel = () => {
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.6, delay: index * 0.05 }}
                 onHoverStart={() => {
-                  setHoveredVideo(index.toString());
                   if (item && item.type === 'video') {
                     if (hoverTimer.current) window.clearTimeout(hoverTimer.current);
                     hoverTimer.current = window.setTimeout(() => {
@@ -219,7 +212,6 @@ const BrandsVideoCarousel = () => {
                   }
                 }}
                 onHoverEnd={() => {
-                  setHoveredVideo(null);
                   if (hoverTimer.current) window.clearTimeout(hoverTimer.current);
                   const v = videoRefs.current[index];
                   if (v) {
@@ -241,7 +233,7 @@ const BrandsVideoCarousel = () => {
                       muted
                       loop
                       playsInline
-                      preload={shouldPreload}
+                      preload="metadata"
                       onLoadedMetadata={(e) => {
                         const video = e.currentTarget;
                         video.currentTime = 0.1;
@@ -258,13 +250,15 @@ const BrandsVideoCarousel = () => {
                           video.currentTime = 0.1;
                         }
                       }}
-                      ref={(el) => { 
+                      ref={(el) => {
                         videoRefs.current[index] = el;
                         if (el) {
+                          let attempts = 0;
                           const tryShowFrame = () => {
                             if (el.readyState >= 2) {
                               el.currentTime = 0.1;
-                            } else {
+                            } else if (attempts < 20) {
+                              attempts++;
                               setTimeout(tryShowFrame, 100);
                             }
                           };

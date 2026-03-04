@@ -9,8 +9,7 @@ import { useI18n } from "@/i18n/simple";
 
 
 const HotelsVideoCarousel = () => {
-  const { language, t } = useI18n();
-  const [hoveredVideo, setHoveredVideo] = useState<string | null>(null);
+  const { language } = useI18n();
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeItem, setActiveItem] = useState<{ src: string; type: 'image' | 'video'; title: string } | null>(null);
   const videoRefs = useRef<Array<HTMLVideoElement | null>>([]);
@@ -39,10 +38,10 @@ const HotelsVideoCarousel = () => {
     { file: 'v14044g50000d1ma62vog65k1sjdbu90.mp4', title: 'תדמית מלון', titleEn: 'Hotel Brand Film', category: 'סקירה', categoryEn: 'Review', type: 'video' as const },
     { file: 'v14044g50000d1pk9hfog65ji0k9nub0.mp4', title: 'תדמית מלון', titleEn: 'Hotel Brand Film', category: 'סקירה', categoryEn: 'Review', type: 'video' as const },
     { file: 'v14044g50000d1n6f7nog65tt3hootig.mp4', title: 'תדמית מלון', titleEn: 'Life style', category: 'סקירה', categoryEn: 'Review', type: 'video' as const },
-    { file: 'hotel drone shot.mov', title: 'תדמית מלון', titleEn: 'Hotel Brand Film', category: 'סקירה', categoryEn: 'Review', type: 'video' as const },
+    { file: 'hotel drone shot.mp4', title: 'תדמית מלון', titleEn: 'Hotel Brand Film', category: 'סקירה', categoryEn: 'Review', type: 'video' as const },
     { file: 'ScreenRecording_11-09-2025 01-59-03_1.mp4', title: 'תדמית מלון', titleEn: 'Hotel Brand Film', category: 'סקירה', categoryEn: 'Review', type: 'video' as const },
     { file: 'ScreenRecording_11-09-2025 02-02-15_1.mp4', title: 'תדמית מלון', titleEn: 'Hotel Brand Film', category: 'סקירה', categoryEn: 'Review', type: 'video' as const },
-    { file: 'סרטון תדמית גלמפינג-B.mov', title: 'גלמפינג יוקרתי', titleEn: 'Luxury Glamping', category: 'תוכן', categoryEn: 'Content', type: 'video' as const },
+    { file: 'סרטון תדמית גלמפינג-B.mp4', title: 'גלמפינג יוקרתי', titleEn: 'Luxury Glamping', category: 'תוכן', categoryEn: 'Content', type: 'video' as const },
   ];
   const items = baseItems.map(b => ({ ...b, src: srcFor(b.file) }));
 
@@ -198,10 +197,6 @@ const HotelsVideoCarousel = () => {
           
           <div className="flex gap-6 md:gap-8 lg:gap-10 min-w-max">
             {items.map((item, index) => {
-              // Progressive loading: first 2-3 videos eager, rest lazy
-              const isPriorityItem = index < 3;
-              const shouldPreload = isPriorityItem ? 'metadata' : 'metadata'; // Always load metadata to show first frame
-              
               return (
               <motion.div
                 key={index}
@@ -211,7 +206,6 @@ const HotelsVideoCarousel = () => {
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.6, delay: index * 0.05 }}
                 onHoverStart={() => {
-                  setHoveredVideo(index.toString());
                   if (item && item.type === 'video') {
                     if (hoverTimer.current) window.clearTimeout(hoverTimer.current);
                     hoverTimer.current = window.setTimeout(() => {
@@ -227,7 +221,6 @@ const HotelsVideoCarousel = () => {
                   }
                 }}
                 onHoverEnd={() => {
-                  setHoveredVideo(null);
                   if (hoverTimer.current) window.clearTimeout(hoverTimer.current);
                   const v = videoRefs.current[index];
                   if (v) {
@@ -253,7 +246,7 @@ const HotelsVideoCarousel = () => {
                       muted
                       loop
                       playsInline
-                      preload={shouldPreload}
+                      preload="metadata"
                       onLoadedMetadata={(e) => {
                         const video = e.currentTarget;
                         video.currentTime = 0.1;
@@ -270,13 +263,15 @@ const HotelsVideoCarousel = () => {
                           video.currentTime = 0.1;
                         }
                       }}
-                      ref={(el) => { 
+                      ref={(el) => {
                         videoRefs.current[index] = el;
                         if (el) {
+                          let attempts = 0;
                           const tryShowFrame = () => {
                             if (el.readyState >= 2) {
                               el.currentTime = 0.1;
-                            } else {
+                            } else if (attempts < 20) {
+                              attempts++;
                               setTimeout(tryShowFrame, 100);
                             }
                           };

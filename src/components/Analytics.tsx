@@ -66,22 +66,4 @@ const Analytics = () => {
   return null;
 };
 
-// Event tracking functions
-export const trackEvent = (eventName: string, parameters?: Record<string, any>) => {
-  // Facebook Pixel
-  if (typeof window !== 'undefined' && (window as any).fbq) {
-    (window as any).fbq('track', eventName, parameters);
-  }
-
-  // TikTok Pixel
-  if (typeof window !== 'undefined' && (window as any).ttq) {
-    (window as any).ttq.track(eventName, parameters);
-  }
-
-  // Google Analytics
-  if (typeof window !== 'undefined' && (window as any).gtag) {
-    (window as any).gtag('event', eventName, parameters);
-  }
-};
-
 export default Analytics;

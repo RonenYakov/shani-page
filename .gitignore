@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# Large video assets (kept locally, not in git)
+src/assets/**/*.mov
+src/assets/**/*.mp4
+src/assets/**/*.webm
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

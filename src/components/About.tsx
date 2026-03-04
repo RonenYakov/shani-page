@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import StoriesGalleryModal from "./StoriesGalleryModal";
 
 const About = () => {
-  const { t, language } = useI18n();
+  const { language } = useI18n();
 
   const [open, setOpen] = useState(false);
 
@@ -83,27 +83,30 @@ const About = () => {
             <div className="grid grid-cols-2 gap-4">
               {/* Main Photo */}
               <div className="col-span-2 rounded-2xl overflow-hidden shadow-warm">
-                <img 
-                  src="/profile.JPG" 
+                <img
+                  src="/profile.webp"
                   alt="Shani - Content Creator"
                   className="w-full h-64 object-cover"
+                  loading="lazy"
                 />
               </div>
               
               {/* Two smaller photos */}
               <div className="rounded-xl overflow-hidden shadow-warm">
-                <img 
-                  src="/story2.jpg" 
+                <img
+                  src="/story2.webp"
                   alt="Behind the scenes"
                   className="w-full h-32 object-cover"
+                  loading="lazy"
                 />
               </div>
               
               <div className="rounded-xl overflow-hidden shadow-warm">
-                <img 
-                  src="/story5.jpg" 
+                <img
+                  src="/story5.webp"
                   alt="Content creation"
                   className="w-full h-32 object-cover"
+                  loading="lazy"
                 />
               </div>
             </div>
