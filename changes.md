@@ -1,5 +1,26 @@
 # Changelog
 
+## 2026-03-05 — Poster-First Carousels (Option E)
+
+### Carousel Loading Strategy Rewrite
+- **Before:** 28 `<video>` elements mounted on page load → ~30 HTTP requests for video before user scrolls
+- **After:** 0 video elements on load → video only downloads when user hovers a card
+- Each carousel card shows a static WebP poster thumbnail by default
+- `<video>` is lazy-mounted on hover (`preload="none"`) and fully unmounted on hover-end
+- Added play button icon overlay on all cards for clear visual affordance
+
+### Video Count Reduction
+- Brands: 9 → 5 videos
+- Hotels: 8 → 4 videos
+- Weddings: 11 → 5 videos
+
+### Poster Thumbnails Generated
+- 14 WebP thumbnails extracted from videos at 1s using ffmpeg (640px wide)
+- Stored in `public/posters/brands/`, `public/posters/hotels/`, `public/posters/weddings/`
+- Added `scripts/generate-posters.mjs` for future use
+
+---
+
 ## 2026-03-04 — Performance & Code Quality Overhaul
 
 ### Dead Code Removal
