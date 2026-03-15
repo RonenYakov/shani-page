@@ -1,0 +1,229 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Cinematic + luxury color palette */
+  --cinematic-black: #0D0D0F;
+  --cream: #FDF8F2;
+  --light-brown: #C8A97E;
+  --white: #FFFFFF;
+  --gold: #E6B325;
+  --sand: #EDE3D9;
+
+  /* HSL color system for Tailwind */
+  --background: 0 0% 100%;
+  --foreground: 222 22% 5%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 22% 5%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 22% 5%;
+  --primary: 44 89% 52%;
+  --primary-foreground: 222 22% 5%;
+  --secondary: 30 25% 71%;
+  --secondary-foreground: 222 22% 5%;
+  --muted: 30 15% 85%;
+  --muted-foreground: 30 8% 45%;
+  --accent: 44 89% 52%;
+  --accent-foreground: 222 22% 5%;
+  --destructive: 0 62% 30%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 30 15% 85%;
+  --input: 30 15% 85%;
+  --ring: 44 89% 52%;
+  --radius: 0.75rem;
+
+  /* Gradients */
+  --gradient-hero: linear-gradient(rgba(253,248,242,.85), rgba(200,169,126,.55));
+  --gradient-warm: linear-gradient(180deg, #FFFFFF 0%, #FDF8F2 100%);
+  --gradient-cream-sand: linear-gradient(180deg, #FDF8F2 0%, #EDE3D9 100%);
+  --gradient-brown-cream: linear-gradient(180deg, #C8A97E 0%, #FDF8F2 100%);
+  --gradient-dark: linear-gradient(180deg, #0D0D0F 0%, #1a1a1c 100%);
+  --gradient-dark-plum: linear-gradient(135deg, #0D0D0F 0%, #1a1a1c 50%, #2a2a2c 100%);
+
+  /* Shadows */
+  --shadow-warm: 0 14px 40px rgba(13,13,15,.06);
+  --shadow-cinematic: 0 25px 80px rgba(13,13,15,.15);
+  --glow-gold: 0 0 16px rgba(230,179,37,.65);
+  --glow-gold-hover: 0 0 26px rgba(230,179,37,.45);
+
+  /* Transitions */
+  --transition-smooth: all 0.25s ease;
+  --transition-cinematic: all 0.7s ease;
+
+  /* Sidebar */
+  --sidebar-background: 222 22% 5%;
+  --sidebar-foreground: 0 0% 95%;
+  --sidebar-primary: 44 89% 52%;
+  --sidebar-primary-foreground: 222 22% 5%;
+  --sidebar-accent: 222 15% 15%;
+  --sidebar-accent-foreground: 0 0% 95%;
+  --sidebar-border: 222 15% 20%;
+  --sidebar-ring: 44 89% 52%;
+}
+
+.dark {
+  --background: 222 22% 5%;
+  --foreground: 0 0% 95%;
+  --card: 222 22% 8%;
+  --card-foreground: 0 0% 95%;
+  --popover: 222 22% 8%;
+  --popover-foreground: 0 0% 95%;
+  --primary: 44 89% 52%;
+  --primary-foreground: 222 22% 5%;
+  --secondary: 222 15% 15%;
+  --secondary-foreground: 0 0% 95%;
+  --muted: 222 15% 15%;
+  --muted-foreground: 0 0% 65%;
+  --accent: 44 89% 52%;
+  --accent-foreground: 222 22% 5%;
+  --border: 222 15% 20%;
+  --input: 222 15% 15%;
+  --ring: 44 89% 52%;
+
+  --sidebar-background: 222 22% 5%;
+  --sidebar-foreground: 0 0% 95%;
+  --sidebar-primary: 44 89% 52%;
+  --sidebar-primary-foreground: 222 22% 5%;
+  --sidebar-accent: 222 15% 15%;
+  --sidebar-accent-foreground: 0 0% 95%;
+  --sidebar-border: 222 15% 20%;
+  --sidebar-ring: 44 89% 52%;
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  color: hsl(var(--foreground));
+  background: var(--gradient-warm);
+  overflow-x: hidden;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Mobile scrolling */
+@media (max-width: 768px) {
+  .overflow-x-auto {
+    scroll-behavior: smooth;
+    overscroll-behavior-x: contain;
+  }
+}
+
+/* Section padding */
+.section-padding {
+  padding: 5rem 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .section-padding {
+    padding: 5rem 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .section-padding {
+    padding: 5rem 3rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .section-padding {
+    padding: 5rem 4rem;
+  }
+}
+
+@media (min-width: 1536px) {
+  .section-padding {
+    padding: 5rem 5rem;
+  }
+}
+
+/* Section titles */
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  font-size: 2.5rem;
+  line-height: 1.1;
+  color: #0D0D0F;
+}
+
+@media (min-width: 768px) {
+  .section-title {
+    font-size: 3rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .section-title {
+    font-size: 3.75rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .section-title {
+    font-size: 4.5rem;
+  }
+}
+
+.section-title--light {
+  font-family: 'Playfair Display', serif;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  font-size: 2.5rem;
+  line-height: 1.1;
+  color: #FDF8F2;
+}
+
+@media (min-width: 768px) {
+  .section-title--light {
+    font-size: 3rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .section-title--light {
+    font-size: 3.75rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .section-title--light {
+    font-size: 4.5rem;
+  }
+}
+
+/* Cinematic text */
+.cinematic-text {
+  font-size: 1.125rem;
+  line-height: 1.75;
+  color: #C8A97E;
+}
+
+@media (min-width: 768px) {
+  .cinematic-text {
+    font-size: 1.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .cinematic-text {
+    font-size: 1.5rem;
+  }
+}
+
+/* Hide scrollbar */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
