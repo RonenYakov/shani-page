@@ -1,23 +1,17 @@
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { useRef, useEffect } from "react";
+import { motion } from "framer-motion";
 import { useI18n } from "@/i18n/simple";
 
 const EASE: [number, number, number, number] = [0.35, 0, 0, 1];
 
-// ── Circle dot positions (% of circle container, center = 50,50) ──────────
-// Angles in degrees, 5 steps × 72°, starting from top (-90°)
-const ANGLES = [-90, -18, 54, 126, 198];
+const ANGLES = [-90, -18, 54, 126, 198]; // 72° apart, clockwise from top
 
 function ptPct(radiusPct: number, deg: number) {
   const a = (deg * Math.PI) / 180;
-  return {
-    x: 50 + radiusPct * Math.cos(a),
-    y: 50 + radiusPct * Math.sin(a),
-  };
+  return { x: 50 + radiusPct * Math.cos(a), y: 50 + radiusPct * Math.sin(a) };
 }
 
 type Anchor = { tx: string; ty: string; align: "left" | "right" | "center" };
-// Text-anchor offsets tuned per clock position
 const ANCHORS: Anchor[] = [
   { tx: "-50%", ty: "-130%", align: "center" }, // 12 o'clock
   { tx:  "12%", ty:  "-50%", align: "left"   }, // ~2 o'clock
@@ -41,27 +35,96 @@ const STEPS_HE = [
   { num: "05", title: "דיווח ושיפור",desc: "נתונים שמובילים להחלטות" },
 ];
 
+const N = 5;
+
 const ProcessTimeline = () => {
   const { language } = useI18n();
   const isRTL = language === "he";
   const steps = isRTL ? STEPS_HE : STEPS_EN;
 
-  const stickyRef = useRef<HTMLDivElement>(null);
-  const inView = useInView(stickyRef as React.RefObject<Element>, { once: true, margin: "0px" });
+  const outerRef     = useRef<HTMLDivElement>(null);
+  const ringRef      = useRef<HTMLDivElement>(null);
+  const centerRef    = useRef<HTMLDivElement>(null);
+  const noteRef      = useRef<HTMLParagraphElement>(null);
+  const listRefs     = useRef<(HTMLDivElement | null)[]>([]);
+  const dotRefs      = useRef<(HTMLDivElement | null)[]>([]);
+  const labelWrappers= useRef<(HTMLDivElement | null)[]>([]);
 
-  // Dot on the ring at 50% radius of the container
-  const DOT_R = 50;
-  // Label anchor points: just outside the ring
-  const LABEL_R = 64;
+  // ── Scroll-driven sequential reveal ───────────────────────────────────
+  useEffect(() => {
+    const outer = outerRef.current;
+    if (!outer) return;
+
+    const INTRO_FRAC = 0.58; // intro block is 58vh
+
+    const update = () => {
+      const rect   = outer.getBoundingClientRect();
+      const total  = outer.offsetHeight - window.innerHeight;
+      const scrolled = Math.max(0, -rect.top);
+      const sectionProgress = Math.min(1, scrolled / total);
+
+      // stickyStart in section progress units
+      const stickyStartPx = INTRO_FRAC * window.innerHeight;
+      const dwellPx = total - stickyStartPx;
+      // dwell progress: 0 when sticky first locks → 1 when section ends
+      const dwell = Math.max(0, Math.min(1, (scrolled - stickyStartPx) / dwellPx));
+
+      // Ring + center fade in immediately at start of dwell
+      const ringFade = Math.min(1, dwell * 10);
+      if (ringRef.current)   ringRef.current.style.opacity   = String(ringFade);
+      if (centerRef.current) centerRef.current.style.opacity = String(Math.min(1, dwell * 7));
+
+      // Each step staggered across 0..0.85 of dwell
+      for (let i = 0; i < N; i++) {
+        const start = (i / N) * 0.80;
+        const frac  = Math.max(0, Math.min(1, (dwell - start) / 0.14));
+
+        // List item
+        const listEl = listRefs.current[i];
+        if (listEl) {
+          listEl.style.opacity   = String(frac);
+          const xOff = (isRTL ? 18 : -18) * (1 - frac);
+          listEl.style.transform = `translateX(${xOff}px)`;
+        }
+
+        // Circle dot
+        const dotEl = dotRefs.current[i];
+        if (dotEl) {
+          dotEl.style.opacity   = String(frac);
+          dotEl.style.transform = `translate(-50%, -50%) scale(${0.3 + 0.7 * frac})`;
+        }
+
+        // Label — combine base anchor + animated Y
+        const labelEl = labelWrappers.current[i];
+        if (labelEl) {
+          const yOff = 10 * (1 - frac);
+          labelEl.style.opacity   = String(frac);
+          labelEl.style.transform = `translate(${ANCHORS[i].tx}, ${ANCHORS[i].ty}) translateY(${yOff}px)`;
+        }
+      }
+
+      // Bottom note appears after all steps
+      if (noteRef.current) {
+        noteRef.current.style.opacity = String(Math.max(0, Math.min(1, (dwell - 0.88) / 0.08)));
+      }
+
+      // Unused to avoid lint: sectionProgress
+      void sectionProgress;
+    };
+
+    window.addEventListener("scroll", update, { passive: true });
+    update(); // run once on mount
+    return () => window.removeEventListener("scroll", update);
+  }, [isRTL]);
 
   return (
-    // ── Outer: 215vh total, correct Boathouse ratio ─────────────────────
+    // 300vh: 58vh entry + 100vh sticky + 142vh dwell = 5 steps spread across 142vh
     <div
+      ref={outerRef}
       id="process"
-      style={{ height: "215vh", position: "relative", background: "var(--color-cream-dark)" }}
+      style={{ height: "300vh", position: "relative", background: "var(--color-cream-dark)" }}
     >
-      {/* ── BLOCK 1: intro — normal flow, scrolls away naturally ────────── */}
-      {/* Its height physically pushes the sticky block below the fold */}
+      {/* ── Block 1: title — normal flow, scrolls away ───────────────────── */}
       <div
         dir={isRTL ? "rtl" : "ltr"}
         style={{
@@ -111,9 +174,8 @@ const ProcessTimeline = () => {
         </div>
       </div>
 
-      {/* ── BLOCK 2: sticky circle — locks at top:0 after Block 1 exits ── */}
+      {/* ── Block 2: sticky — two-column, scroll-animated ────────────────── */}
       <div
-        ref={stickyRef}
         style={{
           position: "sticky",
           top: 0,
@@ -123,7 +185,6 @@ const ProcessTimeline = () => {
           overflow: "visible",
         }}
       >
-        {/* ── Two-column: list LEFT + circle RIGHT ─────────────────────── */}
         <div
           dir={isRTL ? "rtl" : "ltr"}
           style={{
@@ -135,23 +196,27 @@ const ProcessTimeline = () => {
             gap: "clamp(2rem, 4vw, 6rem)",
           }}
         >
-          {/* ── LEFT: numbered step list ────────────────────────────────── */}
+          {/* ── Left: numbered step list ──────────────────────────────── */}
           <div
             style={{
               flexShrink: 0,
               width: "clamp(200px, 32%, 380px)",
               display: "flex",
               flexDirection: "column",
-              gap: "clamp(1.2rem, 2.2vh, 2.2rem)",
+              gap: "clamp(1.1rem, 2vh, 2rem)",
             }}
           >
             {steps.map((step, i) => (
-              <motion.div
+              <div
                 key={step.num}
-                initial={{ opacity: 0, x: isRTL ? 20 : -20 }}
-                animate={inView ? { opacity: 1, x: 0 } : {}}
-                transition={{ duration: 0.5, delay: 0.1 + i * 0.1, ease: EASE }}
-                style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}
+                ref={el => { listRefs.current[i] = el; }}
+                style={{
+                  display: "flex",
+                  gap: "1rem",
+                  alignItems: "flex-start",
+                  opacity: 0,
+                  transition: "opacity 0.35s ease, transform 0.35s ease",
+                }}
               >
                 <span style={{
                   fontFamily: "var(--font-mono)",
@@ -184,85 +249,62 @@ const ProcessTimeline = () => {
                     {step.desc}
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
 
-          {/* ── RIGHT: radial circle diagram ────────────────────────────── */}
-          <div
-            style={{
-              flex: 1,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+          {/* ── Right: CSS circle diagram ──────────────────────────────── */}
+          <div style={{
+            flex: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            position: "relative",
+          }}>
+            <div style={{
               position: "relative",
-            }}
-          >
-            {/* Wrapper — labels can overflow this */}
-            <div
-              style={{
-                position: "relative",
-                width: "min(62vh, 52vw)",
-                height: "min(62vh, 52vw)",
-              }}
-            >
+              width: "min(60vh, 50vw)",
+              height: "min(60vh, 50vw)",
+            }}>
               {/* CSS ring */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.88 }}
-                animate={inView ? { opacity: 1, scale: 1 } : {}}
-                transition={{ duration: 1.4, ease: EASE }}
+              <div
+                ref={ringRef}
                 style={{
                   position: "absolute",
                   inset: 0,
                   borderRadius: "50%",
                   border: "1.5px solid rgba(26,24,20,0.13)",
+                  opacity: 0,
+                  transition: "opacity 0.5s ease",
                 }}
               />
 
-              {/* Dots + connector lines */}
+              {/* Dots — one per step, scroll-revealed */}
               {ANGLES.map((angle, i) => {
-                const dot = ptPct(DOT_R, angle);
-                const lineEnd = ptPct(DOT_R + 8, angle);
+                const dot = ptPct(50, angle);
                 return (
-                  <motion.div
+                  <div
                     key={i}
-                    initial={{ opacity: 0 }}
-                    animate={inView ? { opacity: 1 } : {}}
-                    transition={{ duration: 0.4, delay: 0.8 + i * 0.12, ease: EASE }}
-                    style={{ position: "absolute", inset: 0 }}
-                  >
-                    {/* SVG connector line (tiny per-dot) */}
-                    <svg
-                      viewBox="0 0 100 100"
-                      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", overflow: "visible" }}
-                    >
-                      <line
-                        x1={dot.x} y1={dot.y}
-                        x2={lineEnd.x} y2={lineEnd.y}
-                        stroke="rgba(26,24,20,0.10)"
-                        strokeWidth="0.4"
-                      />
-                    </svg>
-                    {/* Dot */}
-                    <div style={{
+                    ref={el => { dotRefs.current[i] = el; }}
+                    style={{
                       position: "absolute",
                       left: `${dot.x}%`,
                       top: `${dot.y}%`,
-                      transform: "translate(-50%, -50%)",
+                      transform: "translate(-50%, -50%) scale(0.3)",
                       width: i === 0 ? "10px" : "7px",
                       height: i === 0 ? "10px" : "7px",
                       borderRadius: "50%",
                       background: i === 0 ? "var(--color-orange)" : "rgba(26,24,20,0.22)",
-                    }} />
-                  </motion.div>
+                      opacity: 0,
+                      transition: "opacity 0.3s ease, transform 0.3s ease",
+                    }}
+                  />
                 );
               })}
 
               {/* Center text */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.88 }}
-                animate={inView ? { opacity: 1, scale: 1 } : {}}
-                transition={{ duration: 0.9, delay: 0.25, ease: EASE }}
+              <div
+                ref={centerRef}
                 style={{
                   position: "absolute",
                   inset: 0,
@@ -272,6 +314,8 @@ const ProcessTimeline = () => {
                   justifyContent: "center",
                   textAlign: "center",
                   pointerEvents: "none",
+                  opacity: 0,
+                  transition: "opacity 0.5s ease",
                 }}
               >
                 <div style={{
@@ -294,50 +338,56 @@ const ProcessTimeline = () => {
                 }}>
                   {isRTL ? "5 שלבים" : "5 steps"}
                 </div>
-              </motion.div>
+              </div>
 
-              {/* Step labels — outside the ring */}
+              {/* Labels — positioned, scroll-revealed */}
               {steps.map((step, i) => {
-                const lPos = ptPct(LABEL_R, ANGLES[i]);
+                const lPos = ptPct(64, ANGLES[i]);
                 const cfg = ANCHORS[i];
                 return (
-                  <motion.div
+                  // outer div: sets left/top (no transform)
+                  <div
                     key={step.num}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={inView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.45, delay: 1.1 + i * 0.12, ease: EASE }}
-                    dir={isRTL ? "rtl" : "ltr"}
                     style={{
                       position: "absolute",
                       left: `${lPos.x}%`,
                       top: `${lPos.y}%`,
-                      transform: `translate(${cfg.tx}, ${cfg.ty})`,
-                      textAlign: cfg.align,
                       width: "140px",
                       pointerEvents: "none",
                     }}
                   >
-                    <div style={{
-                      fontFamily: "var(--font-mono)",
-                      fontSize: "0.47rem",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.14em",
-                      color: i === 0 ? "var(--color-orange)" : "rgba(26,24,20,0.33)",
-                      marginBottom: "2px",
-                    }}>
-                      {step.num}
+                    {/* inner div: anchor transform + scroll Y offset */}
+                    <div
+                      ref={el => { labelWrappers.current[i] = el; }}
+                      dir={isRTL ? "rtl" : "ltr"}
+                      style={{
+                        transform: `translate(${cfg.tx}, ${cfg.ty}) translateY(10px)`,
+                        textAlign: cfg.align,
+                        opacity: 0,
+                        transition: "opacity 0.35s ease, transform 0.35s ease",
+                      }}
+                    >
+                      <div style={{
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "0.47rem",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.14em",
+                        color: i === 0 ? "var(--color-orange)" : "rgba(26,24,20,0.33)",
+                        marginBottom: "2px",
+                      }}>
+                        {step.num}
+                      </div>
+                      <div style={{
+                        fontFamily: "var(--font-body)",
+                        fontWeight: 500,
+                        fontSize: "clamp(0.65rem, 0.95vw, 0.82rem)",
+                        color: "var(--color-ink)",
+                        lineHeight: 1.2,
+                      }}>
+                        {step.title}
+                      </div>
                     </div>
-                    <div style={{
-                      fontFamily: "var(--font-body)",
-                      fontWeight: 500,
-                      fontSize: "clamp(0.65rem, 0.95vw, 0.82rem)",
-                      color: "var(--color-ink)",
-                      lineHeight: 1.2,
-                      marginBottom: "2px",
-                    }}>
-                      {step.title}
-                    </div>
-                  </motion.div>
+                  </div>
                 );
               })}
             </div>
@@ -345,10 +395,8 @@ const ProcessTimeline = () => {
         </div>
 
         {/* Bottom note */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={inView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.6, delay: 2.0, ease: EASE }}
+        <p
+          ref={noteRef}
           style={{
             position: "absolute",
             bottom: "2rem",
@@ -360,11 +408,13 @@ const ProcessTimeline = () => {
             letterSpacing: "0.12em",
             color: "var(--color-ink-muted)",
             whiteSpace: "nowrap",
+            opacity: 0,
+            transition: "opacity 0.4s ease",
           }}
         >
           <span style={{ color: "var(--color-orange)" }}>◆</span>{" "}
           {isRTL ? "מוכנים להתחיל? השלב הראשון תמיד חינם" : "Ready to start? First step is always free"}
-        </motion.p>
+        </p>
       </div>
     </div>
   );

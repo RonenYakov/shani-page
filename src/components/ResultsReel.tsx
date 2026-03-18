@@ -51,7 +51,8 @@ const ResultsReel = () => {
 
     const len = path.getTotalLength();
     path.style.strokeDasharray = String(len);
-    path.style.strokeDashoffset = String(len);
+    // Start with a tiny bit drawn so spine is immediately visible on enter
+    path.style.strokeDashoffset = String(len * 0.97);
     videoContainer.style.transform = `translateY(${window.innerHeight * 1.05}px)`;
 
     const update = () => {
@@ -60,12 +61,12 @@ const ResultsReel = () => {
       const scrolled = -rect.top;
       const progress = Math.max(0, Math.min(1, scrolled / totalRange));
 
-      // Spine draws 0 → 0.62
-      const spinePct = mapRange(progress, 0, 0.62, 0, 1);
+      // Spine: starts at 3% drawn, completes by 65%
+      const spinePct = mapRange(progress, 0, 0.65, 0.03, 1);
       path.style.strokeDashoffset = String(len * (1 - spinePct));
 
-      // Video rises 0.45 → 0.90
-      const vidPct = easeOutCubic(mapRange(progress, 0.45, 0.90, 0, 1));
+      // Video rises 0.42 → 0.88
+      const vidPct = easeOutCubic(mapRange(progress, 0.42, 0.88, 0, 1));
       const translateY = (1 - vidPct) * window.innerHeight * 1.05;
       videoContainer.style.transform = `translateY(${translateY}px)`;
     };
@@ -114,8 +115,8 @@ const ResultsReel = () => {
       <div
         style={{
           position: "sticky",
-          top: "10vh",
-          height: "80vh",
+          top: 0,
+          height: "100vh",
           overflow: "hidden",
         }}
       >
