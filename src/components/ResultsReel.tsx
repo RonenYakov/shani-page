@@ -2,29 +2,34 @@ import { useRef, useState, useEffect } from "react";
 import { Volume2, VolumeX } from "lucide-react";
 import { useI18n } from "@/i18n/simple";
 import { socials } from "@/content/socials";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-gsap.registerPlugin(ScrollTrigger);
-
-// ── Spine path — large organic loop, exits right ────────────────────────
-// LTR: enters top-center, makes a clockwise loop left, tail sweeps right
+// ── Spine path: large clockwise teardrop loop, tail exits right ────────────
+// LTR: enters top, loops left side, exits right
 const SPINE_LTR =
-  "M 500 -80 " +
-  "C 820 20, 1000 260, 820 480 " +   // sweep right and down
-  "C 640 700, 280 720, 100 520 " +   // arc left, loop bottom
-  "C -80 320, 30 90, 240 50 " +      // close loop, arc up
-  "C 420 10, 580 200, 740 460 " +    // exit the loop
-  "C 900 700, 1150 600, 1450 380";   // sweep right off-screen
+  "M 500 -60 " +
+  "C 820 20, 980 240, 800 460 " +
+  "C 640 680, 280 700, 110 510 " +
+  "C -70 320, 40 100, 240 55 " +
+  "C 410 10, 580 180, 740 450 " +
+  "C 900 700, 1150 580, 1480 370";
 
-// RTL: mirror of LTR
+// RTL: mirror
 const SPINE_RTL =
-  "M 900 -80 " +
-  "C 580 20, 400 260, 580 480 " +
-  "C 760 700, 1120 720, 1300 520 " +
-  "C 1480 320, 1370 90, 1160 50 " +
-  "C 980 10, 820 200, 660 460 " +
-  "C 500 700, 250 600, -50 380";
+  "M 900 -60 " +
+  "C 580 20, 420 240, 600 460 " +
+  "C 760 680, 1120 700, 1290 510 " +
+  "C 1470 320, 1360 100, 1160 55 " +
+  "C 990 10, 820 180, 660 450 " +
+  "C 500 700, 250 580, -80 370";
+
+function easeOutCubic(t: number) {
+  return 1 - Math.pow(1 - t, 3);
+}
+
+function mapRange(val: number, inMin: number, inMax: number, outMin: number, outMax: number) {
+  const clamped = Math.max(inMin, Math.min(inMax, val));
+  return outMin + ((clamped - inMin) / (inMax - inMin)) * (outMax - outMin);
+}
 
 const ResultsReel = () => {
   const { language } = useI18n();
@@ -33,42 +38,46 @@ const ResultsReel = () => {
 
   const outerRef = useRef<HTMLDivElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
-  const videoWrapRef = useRef<HTMLDivElement>(null);
+  const videoContainerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isMuted, setIsMuted] = useState(true);
 
-  // ── GSAP: spine draws, then giant video frame rises from below ─────
+  // ── Direct scroll driver — matches the JS pattern from the reference ──
   useEffect(() => {
-    const path = pathRef.current;
-    const videoWrap = videoWrapRef.current;
     const outer = outerRef.current;
-    if (!path || !videoWrap || !outer) return;
+    const path = pathRef.current;
+    const videoContainer = videoContainerRef.current;
+    if (!outer || !path || !videoContainer) return;
 
     const len = path.getTotalLength();
-    gsap.set(path, { strokeDasharray: len, strokeDashoffset: len });
-    gsap.set(videoWrap, { y: "105%" });
+    path.style.strokeDasharray = String(len);
+    path.style.strokeDashoffset = String(len);
+    videoContainer.style.transform = `translateY(${window.innerHeight * 1.05}px)`;
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: outer,
-        start: "top top",
-        end: "bottom bottom",
-        scrub: 1.4,
-      },
-    });
+    const update = () => {
+      const rect = outer.getBoundingClientRect();
+      const totalRange = outer.offsetHeight - window.innerHeight;
+      const scrolled = -rect.top;
+      const progress = Math.max(0, Math.min(1, scrolled / totalRange));
 
-    tl.to(path, { strokeDashoffset: 0, ease: "none", duration: 0.6 }, 0);
-    tl.to(videoWrap, { y: "0%", ease: "power2.inOut", duration: 0.55 }, 0.44);
+      // Spine draws 0 → 0.62
+      const spinePct = mapRange(progress, 0, 0.62, 0, 1);
+      path.style.strokeDashoffset = String(len * (1 - spinePct));
 
-    return () => {
-      tl.scrollTrigger?.kill();
-      tl.kill();
+      // Video rises 0.45 → 0.90
+      const vidPct = easeOutCubic(mapRange(progress, 0.45, 0.90, 0, 1));
+      const translateY = (1 - vidPct) * window.innerHeight * 1.05;
+      videoContainer.style.transform = `translateY(${translateY}px)`;
     };
+
+    window.addEventListener("scroll", update, { passive: true });
+    update();
+    return () => window.removeEventListener("scroll", update);
   }, []);
 
-  // ── Auto-mute when off screen ──────────────────────────────────────
+  // ── Auto-mute when off screen ──────────────────────────────────────────
   useEffect(() => {
-    const el = videoWrapRef.current;
+    const el = videoContainerRef.current;
     if (!el) return;
     const ob = new IntersectionObserver(
       (entries) => {
@@ -95,21 +104,22 @@ const ResultsReel = () => {
   };
 
   return (
+    // 280vh total — matches the reference code
     <div
       ref={outerRef}
       id="results"
-      style={{ height: "260vh", position: "relative", background: "var(--color-cream-dark)" }}
+      style={{ height: "280vh", position: "relative", background: "var(--color-cream-dark)" }}
     >
-      {/* Sticky container — both layers live here */}
+      {/* ── Sticky container — top: 10vh as per reference ─────────────── */}
       <div
         style={{
           position: "sticky",
-          top: 0,
-          height: "100vh",
+          top: "10vh",
+          height: "80vh",
           overflow: "hidden",
         }}
       >
-        {/* ── Layer 1: Spine ─────────────────────────────────────────── */}
+        {/* ── Layer 1: Spine SVG fills the sticky viewport ────────────── */}
         <div
           style={{
             position: "absolute",
@@ -130,51 +140,48 @@ const ResultsReel = () => {
               d={isRTL ? SPINE_RTL : SPINE_LTR}
               fill="none"
               stroke="var(--color-orange)"
-              strokeWidth="6"
+              strokeWidth="7"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
           </svg>
-
           <p style={{
             position: "relative",
             zIndex: 1,
             fontFamily: "var(--font-mono)",
-            fontSize: "0.56rem",
+            fontSize: "0.54rem",
             textTransform: "uppercase",
             letterSpacing: "0.22em",
-            color: "rgba(26,24,20,0.16)",
+            color: "rgba(26,24,20,0.15)",
             userSelect: "none",
           }}>
             {isRTL ? "ממשיכים לתוצאות" : "continuing to results"}
           </p>
         </div>
 
-        {/* ── Layer 2: Full-frame video — slides up from below ───────── */}
+        {/* ── Layer 2: Video frame — translates up from below via JS ────── */}
+        {/* width: 90%, centered, height: 75vh — Lusion-style large frame */}
         <div
-          ref={videoWrapRef}
           style={{
             position: "absolute",
-            inset: 0,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            background: "var(--color-cream-dark)",
-            padding: "clamp(16px, 2vw, 30px) clamp(16px, 2.5vw, 36px)",
-            gap: "clamp(14px, 1.5vw, 22px)",
+            top: 0,
+            left: "5%",
+            right: "5%",
+            height: "100%",
           }}
         >
-          {/* Giant video frame — near-full viewport, Lusion-style */}
           <div
+            ref={videoContainerRef}
             style={{
-              position: "relative",
-              width: "calc(100vw - clamp(32px, 5vw, 72px))",
-              height: "calc(100vh - clamp(100px, 12vw, 160px))",
-              borderRadius: "clamp(14px, 2vw, 24px)",
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              borderRadius: "clamp(14px, 2vw, 22px)",
               overflow: "hidden",
               boxShadow: "0 50px 120px rgba(26,24,20,0.22)",
-              flexShrink: 0,
+              willChange: "transform",
             }}
           >
             <video
@@ -188,16 +195,16 @@ const ResultsReel = () => {
               preload="metadata"
             />
 
-            {/* Gradient overlay — top + bottom */}
+            {/* Gradient overlay */}
             <div style={{
               position: "absolute",
               inset: 0,
               background:
-                "linear-gradient(to bottom, rgba(26,24,20,0.50) 0%, transparent 35%, transparent 60%, rgba(26,24,20,0.55) 100%)",
+                "linear-gradient(to bottom, rgba(26,24,20,0.52) 0%, transparent 38%, transparent 62%, rgba(26,24,20,0.52) 100%)",
               pointerEvents: "none",
             }} />
 
-            {/* Section label + title — overlaid top-left */}
+            {/* Label + title overlaid top corner */}
             <div
               dir={isRTL ? "rtl" : "ltr"}
               style={{
@@ -211,10 +218,10 @@ const ResultsReel = () => {
             >
               <p style={{
                 fontFamily: "var(--font-mono)",
-                fontSize: "0.62rem",
+                fontSize: "0.6rem",
                 textTransform: "uppercase",
                 letterSpacing: "0.18em",
-                color: "rgba(245,240,232,0.65)",
+                color: "rgba(245,240,232,0.60)",
                 margin: "0 0 0.5rem",
               }}>
                 — 03 / RESULTS
@@ -222,8 +229,8 @@ const ResultsReel = () => {
               <div style={{
                 fontFamily: "var(--font-body)",
                 fontWeight: 400,
-                fontSize: "clamp(1.6rem, 2.8vw, 3.2rem)",
-                lineHeight: 0.9,
+                fontSize: "clamp(1.4rem, 2.4vw, 2.8rem)",
+                lineHeight: 0.92,
                 letterSpacing: "-0.02em",
                 color: "var(--color-cream)",
                 borderBottom: "2.5px solid var(--color-orange)",
@@ -234,6 +241,35 @@ const ResultsReel = () => {
               </div>
             </div>
 
+            {/* Calendly CTA — bottom corner */}
+            {hasCalendly && (
+              <button
+                onClick={() => socials.calendlyUrl && window.open(socials.calendlyUrl, "_blank")}
+                style={{
+                  position: "absolute",
+                  bottom: "clamp(1rem, 2vw, 1.8rem)",
+                  ...(isRTL
+                    ? { left: "clamp(1rem, 2vw, 1.8rem)" }
+                    : { right: "clamp(1rem, 2vw, 1.8rem)" }),
+                  zIndex: 10,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  background: "var(--color-orange)",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "9999px",
+                  padding: "0.75rem 1.8rem",
+                  fontFamily: "var(--font-body)",
+                  fontSize: "0.88rem",
+                  fontWeight: 500,
+                  cursor: "pointer",
+                }}
+              >
+                {isRTL ? "קבעו שיחת היכרות קצרה" : "Book a quick call"}
+              </button>
+            )}
+
             {/* Mute toggle */}
             <button
               type="button"
@@ -241,8 +277,10 @@ const ResultsReel = () => {
               aria-label={isMuted ? (isRTL ? "הפעל קול" : "Unmute") : (isRTL ? "השתק" : "Mute")}
               style={{
                 position: "absolute",
-                bottom: "1.2rem",
-                insetInlineEnd: "1.2rem",
+                bottom: "clamp(1rem, 2vw, 1.8rem)",
+                ...(isRTL
+                  ? { right: "clamp(1rem, 2vw, 1.8rem)" }
+                  : { left: "clamp(1rem, 2vw, 1.8rem)" }),
                 zIndex: 10,
                 width: "2.75rem",
                 height: "2.75rem",
@@ -263,30 +301,6 @@ const ResultsReel = () => {
               {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
             </button>
           </div>
-
-          {/* Calendly CTA — below the frame */}
-          {hasCalendly && (
-            <button
-              onClick={() => socials.calendlyUrl && window.open(socials.calendlyUrl, "_blank")}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "0.5rem",
-                background: "var(--color-orange)",
-                color: "white",
-                border: "none",
-                borderRadius: "9999px",
-                padding: "0.75rem 2rem",
-                fontFamily: "var(--font-body)",
-                fontSize: "0.9rem",
-                fontWeight: 500,
-                cursor: "pointer",
-                flexShrink: 0,
-              }}
-            >
-              {isRTL ? "קבעו שיחת היכרות קצרה" : "Book a quick call"}
-            </button>
-          )}
         </div>
       </div>
     </div>
