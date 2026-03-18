@@ -1,9 +1,6 @@
-import HeroWorking from "@/components/HeroWorking";
-import About from "@/components/About";
+import HeroAbout from "@/components/HeroAbout";
+import WorkGrid from "@/components/work/WorkGrid";
 import ProcessTimeline from "@/components/ProcessTimeline";
-import BrandsVideoCarousel from "@/components/BrandsVideoCarousel";
-import WeddingsVideoGallery from "@/components/WeddingsVideoGallery";
-import HotelsVideoCarousel from "@/components/HotelsVideoCarousel";
 import ResultsReel from "@/components/ResultsReel";
 import Testimonials from "@/components/Testimonials";
 import FAQ from "@/components/FAQ";
@@ -16,11 +13,8 @@ const IndexTest = () => {
   return (
     <div className="min-h-screen">
       <Analytics />
-      <HeroWorking />
-      <About />
-      <HotelsVideoCarousel />
-      <BrandsVideoCarousel />
-      <WeddingsVideoGallery />
+      <HeroAbout />
+      <WorkGrid />
       <ProcessTimeline />
       <ResultsReel />
       <Testimonials />

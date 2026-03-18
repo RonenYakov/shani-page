@@ -60,6 +60,41 @@
   --sidebar-accent-foreground: 0 0% 95%;
   --sidebar-border: 222 15% 20%;
   --sidebar-ring: 44 89% 52%;
+
+  /* === NEW BRAND VARIABLES (Phase 1 Rebranding) === */
+
+  /* Backgrounds */
+  --color-cream: #F5F0E8;
+  --color-cream-dark: #EDE8DF;
+  --color-off-white: #FAF8F4;
+
+  /* Text */
+  --color-ink: #1A1814;
+  --color-ink-muted: #6B6560;
+
+  /* Accents */
+  --color-orange: #D4622A;
+  --color-accent: #C8A882;
+  --color-accent-dark: #A8845A;
+  --color-line: rgba(26, 24, 20, 0.05);
+
+  /* Interactive */
+  --color-blue: #1a2ffb;
+  --color-grey-blue: #2b2e3a;
+
+  /* Layout */
+  --grid-gap: 2vw;
+  --grid-space: calc((100% - 11 * var(--grid-gap)) / 12);
+  --global-border-radius: 16px;
+  --base-padding-x: max(5vw, 40px);
+  --base-padding-y: clamp(30px, 4vw, 50px);
+
+  /* Typography */
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+
+  /* Easing */
+  --ease-brand: cubic-bezier(0.35, 0, 0, 1);
 }
 
 .dark {
@@ -96,11 +131,18 @@
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  font-family: var(--font-body);
   line-height: 1.6;
   font-weight: 400;
-  color: hsl(var(--foreground));
-  background: var(--gradient-warm);
+  color: var(--color-ink);
+  background-color: var(--color-cream);
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--color-line) 0px,
+    var(--color-line) 1px,
+    transparent 1px,
+    transparent 80px
+  );
   overflow-x: hidden;
 }
 
