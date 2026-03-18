@@ -10,7 +10,17 @@ const About = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <section id="about" className="py-12 md:py-16 px-6 bg-white">
+    <section
+      id="about"
+      className="py-12 md:py-16 px-6"
+      style={{
+        position: 'relative',
+        zIndex: 10,
+        background: 'var(--color-cream)',
+        borderRadius: '24px 24px 0 0',
+        boxShadow: '0 -8px 40px rgba(26,24,20,0.10)',
+      }}
+    >
       <div className="max-w-6xl mx-auto">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           {/* Text Content */}
