@@ -7,11 +7,24 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Flowing S-curve spine — LTR sweeps left→right, RTL is mirrored
+// ── Spine path — large organic loop, exits right ────────────────────────
+// LTR: enters top-center, makes a clockwise loop left, tail sweeps right
 const SPINE_LTR =
-  "M -150 650 C 150 300, 480 50, 750 320 C 1020 590, 1180 150, 1500 50";
+  "M 500 -80 " +
+  "C 820 20, 1000 260, 820 480 " +   // sweep right and down
+  "C 640 700, 280 720, 100 520 " +   // arc left, loop bottom
+  "C -80 320, 30 90, 240 50 " +      // close loop, arc up
+  "C 420 10, 580 200, 740 460 " +    // exit the loop
+  "C 900 700, 1150 600, 1450 380";   // sweep right off-screen
+
+// RTL: mirror of LTR
 const SPINE_RTL =
-  "M 1450 650 C 1150 300, 820 50, 550 320 C 280 590, 120 150, -200 50";
+  "M 900 -80 " +
+  "C 580 20, 400 260, 580 480 " +
+  "C 760 700, 1120 720, 1300 520 " +
+  "C 1480 320, 1370 90, 1160 50 " +
+  "C 980 10, 820 200, 660 460 " +
+  "C 500 700, 250 600, -50 380";
 
 const ResultsReel = () => {
   const { language } = useI18n();
@@ -24,7 +37,7 @@ const ResultsReel = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isMuted, setIsMuted] = useState(true);
 
-  // ── GSAP: spine draws → video rises up ────────────────────────────────
+  // ── GSAP: spine draws, then giant video frame rises from below ─────
   useEffect(() => {
     const path = pathRef.current;
     const videoWrap = videoWrapRef.current;
@@ -33,28 +46,27 @@ const ResultsReel = () => {
 
     const len = path.getTotalLength();
     gsap.set(path, { strokeDasharray: len, strokeDashoffset: len });
-    gsap.set(videoWrap, { y: "102%" });
+    gsap.set(videoWrap, { y: "105%" });
 
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: outer,
         start: "top top",
         end: "bottom bottom",
-        scrub: 1.2,
+        scrub: 1.4,
       },
     });
 
-    // Spine draws during first 60% of scroll
     tl.to(path, { strokeDashoffset: 0, ease: "none", duration: 0.6 }, 0);
-    // Video slides up from 42% → 100%
-    tl.to(videoWrap, { y: "0%", ease: "power2.inOut", duration: 0.58 }, 0.42);
+    tl.to(videoWrap, { y: "0%", ease: "power2.inOut", duration: 0.55 }, 0.44);
 
     return () => {
-      ScrollTrigger.getAll().forEach((t) => t.kill());
+      tl.scrollTrigger?.kill();
+      tl.kill();
     };
   }, []);
 
-  // ── Auto-mute when video leaves viewport ──────────────────────────────
+  // ── Auto-mute when off screen ──────────────────────────────────────
   useEffect(() => {
     const el = videoWrapRef.current;
     if (!el) return;
@@ -78,21 +90,17 @@ const ResultsReel = () => {
     setIsMuted(next);
     v.muted = next;
     if (!next) {
-      try {
-        v.volume = 1;
-        void v.play();
-      } catch {}
+      try { v.volume = 1; void v.play(); } catch {}
     }
   };
 
   return (
-    // Outer — taller than viewport, creates scroll space for GSAP scrub
     <div
       ref={outerRef}
       id="results"
-      style={{ height: "280vh", position: "relative", background: "var(--color-cream-dark)" }}
+      style={{ height: "260vh", position: "relative", background: "var(--color-cream-dark)" }}
     >
-      {/* Sticky wrapper — 100vh, both spine and video live here */}
+      {/* Sticky container — both layers live here */}
       <div
         style={{
           position: "sticky",
@@ -101,7 +109,7 @@ const ResultsReel = () => {
           overflow: "hidden",
         }}
       >
-        {/* ── Spine layer ────────────────────────────────────────────────── */}
+        {/* ── Layer 1: Spine ─────────────────────────────────────────── */}
         <div
           style={{
             position: "absolute",
@@ -113,96 +121,65 @@ const ResultsReel = () => {
           }}
         >
           <svg
-            viewBox="0 0 1300 700"
-            preserveAspectRatio="xMidYMid meet"
-            style={{ width: "100%", height: "100%", position: "absolute", inset: 0 }}
+            viewBox="0 0 1400 800"
+            preserveAspectRatio="xMidYMid slice"
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
           >
             <path
               ref={pathRef}
               d={isRTL ? SPINE_RTL : SPINE_LTR}
               fill="none"
               stroke="var(--color-orange)"
-              strokeWidth="3.5"
+              strokeWidth="6"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
           </svg>
 
-          {/* Subtle label visible while spine is drawing */}
-          <p
-            style={{
-              position: "relative",
-              zIndex: 1,
-              fontFamily: "var(--font-mono)",
-              fontSize: "0.58rem",
-              textTransform: "uppercase",
-              letterSpacing: "0.22em",
-              color: "rgba(26,24,20,0.18)",
-              userSelect: "none",
-            }}
-          >
+          <p style={{
+            position: "relative",
+            zIndex: 1,
+            fontFamily: "var(--font-mono)",
+            fontSize: "0.56rem",
+            textTransform: "uppercase",
+            letterSpacing: "0.22em",
+            color: "rgba(26,24,20,0.16)",
+            userSelect: "none",
+          }}>
             {isRTL ? "ממשיכים לתוצאות" : "continuing to results"}
           </p>
         </div>
 
-        {/* ── Video layer — slides up from below, covers spine ────────────── */}
+        {/* ── Layer 2: Full-frame video — slides up from below ───────── */}
         <div
           ref={videoWrapRef}
           style={{
             position: "absolute",
             inset: 0,
-            background: "var(--color-cream)",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            padding: "clamp(24px, 3vw, 48px) var(--base-padding-x)",
-            gap: "clamp(14px, 2vw, 28px)",
+            background: "var(--color-cream-dark)",
+            padding: "clamp(16px, 2vw, 30px) clamp(16px, 2.5vw, 36px)",
+            gap: "clamp(14px, 1.5vw, 22px)",
           }}
         >
-          {/* Section label + title */}
+          {/* Giant video frame — near-full viewport, Lusion-style */}
           <div
-            dir={isRTL ? "rtl" : "ltr"}
-            style={{ width: "100%", maxWidth: "900px" }}
+            style={{
+              position: "relative",
+              width: "calc(100vw - clamp(32px, 5vw, 72px))",
+              height: "calc(100vh - clamp(100px, 12vw, 160px))",
+              borderRadius: "clamp(14px, 2vw, 24px)",
+              overflow: "hidden",
+              boxShadow: "0 50px 120px rgba(26,24,20,0.22)",
+              flexShrink: 0,
+            }}
           >
-            <p style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: "0.68rem",
-              textTransform: "uppercase",
-              letterSpacing: "0.18em",
-              color: "var(--color-orange)",
-              margin: "0 0 0.75rem",
-            }}>
-              — 03 / RESULTS
-            </p>
-            <div style={{
-              fontFamily: "var(--font-body)",
-              fontWeight: 400,
-              fontSize: "clamp(1.8rem, 3.2vw, 3.8rem)",
-              lineHeight: 0.9,
-              letterSpacing: "-0.02em",
-              color: "var(--color-ink)",
-              borderBottom: "3px solid var(--color-orange)",
-              paddingBottom: "0.15em",
-              display: "inline-block",
-            }}>
-              {isRTL ? "ככה נראות תוצאות" : "What Results Look Like"}
-            </div>
-          </div>
-
-          {/* Video */}
-          <div style={{
-            position: "relative",
-            borderRadius: 20,
-            overflow: "hidden",
-            width: "100%",
-            maxWidth: "900px",
-            boxShadow: "0 40px 80px rgba(26,24,20,0.14)",
-            flexShrink: 0,
-          }}>
             <video
               ref={videoRef}
-              style={{ width: "100%", aspectRatio: "16/9", objectFit: "cover", display: "block" }}
+              style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
               src="/recomendations.mp4"
               autoPlay
               muted={isMuted}
@@ -210,25 +187,67 @@ const ResultsReel = () => {
               playsInline
               preload="metadata"
             />
+
+            {/* Gradient overlay — top + bottom */}
             <div style={{
               position: "absolute",
               inset: 0,
-              background: "linear-gradient(to top, rgba(26,24,20,0.5) 0%, transparent 50%)",
+              background:
+                "linear-gradient(to bottom, rgba(26,24,20,0.50) 0%, transparent 35%, transparent 60%, rgba(26,24,20,0.55) 100%)",
               pointerEvents: "none",
             }} />
+
+            {/* Section label + title — overlaid top-left */}
+            <div
+              dir={isRTL ? "rtl" : "ltr"}
+              style={{
+                position: "absolute",
+                top: "clamp(1.2rem, 2.5vw, 2.2rem)",
+                ...(isRTL
+                  ? { right: "clamp(1.2rem, 2.5vw, 2.2rem)" }
+                  : { left: "clamp(1.2rem, 2.5vw, 2.2rem)" }),
+                zIndex: 2,
+              }}
+            >
+              <p style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: "0.62rem",
+                textTransform: "uppercase",
+                letterSpacing: "0.18em",
+                color: "rgba(245,240,232,0.65)",
+                margin: "0 0 0.5rem",
+              }}>
+                — 03 / RESULTS
+              </p>
+              <div style={{
+                fontFamily: "var(--font-body)",
+                fontWeight: 400,
+                fontSize: "clamp(1.6rem, 2.8vw, 3.2rem)",
+                lineHeight: 0.9,
+                letterSpacing: "-0.02em",
+                color: "var(--color-cream)",
+                borderBottom: "2.5px solid var(--color-orange)",
+                paddingBottom: "0.12em",
+                display: "inline-block",
+              }}>
+                {isRTL ? "ככה נראות תוצאות" : "What Results Look Like"}
+              </div>
+            </div>
+
+            {/* Mute toggle */}
             <button
               type="button"
               onClick={toggleMute}
               aria-label={isMuted ? (isRTL ? "הפעל קול" : "Unmute") : (isRTL ? "השתק" : "Mute")}
               style={{
                 position: "absolute",
-                bottom: "1rem",
-                insetInlineEnd: "1rem",
+                bottom: "1.2rem",
+                insetInlineEnd: "1.2rem",
                 zIndex: 10,
                 width: "2.75rem",
                 height: "2.75rem",
                 borderRadius: "50%",
-                background: "rgba(26,24,20,0.55)",
+                background: "rgba(26,24,20,0.50)",
                 border: "1px solid rgba(245,240,232,0.2)",
                 backdropFilter: "blur(8px)",
                 display: "flex",
@@ -239,13 +258,13 @@ const ResultsReel = () => {
                 transition: "background 0.2s",
               }}
               onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(26,24,20,0.75)")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(26,24,20,0.55)")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(26,24,20,0.50)")}
             >
               {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
             </button>
           </div>
 
-          {/* Calendly CTA */}
+          {/* Calendly CTA — below the frame */}
           {hasCalendly && (
             <button
               onClick={() => socials.calendlyUrl && window.open(socials.calendlyUrl, "_blank")}
@@ -257,9 +276,9 @@ const ResultsReel = () => {
                 color: "white",
                 border: "none",
                 borderRadius: "9999px",
-                padding: "0.9rem 2.2rem",
+                padding: "0.75rem 2rem",
                 fontFamily: "var(--font-body)",
-                fontSize: "0.95rem",
+                fontSize: "0.9rem",
                 fontWeight: 500,
                 cursor: "pointer",
                 flexShrink: 0,
