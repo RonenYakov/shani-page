@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useI18n } from "@/i18n/simple";
 
 const EASE: [number, number, number, number] = [0.35, 0, 0, 1]; void EASE;
@@ -40,6 +40,14 @@ const ProcessTimeline = () => {
   const { language } = useI18n();
   const isRTL = language === "he";
   const steps = isRTL ? STEPS_HE : STEPS_EN;
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   const outerRef      = useRef<HTMLDivElement>(null);
   const ringRef       = useRef<HTMLDivElement>(null);
@@ -115,6 +123,88 @@ const ProcessTimeline = () => {
     update();
     return () => window.removeEventListener("scroll", update);
   }, [isRTL]);
+
+  // ── Mobile: simple vertical numbered list, no animation, no sticky ────────
+  if (isMobile) {
+    return (
+      <section
+        id="process"
+        dir={isRTL ? "rtl" : "ltr"}
+        style={{
+          background: "var(--color-cream)",
+          padding: "clamp(3rem, 8vw, 5rem) var(--base-padding-x)",
+        }}
+      >
+        <p style={{
+          fontFamily: "var(--font-mono)",
+          fontSize: "0.68rem",
+          textTransform: "uppercase",
+          letterSpacing: "0.18em",
+          color: "var(--color-orange)",
+          marginBottom: "0.6rem",
+        }}>— 02 / PROCESS</p>
+        <h2 style={{
+          fontFamily: isRTL ? "var(--font-display)" : "var(--font-display-en-hero)",
+          fontWeight: isRTL ? 900 : 400,
+          fontSize: "clamp(2.4rem, 9vw, 3.5rem)",
+          lineHeight: 0.9,
+          color: "var(--color-ink)",
+          margin: "0 0 2.5rem",
+          borderBottom: "3px solid var(--color-orange)",
+          paddingBottom: "0.15em",
+          display: "inline-block",
+        }}>
+          {isRTL ? "איך אני עובדת" : "How I Work"}
+        </h2>
+
+        <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "0" }}>
+          {steps.map((step, i) => (
+            <li
+              key={step.num}
+              style={{
+                display: "flex",
+                gap: "1.2rem",
+                alignItems: "flex-start",
+                borderTop: "1px solid rgba(26,24,20,0.1)",
+                padding: "1.4rem 0",
+              }}
+            >
+              <span style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: "0.62rem",
+                letterSpacing: "0.12em",
+                color: i === 0 ? "var(--color-orange)" : "rgba(26,24,20,0.38)",
+                paddingTop: "4px",
+                flexShrink: 0,
+                minWidth: "2.2rem",
+              }}>
+                {step.num}
+              </span>
+              <div>
+                <div style={{
+                  fontFamily: "var(--font-body)",
+                  fontWeight: 600,
+                  fontSize: "1.05rem",
+                  color: "var(--color-ink)",
+                  marginBottom: "0.3rem",
+                }}>
+                  {step.title}
+                </div>
+                <div style={{
+                  fontFamily: "var(--font-body)",
+                  fontSize: "0.88rem",
+                  color: "var(--color-ink-muted)",
+                  lineHeight: 1.6,
+                }}>
+                  {step.desc}
+                </div>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+    );
+  }
 
   return (
     // 250vh: title stays sticky, dwell time for 5 steps

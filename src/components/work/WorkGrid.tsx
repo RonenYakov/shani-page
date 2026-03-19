@@ -242,8 +242,16 @@ const WorkGrid = () => {
   const { language } = useI18n()
   const isRTL = language === 'he'
   const [selected, setSelected] = useState<WorkItem | null>(null)
+  const [isMobile, setIsMobile] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
   const titleInView = useInView(sectionRef, { once: true, margin: '-80px' })
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
 
   const handleWhatsApp = () => {
     window.open('https://wa.me/message/D4AOECDSG35YE1', '_blank')
@@ -358,8 +366,8 @@ const WorkGrid = () => {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '2vw',
+            gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+            gap: isMobile ? '1.5rem' : '2vw',
           }}
         >
           {WORK_ITEMS.map((item, i) => (
@@ -369,6 +377,7 @@ const WorkGrid = () => {
               index={i}
               isRTL={isRTL}
               language={language}
+              isMobile={isMobile}
               onClick={() => setSelected(item)}
             />
           ))}
@@ -397,10 +406,11 @@ interface WorkCardProps {
   index: number
   isRTL: boolean
   language: string
+  isMobile: boolean
   onClick: () => void
 }
 
-const WorkCard = ({ item, index, isRTL, language, onClick }: WorkCardProps) => {
+const WorkCard = ({ item, index, isRTL, language, isMobile, onClick }: WorkCardProps) => {
   const [hovered, setHovered] = useState(false)
   const cardRef = useRef<HTMLDivElement>(null)
   const inView = useInView(cardRef, { once: true, margin: '-60px' })
@@ -415,7 +425,7 @@ const WorkCard = ({ item, index, isRTL, language, onClick }: WorkCardProps) => {
       initial={{ opacity: 0, y: 40, clipPath: 'inset(0 0 100% 0)' }}
       animate={inView ? { opacity: 1, y: 0, clipPath: 'inset(0 0 0% 0)' } : {}}
       transition={{ duration: 1.0, delay: pairDelay, ease: EASE }}
-      style={{ marginTop: index >= 2 ? '5em' : 0 }}
+      style={{ marginTop: !isMobile && index >= 2 ? '5em' : 0 }}
     >
       {/* Image */}
       <motion.div

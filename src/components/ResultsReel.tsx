@@ -35,6 +35,14 @@ const ResultsReel = () => {
   const { language } = useI18n();
   const isRTL = language === "he";
   const hasCalendly = Boolean(socials.calendlyUrl);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   const outerRef = useRef<HTMLDivElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
@@ -49,11 +57,13 @@ const ResultsReel = () => {
     const videoContainer = videoContainerRef.current;
     if (!outer || !path || !videoContainer) return;
 
+    const mobile = window.innerWidth < 768;
     const len = path.getTotalLength();
     path.style.strokeDasharray = String(len);
     // Start with a tiny bit drawn so spine is immediately visible on enter
     path.style.strokeDashoffset = String(len * 0.97);
-    videoContainer.style.transform = `translateY(${window.innerHeight * 1.05}px)`;
+    const initialY = mobile ? window.innerHeight * 0.5 : window.innerHeight * 1.05;
+    videoContainer.style.transform = `translateY(${initialY}px)`;
 
     const update = () => {
       const rect = outer.getBoundingClientRect();
@@ -65,9 +75,13 @@ const ResultsReel = () => {
       const spinePct = mapRange(progress, 0, 0.65, 0.03, 1);
       path.style.strokeDashoffset = String(len * (1 - spinePct));
 
-      // Video rises 0.42 → 0.88
-      const vidPct = easeOutCubic(mapRange(progress, 0.42, 0.88, 0, 1));
-      const translateY = (1 - vidPct) * window.innerHeight * 1.05;
+      // Video rises 0.42 → 0.88 (starts sooner on mobile)
+      const mobile = window.innerWidth < 768;
+      const riseStart = mobile ? 0.2 : 0.42;
+      const riseEnd   = mobile ? 0.72 : 0.88;
+      const maxY      = mobile ? window.innerHeight * 0.5 : window.innerHeight * 1.05;
+      const vidPct = easeOutCubic(mapRange(progress, riseStart, riseEnd, 0, 1));
+      const translateY = (1 - vidPct) * maxY;
       videoContainer.style.transform = `translateY(${translateY}px)`;
     };
 
@@ -105,11 +119,11 @@ const ResultsReel = () => {
   };
 
   return (
-    // 280vh total — matches the reference code
+    // 280vh desktop / 180vh mobile
     <div
       ref={outerRef}
       id="results"
-      style={{ height: "280vh", position: "relative", background: "var(--color-cream-dark)" }}
+      style={{ height: isMobile ? "180vh" : "280vh", position: "relative", background: "var(--color-cream-dark)" }}
     >
       {/* ── Sticky container — top: 10vh as per reference ─────────────── */}
       <div
@@ -165,10 +179,10 @@ const ResultsReel = () => {
         <div
           style={{
             position: "absolute",
-            top: "5%",
-            left: "12%",
-            right: "12%",
-            height: "90%",
+            top: isMobile ? "2%" : "5%",
+            left: isMobile ? "4%" : "12%",
+            right: isMobile ? "4%" : "12%",
+            height: isMobile ? "96%" : "90%",
           }}
         >
           <div
@@ -230,7 +244,7 @@ const ResultsReel = () => {
               <div style={{
                 fontFamily: isRTL ? "var(--font-display)" : "var(--font-display-en-hero)",
                 fontWeight: isRTL ? 900 : 400,
-                fontSize: "clamp(1.6rem, 2.8vw, 3.2rem)",
+                fontSize: isMobile ? "clamp(1.4rem, 5.5vw, 2rem)" : "clamp(1.6rem, 2.8vw, 3.2rem)",
                 lineHeight: 0.9,
                 letterSpacing: isRTL ? "-0.02em" : "-0.01em",
                 color: "var(--color-cream)",
