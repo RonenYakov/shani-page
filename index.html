@@ -27,6 +27,22 @@
     <meta name="twitter:description" content="ניהול סושיאל מדיה מקצועי + סרטוני UGC אותנטיים" />
     <meta name="twitter:image" content="/images/og.webp" />
 
+    <!-- Security: Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self';
+      script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://connect.facebook.net https://analytics.tiktok.com;
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+      font-src 'self' https://fonts.gstatic.com;
+      img-src 'self' data: https://www.facebook.com https://www.googletagmanager.com;
+      connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://analytics.tiktok.com;
+      frame-src 'none';
+      object-src 'none';
+      base-uri 'self';
+    " />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="alternate icon" type="image/png" href="/shani-logo2.png" />
