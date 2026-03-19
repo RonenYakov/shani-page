@@ -414,7 +414,7 @@ interface WorkCardProps {
 const WorkCard = ({ item, index, isRTL, language, isMobile, onClick }: WorkCardProps) => {
   const [hovered, setHovered] = useState(false)
   const cardRef = useRef<HTMLDivElement>(null)
-  const inView = useInView(cardRef, { once: true, margin: '-60px' })
+  const inView = useInView(cardRef, { once: true, margin: '-20px' })
   const palette = PALETTES[item.paletteKey]
 
   // Row-pair stagger: cards 0&1 together, 2&3 together, 4&5 together
@@ -423,12 +423,8 @@ const WorkCard = ({ item, index, isRTL, language, isMobile, onClick }: WorkCardP
   return (
     <motion.div
       ref={cardRef}
-      initial={isMobile
-        ? { opacity: 0, y: 20 }
-        : { opacity: 0, y: 40, clipPath: 'inset(0 0 100% 0)' }}
-      animate={inView
-        ? { opacity: 1, y: 0, clipPath: 'inset(0 0 0% 0)' }
-        : {}}
+      initial={{ opacity: 0, y: isMobile ? 20 : 40 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: isMobile ? 0.5 : 1.0, delay: pairDelay, ease: EASE }}
       style={{ marginTop: !isMobile && index >= 2 ? '5em' : 0 }}
     >
@@ -618,6 +614,13 @@ interface DetailViewProps {
 const DetailView = ({ item, isRTL, language, onClose, onWhatsApp }: DetailViewProps) => {
   const p = PALETTES[item.paletteKey]
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null)
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
 
   // Lock body scroll while open
   useEffect(() => {
@@ -803,8 +806,8 @@ const DetailView = ({ item, isRTL, language, onClose, onWhatsApp }: DetailViewPr
         {/* Two-column: description + services */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '6vw',
+          gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+          gap: isMobile ? '2rem' : '6vw',
           alignItems: 'start',
           marginBottom: 'clamp(3rem, 6vw, 6rem)',
         }}>

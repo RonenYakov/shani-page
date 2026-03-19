@@ -1,367 +1,175 @@
-# CLAUDE.md
-
 # CLAUDE.md — Shani Basa Website
 
 This file provides guidance to Claude Code when working with code in this repository.
---
+
+---
+
 ## Business Context
+
 **Client:** Shani Basa
 **Service:** Social Media Management & Video Content Creation & social photography for weddings and events
 **Audience:** Small-to-medium Israeli businesses
 **Goal:** Convert visitors into leads — every section should drive toward contact (WhatsApp / email)
 **Tone:** Professional, warm, creative, dynamic, selling — like a talented creative you trust
 
-**Critical business elements that must ALWAYS be preserved:**
-- WhatsApp contact button/link — never remove or break
-- All CTAs that lead to contact (forms, buttons, links)
-- Phone number and contact info
+**Critical elements — NEVER break:**
+- WhatsApp link in `src/content/socials.ts` → `whatsappUrl`
 - All Hebrew text content — never translate or remove
-- Existing videos and images in `public/` — these are real client work samples
-- Testimonials content — real social proof, do not touch
-- FAQ content — real customer questions
+- `public/` videos and images — real client work samples
+- `testimonials.json`, `faq.json` — real content, do not alter
 
 ---
 
 ## Stack
 
 - **Framework:** React + TypeScript + Vite
-- **Styling:** Tailwind CSS
-- **Package manager:** Bun (`bun` commands, lockfile `bun.lockb`)
-- **Language:** Hebrew (RTL) — always preserve `dir="rtl"` and RTL layout
-- **Dev port:** 8080
-- **Path alias:** `@` maps to `./src`
+- **Package manager:** Bun (`bun run dev`, lockfile `bun.lockb`)
+- **Styling:** Tailwind CSS utilities + inline styles for dynamic/scroll-driven values
+- **Language:** Hebrew RTL primary — always preserve `dir="rtl"` and RTL layout
+- **Dev port:** 8080 — `bun run dev`
+- **Path alias:** `@` → `./src`
 - **Single page:** `/` → `pages/IndexTest.tsx`
-- **i18n:** `useI18n()` from `@/i18n/simple`, `t('key')` dot notation, default Hebrew, translations in `src/i18n/translations.ts`
-- **UI primitives:** shadcn/ui in `src/components/ui/`
-- **Animations:** Framer Motion (components) + GSAP (scroll/timeline)
-- **Assets:** `public/` as `.webp`/`.mp4`, posters in `public/posters/`
+- **i18n:** `useI18n()` from `@/i18n/simple`, default Hebrew, translations in `src/i18n/translations.ts`
+- **Animations:** Framer Motion (component-level) + scroll-driven JS (`requestAnimationFrame` + `IntersectionObserver`)
+- **Assets:** `public/` as `.webp`/`.mp4`
 - **Live site:** https://shani-page.vercel.app/
 
 ---
 
-## ⚠️ ACTIVE REBRANDING — READ THIS FIRST
+## Rules for Every Task
 
-The site is undergoing a complete visual redesign. The content stays — only the presentation changes.
-
-### Golden rules for this rebranding
-1. **Plan before implementing** — always write out what you're going to do and get confirmation before touching files
-2. **Never break working functionality** — WhatsApp links, contact CTAs, navigation anchors, i18n keys must survive every change
-3. **Screenshot = law** — when a screenshot of a reference site is provided, study it carefully and match it as closely as possible before writing any code. Ask clarifying questions if anything is unclear.
-4. **One phase at a time** — complete and verify each phase before starting the next
-5. **Preserve content** — all Hebrew text, videos, images, testimonials, FAQ stay exactly as they are
-6. **RTL always** — every new component must work correctly in RTL
-
-### Sections redesigned (all complete)
-| Section | Status | Notes |
-|---------|--------|-------|
-| Hero + About | ✅ Done | Cinematic shared-element scroll in `HeroAbout.tsx` |
-| Work/Portfolio | ✅ Done | `WorkGrid.tsx` — 6 categories, niche palettes, Lusion layout |
-| ProcessTimeline | ✅ Done | Sticky, cream bg, scroll-driven orange dot, bold h2 |
-| ResultsReel | ✅ Done | strokeWidth 20 spine, smaller video, bold h2 |
-| Testimonials | ✅ Done | Dark ink bg, scroll-driven spine, staggered cards, bold h2 |
-| FAQ | ✅ Done | Centered, animated accordion height, word-split h2 |
-| ContactBlock | ✅ Done | Dark ink, word-split h2, WhatsApp pulse, features grid |
-| HeroAbout "About Me" | ✅ Done | Bold h2 — Abril Fatface / Frank Ruhl Libre 900 |
-
-### Do NOT touch (protected content)
-| Section | Reason |
-|---------|--------|
-| Footer.tsx | Legal copyright notice |
-| testimonials.json | Real client reviews — do not alter |
-| faq.json | Real customer questions — do not alter |
-| socials.ts | WhatsApp link — never break |
+1. **Never commit or push without explicit user approval**
+2. **Plan before coding** — for multi-step tasks, write the plan and confirm before touching files
+3. **Screenshot = law** — when a reference screenshot is provided, study it carefully before writing any code
+4. **Preserve content** — Hebrew text, videos, images, testimonials, FAQ stay exactly as they are
+5. **RTL always** — every component must work correctly in RTL
+6. **Mobile + desktop** — always keep desktop behaviour unchanged when fixing mobile
 
 ---
 
-## How to Work on This Project
+## Design System
 
-### Before starting ANY task
-1. Re-read the relevant section of this CLAUDE.md
-2. If the task involves a new UI section → run `/superpowers:brainstorming` first
-3. If the task involves multiple steps → run `/superpowers:writing-plans` and present the plan before touching code
-4. If a screenshot is provided → study it carefully, identify: layout grid, spacing, typography, colors, animations, hover states. Then describe what you see and confirm with the user before implementing.
-
-### When a screenshot is provided
-This is the most important instruction for visual work:
-- Treat the screenshot as the exact target
-- Identify and note: column count, card sizes, font weights, spacing rhythm, border radius, color values, animation hints
-- Do NOT approximate — if something is unclear in the screenshot, ask
-- Build a pixel-faithful version, then adjust for RTL and Hebrew content
-- Use Stitch MCP to generate a mockup draft first if building from scratch
-
-### After completing any task
-Always run `/superpowers:verification-before-completion` before saying you're done.
-
----
-
-## New Brand Direction
-
-### Personality
-Warm, creative, premium, editorial. Not corporate. Not generic. Alive and confident.
+### Brand Personality
+Warm, creative, premium, editorial. Not corporate. Not generic.
 
 ### Color Palette
 ```css
-:root {
-  /* Backgrounds */
-  --color-cream: #F5F0E8;
-  --color-cream-dark: #EDE8DF;
-  --color-off-white: #FAF8F4;
-
-  /* Text */
-  --color-ink: #1A1814;
-  --color-ink-muted: #6B6560;
-
-  /* Accents */
-  --color-orange: #D4622A;  /* added Phase 2 — accent only, see orange rule below */
-  --color-accent: #C8A882;
-  --color-accent-dark: #A8845A;
-  --color-line: rgba(26, 24, 20, 0.05);
-
-  /* Interactive (Lusion-derived) */
-  --color-blue: #1a2ffb;
-  --color-grey-blue: #2b2e3a;
-
-  /* Layout */
-  --grid-gap: 2vw;
-  --grid-space: calc((100% - 11 * var(--grid-gap)) / 12);
-  --global-border-radius: 16px;
-  --base-padding-x: max(5vw, 40px);
-  --base-padding-y: clamp(30px, 4vw, 50px);
-}
+--color-cream:      #F5F0E8   /* main background */
+--color-cream-dark: #EDE8DF
+--color-ink:        #1A1814   /* main text */
+--color-ink-muted:  #6B6560
+--color-orange:     #D4622A   /* accent — CTAs, highlights, spine */
+--color-accent:     #C8A882
+--color-line:       rgba(26, 24, 20, 0.05)
 ```
+
+### Orange Rule
+Orange is an accent — not a theme. Use for: headline first line, CTA buttons, mono labels, SVG spines. **Never** make large text blocks or section titles orange.
 
 ### Typography
-- **Display/body:** `DM Sans` (400/500) — warm, modern, readable in Hebrew
-- **Labels/tags/mono:** `IBM Plex Mono` — for categories, dates, small metadata
-- **Scale:** always fluid — `clamp()` + `vw` units for headings, never fixed `px`
-- Import both from Google Fonts in `index.html`
+| Variable | Font | Use |
+|---|---|---|
+| `--font-display-en-hero` | Abril Fatface | EN section h2s — bold/impactful |
+| `--font-display` | Frank Ruhl Libre 900 | HE section h2s |
+| `--font-display-en` | Cormorant Garamond | EN elegant sub-headings |
+| `--font-body` | DM Sans | All body text, buttons |
+| `--font-mono` | IBM Plex Mono | Section labels, tags, metadata |
 
-### Background Texture
-Warm cream with very subtle vertical lines — barely visible, atmospheric:
-```css
-body {
-  background-color: var(--color-cream);
-  background-image: repeating-linear-gradient(
-    90deg,
-    var(--color-line) 0px,
-    var(--color-line) 1px,
-    transparent 1px,
-    transparent 80px
-  );
-}
-```
-Lines opacity should be 4–6%. If it looks like notebook paper, it's too strong.
-
-### Orange Usage Rule
-**Orange is an accent, not a theme.** Use for: headline first line, CTA buttons, mono labels (e.g. "ABOUT"). Keep headings and body text in `--color-ink`. Never make large text blocks or section titles orange — user feedback: "a bit more black".
+**h2 rule:** EN → `var(--font-display-en-hero)` weight 400; HE → Frank Ruhl Libre weight 900.
+Sizes: `clamp(2.2rem, 4.5vw, 4.5rem)` mid-sections · `clamp(3rem, 7vw, 7rem)` large hero-style.
 
 ### Motion & Easing
-- **Signature easing:** `cubic-bezier(0.35, 0, 0, 1)` — use this everywhere
-- Framer Motion for component animations
-- GSAP for scroll-triggered and timeline sequences
-- Animations feel physical and weighted — not bouncy, not instant
+- **Signature easing:** `cubic-bezier(0.35, 0, 0, 1)` — everywhere
+- Scroll-driven animations: sticky outer div (250–320vh) + `getBoundingClientRect()` scroll handler
+- Component animations: Framer Motion `motion.div`
 
 ---
 
-## Hero + About — Cinematic Shared Element (✅ IMPLEMENTED)
+## Page Structure (`pages/IndexTest.tsx`)
 
-**File:** `src/components/HeroAbout.tsx` — replaces both `HeroNew.tsx` and `About.tsx` in `IndexTest.tsx`.
+Order is load-bearing — ResultsReel spine exits at exact coordinates that Testimonials picks up:
 
-### Mechanic
-Single scroll section (`minHeight: 260vh`, sticky inner `100vh`). One image morphs from Hero to About as you scroll.
+```
+HeroAbout       → cinematic hero + about (260vh desktop, stacked mobile)
+WorkGrid        → 6-niche Lusion grid
+ProcessTimeline → 5-step process (250vh desktop, simple list mobile)
+ResultsReel     → SVG spine + video rise (280vh desktop, 180vh mobile)
+Testimonials    → dark ink, spine continues (320vh desktop, 220vh mobile)
+FAQ             → centered accordion
+ContactBlock    → dark ink, WhatsApp CTA
+StickyWhatsApp  → fixed bottom bar (mobile only)
+Footer          → copyright — DO NOT TOUCH
+```
 
-- Image (`/profile.webp`) starts RIGHT side, small (`scale: 0.65`), grows to full size (`scale: 1.0`) in About state
-- Image x: stays on right — `+22vw` LTR / `-22vw` RTL — barely moves horizontally
-- Hero text fades out at scroll progress `0.22–0.42`; About text fades in at `0.54–0.78`
-- Mobile: static stacked layout, no scroll animation — `hidden md:block` / `md:hidden`
-- **TODO:** swap `HERO_IMAGE` constant in `HeroAbout.tsx` for a background-removed PNG cutout
+---
 
-### RTL + useTransform pattern
-Always declare both LTR and RTL transform values at the top level, then pick with a ternary. Never use computed property keys inside `useTransform` arrays:
+## Mobile Strategy
+
+**Breakpoint:** `window.innerWidth < 768` detected via `useState + useEffect` + `resize` listener.
+
+**Pattern used in every component:**
 ```tsx
-const imageXLTR = useTransform(scrollYProgress, [0, 0.35, 0.78], ['22vw', '22vw', '20vw'])
-const imageXRTL = useTransform(scrollYProgress, [0, 0.35, 0.78], ['-22vw', '-22vw', '-20vw'])
-const imageX = isRTL ? imageXRTL : imageXLTR
+const [isMobile, setIsMobile] = useState(false);
+useEffect(() => {
+  const check = () => setIsMobile(window.innerWidth < 768);
+  check();
+  window.addEventListener('resize', check);
+  return () => window.removeEventListener('resize', check);
+}, []);
 ```
 
-### Framer Motion gotcha
-`whileDrag={{ zIndex: N }}` does **not** work — Framer Motion cannot animate zIndex. Manage it via React state + inline `style` prop instead:
-```tsx
-style={{ zIndex: isDragging ? 20 : 2 }}
-```
+**Per-section mobile behaviour:**
+| Section | Desktop | Mobile |
+|---|---|---|
+| HeroAbout | 260vh cinematic scroll | Static stacked (`md:hidden` / `hidden md:block`) |
+| WorkGrid | 2-col grid, clipPath reveal | 1-col grid, opacity+y fade |
+| ProcessTimeline | 250vh sticky circle | Simple vertical numbered list, no animation |
+| ResultsReel | 280vh, video starts 105vh below | 180vh, video starts 50vh below, rises sooner |
+| Testimonials | 320vh, 3-column cards | 220vh, 1-column cards |
+| StickyWhatsApp | Hidden (`lg:hidden`) | Full-width green bar, `env(safe-area-inset-bottom)` |
+
+**Critical mobile bug — clipPath + isMobile state switch:**
+Framer Motion `initial` only applies on first mount. If `isMobile` switches after mount, the card keeps its first-render `initial` state. Always include `clipPath: 'inset(0 0 0% 0)'` in the `animate` (inView) target so it's explicitly reset regardless of starting state.
 
 ---
 
-## Work Section Spec — Lusion Grid
+## Known CSS Gotchas
 
-**Reference:** lusion.co — exact measurements below
-
-### Grid measurements (at 919px viewport)
-- Section padding: `46px` sides, `37px` top/bottom
-- 12-column grid, `2vw` gap
-- Each card: `span 6` = 2 per row, `65%` aspect ratio via `padding-top: 65%`
-- Row 3+ stagger: `margin-top: 5em` (NOT CSS `row-gap`)
-- `border-radius: 15px` on `.project-item-main` only
-
-### Typography in cards
-- Section title: `8vw`, weight 400, `letter-spacing: -0.02em`, `line-height: 0.9`
-- Tags (line-1): `0.9vw`, IBM Plex Mono, uppercase, `opacity: 0.85`
-- Project name (line-2): `3vw`, `letter-spacing: -0.01em`
-
-### Hover behavior
-- Image: `scale(1.03)` with `0.6s cubic-bezier(0.35, 0, 0, 1)`
-- Arrow icon slides in from left
-- Title text shifts right to make room
-
-### Card data fields
-```ts
-interface WorkItem {
-  tags: string       // e.g. "סושיאל מדיה • ווידאו • תוכן"
-  title: string      // Client or project name (Hebrew)
-  asset: string      // path to image/video in public/
-  type: 'image' | 'video'
-}
-```
+- **`overflow: hidden` breaks `position: sticky`** — use `overflow-x: clip` on `html` instead. `clip` clips visually without creating a scroll container.
+- **SVG spine coordinates** — ResultsReel LTR spine exits at `M 1480 370` in `0 0 1400 800` viewBox. Testimonials LTR spine starts at exactly `M 1480 370` for visual continuity.
+- **Accordion height animation** — can't animate `height: auto`. Measure with `bodyRef.current.scrollHeight` and animate to that px value.
+- **Word-split reveal** — each word in `overflow: hidden` outer span + inner span with `translateY(110% → 0)`.
+- **`bun` not in Claude bash PATH** — use `npx tsc --noEmit` to type-check. Run `bun run dev` from terminal manually.
 
 ---
 
-## File Structure
+## File Map
 
 ```
-shani-page/
+src/
+├── pages/IndexTest.tsx          ← page order — change section order here
 ├── components/
-│   ├── HeroAbout.tsx            ← Hero + About combined (cinematic scroll) ✅ ACTIVE
-│   ├── hero/
-│   │   ├── HeroNew.tsx          ← superseded, kept as reference
-│   │   └── DraggableCard.tsx    ← superseded, kept as reference
-│   ├── work/
-│   │   └── WorkGrid.tsx         ← Lusion-style grid (Phase 3 — next)
-│   ├── About.tsx                ← superseded by HeroAbout.tsx
-│   ├── FAQ.tsx                  ← DO NOT TOUCH
-│   ├── Footer.tsx               ← DO NOT TOUCH (WhatsApp link lives here)
-│   ├── HeroWorking.tsx          ← OLD fallback, do not use
-│   └── Testimonials.tsx         ← DO NOT TOUCH
-├── styles/
-│   └── globals.css              ← CSS variables + background texture go here
+│   ├── HeroAbout.tsx            ← Hero + About (combined cinematic scroll)
+│   ├── work/WorkGrid.tsx        ← 6-niche portfolio grid
+│   ├── ProcessTimeline.tsx      ← 5-step process
+│   ├── ResultsReel.tsx          ← SVG spine + video reel
+│   ├── Testimonials.tsx         ← client reviews
+│   ├── FAQ.tsx                  ← accordion FAQ
+│   ├── ContactBlock.tsx         ← final CTA section
+│   ├── StickyWhatsApp.tsx       ← mobile fixed WhatsApp bar
+│   ├── Footer.tsx               ← DO NOT TOUCH (copyright)
+│   └── Analytics.tsx            ← Google Analytics
 ├── content/
-├── hooks/
+│   ├── socials.ts               ← WhatsApp, Instagram, TikTok URLs ← CRITICAL
+│   ├── faq.json                 ← FAQ Q&A — DO NOT ALTER
+│   ├── testimonials.json        ← client reviews — DO NOT ALTER
+│   ├── services.json            ← pricing packages
+│   └── videoManifest.ts         ← auto-discovers public/videos/**/*.mp4
 ├── i18n/
-├── pages/
-│   └── IndexTest.tsx            ← swap sections here during rebranding
-├── utils/
-├── App.tsx
-├── main.tsx
-└── index.html                   ← add Google Fonts here
+│   ├── simple.tsx               ← useI18n() hook
+│   └── translations.ts          ← all translated strings
+└── index.css                    ← CSS vars, keyframes, scrollbar, overflow-x: clip
 ```
-
----
-
-## Code Standards
-
-```tsx
-interface Props {
-  title: string
-  isVisible?: boolean
-}
-
-const MyComponent = ({ title, isVisible = true }: Props) => {
-  return <div>{title}</div>
-}
-
-export default MyComponent
-```
-
-- TypeScript interfaces for all props — no `any`
-- `const` over `let`
-- Components under 150 lines — split if longer
-- One component per file
-- RTL: use `dir="rtl"`, logical CSS props (`margin-inline-start` etc.)
-
----
-
-## Performance Targets
-
-| Metric | Target |
-|--------|--------|
-| LCP | < 2.5s |
-| FID / INP | < 100ms |
-| CLS | < 0.1 |
-
-**Rebranding performance notes:**
-- Drag cards: `will-change: transform`, avoid layout thrashing
-- Images: `.webp`, lazy load below fold
-- Fonts: `font-display: swap`, preload critical weights
-- GSAP: tree-shake — only import what's used
-- Run `npx vite-bundle-visualizer` after each phase
-
----
-
-## Skills — When to Use
-
-| Situation | Skill |
-|-----------|-------|
-| Before any new section or component | `/superpowers:brainstorming` |
-| Before any multi-step task | `/superpowers:writing-plans` |
-| Building or redesigning any UI | `/frontend-design` |
-| Screenshot provided as reference | `/frontend-design` + study screenshot first |
-| After completing any feature | `/superpowers:verification-before-completion` |
-| Bug or unexpected behavior | `/superpowers:systematic-debugging` |
-| Cleaning up or refactoring | `/simplify` |
-
----
-
-## MCP Tools — When to Use
-
-### Stitch (`mcp__stitch__*`)
-AI UI design generation. Use **before implementing** any new section.
-
-Workflow:
-1. `create_project` — set up a Stitch project
-2. `generate_screen_from_text` — generate mockup from description
-3. `get_screen` — retrieve the design
-4. Review with user → then implement in code
-
-Use for: Hero layout drafts, Work grid, About layout.
-
-### nano-banana (`mcp__nano-banana__*`)
-AI image generation via Gemini (512px–4K).
-
-Use when: New visual assets or background images are needed.
-Do NOT use for: existing client work — those come from `public/`.
-
----
-
-## Rebranding Execution Plan
-
-**Rule: plan → confirm → implement → verify. Never skip to code.**
-
-### Phase 1 — Foundation ✅ DONE
-CSS variables, Google Fonts (DM Sans + IBM Plex Mono), background texture.
-
-### Phase 2 — Hero + About ✅ DONE
-`HeroAbout.tsx` — cinematic shared-element scroll transition. Image morphs from Hero to About on scroll.
-
-### Phase 3 — Work Grid ✅ DONE
-`src/components/work/WorkGrid.tsx` — 6 categories, 2-col Lusion grid, per-niche palette shifts on expansion, layoutId morph, horizontal gallery scroll. Old carousels (HotelsVideoCarousel, BrandsVideoCarousel, WeddingsVideoGallery) removed.
-
-### Phase 4 — Integration & Polish ✅ DONE
-- [x] All sections redesigned with bold Abril Fatface (EN) / Frank Ruhl Libre 900 (HE) h2s
-- [x] Word-split heading reveals (FAQ, ContactBlock, Testimonials, WorkGrid)
-- [x] Lusion-style WorkGrid card animations (clipPath wipe, pair stagger, bottom-slide hover)
-- [x] Horizontal scrollbar removed (`overflow-x: clip` on html + transparent scrollbar CSS)
-- [x] All WhatsApp CTAs working ✓
-- [x] PROJECT_GUIDE.md — full codebase documentation written
-
-### Phase 5 — Mobile ⬜ ← CURRENT
-- [ ] HeroAbout: static stacked layout on mobile (already has hidden/block toggle — verify)
-- [ ] ProcessTimeline: mobile-friendly layout (circle likely too small on phones)
-- [ ] ResultsReel: sticky scroll on mobile — test and simplify if needed
-- [ ] Testimonials: single-column cards on mobile, spine simplification
-- [ ] WorkGrid: single column on mobile, touch-friendly hover
-- [ ] FAQ: full-width accordion on mobile
-- [ ] ContactBlock: single-column features grid
-- [ ] Typography: verify all `clamp()` sizes are readable on 375px screens
-- [ ] Test on: iPhone SE (375px), iPhone 14 (390px), Android (360px)
 
 ---
 
@@ -371,33 +179,18 @@ CSS variables, Google Fonts (DM Sans + IBM Plex Mono), background texture.
 bun run dev        # Start dev server (port 8080)
 bun run build      # Production build
 bun run preview    # Preview production build
-bun run lint       # Lint
-npx tsc --noEmit   # TypeScript check (bun not in PATH in bash — use npx)
-npx vite-bundle-visualizer  # Bundle size check
+npx tsc --noEmit   # TypeScript check
 ```
 
 ---
 
-## Notes & Learnings
+## Phase Status
 
-> Claude updates this after each session.
-
-- Project started: March 2026
-- Stack confirmed: React + TypeScript + Vite + Bun ✅
-- Rebranding started: March 2026
-- Design direction: Warm cream + vertical lines + cinematic scroll transitions
-- References: theboathouse.agency (stacking/cinematic scroll), lusion.co (work grid)
-- WhatsApp link location: Footer.tsx — never break this
-- Hero + About merged into single `HeroAbout.tsx` — shared scroll context is required for shared-element transitions; two separate components cannot share a `useScroll` ref
-- Orange rule: accent only — headline line 1, CTA buttons, mono labels. Headings stay `--color-ink`.
-- WorkGrid niche palettes: each `WorkItem` has a `paletteKey` → `NichePalette` (bg, accent, heading, body, muted, divider, scrollbar) — detail view reads from it for full color shift
-- Old carousels removed: `HotelsVideoCarousel`, `BrandsVideoCarousel`, `WeddingsVideoGallery` no longer in `IndexTest.tsx`
-- Stitch MCP (`mcp__stitch__generate_screen_from_text`) returned empty in testing — don't block on it, design directly if it fails
-- `bun` not in shell PATH during Claude Code bash sessions — use `npx tsc --noEmit` to type-check; run `bun run dev` from terminal manually
-- **Sticky + overflow bug:** `overflow: hidden` on any ancestor breaks `position: sticky`. Use `overflow-x: clip` on `html` instead — clips visually without creating a scroll container
-- **SVG spine continuity:** ResultsReel spine exits at `M 1480 370` (LTR) in a `0 0 1400 800` viewBox. Testimonials spine must start at exactly that coordinate to appear continuous
-- **h2 font rule (all sections):** EN → `var(--font-display-en-hero)` (Abril Fatface) weight 400; HE → Frank Ruhl Libre weight 900. Size: `clamp(2.2rem, 4.5vw, 4.5rem)` for mid-sections, `clamp(3rem, 7vw, 7rem)` for large hero-style headings
-- **Word-split animation pattern:** wrap each word in `overflow: hidden` outer span + inner span with `transform: translateY(110% → 0)` — reveals word from below a hidden floor
-- **Accordion height animation:** can't animate `height: auto` in CSS. Measure with `bodyRef.current.scrollHeight` and animate to that px value
-- **ctaPulse keyframe:** defined in `index.css` as `.cta-pulse` class — 2.8s infinite pulsing box-shadow on orange buttons
-- **PROJECT_GUIDE.md** added to repo root — full plain-English documentation of every component, pattern, and design decision. Reference it before any new feature.
+| Phase | Status | Summary |
+|---|---|---|
+| 1 — Foundation | ✅ Done | CSS vars, fonts, background texture |
+| 2 — Hero + About | ✅ Done | Cinematic shared-element scroll, `HeroAbout.tsx` |
+| 3 — Work Grid | ✅ Done | Lusion 6-niche grid, niche palettes, detail view |
+| 4 — All sections | ✅ Done | Bold h2s, word-split reveals, spine animations, scrollbar fix |
+| 5 — Mobile | ✅ Done | isMobile pattern, simplified layouts, StickyWhatsApp fix |
+| 6 — Deploy & QA | ⬜ Next | Full device test, RTL audit, Vercel domain, performance |

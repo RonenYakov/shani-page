@@ -18,9 +18,10 @@
 11. [How to Change Videos](#11-how-to-change-videos)
 12. [Buttons & CTAs — How They Work](#12-buttons--ctas)
 13. [Animations — How They Work](#13-animations)
-14. [The Logic We Used (Design Thinking)](#14-the-logic-we-used)
-15. [What Can Be Improved](#15-what-can-be-improved)
-16. [Glossary — Terms Every Developer Should Know](#16-glossary)
+14. [Mobile — How It Works](#14-mobile--how-it-works)
+15. [The Logic We Used (Design Thinking)](#15-the-logic-we-used)
+16. [What Can Be Improved](#16-what-can-be-improved)
+17. [Glossary — Terms Every Developer Should Know](#17-glossary)
 
 ---
 
@@ -895,7 +896,60 @@ Used in: WorkGrid cards
 
 ---
 
-## 14. The Logic We Used
+## 14. Mobile — How It Works
+
+Mobile support uses a single breakpoint: **768px**. Below that, sections either show a simplified layout or adjust their animations.
+
+### The isMobile Pattern
+
+Every section that needs different mobile behaviour uses this hook pattern:
+
+```tsx
+const [isMobile, setIsMobile] = useState(false);
+
+useEffect(() => {
+  const check = () => setIsMobile(window.innerWidth < 768);
+  check();                                    // run once on mount
+  window.addEventListener('resize', check);   // update on resize
+  return () => window.removeEventListener('resize', check);
+}, []);
+```
+
+Then in the JSX:
+```tsx
+<div style={{ gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr' }}>
+```
+
+**Why not use CSS media queries?** Most animations in this project are driven by JavaScript (scroll position, `window.innerHeight`, etc.). CSS alone can't change those values — the JS logic needs to know if it's mobile too.
+
+**Why start as `false`?** `useState(false)` means the first render assumes desktop. The `useEffect` then immediately corrects it. This avoids a flash of wrong layout but means the first-render state is always desktop — which is fine for performance (desktop is the heavier layout; mobile is simpler).
+
+### What Each Section Does on Mobile
+
+| Section | Mobile Layout |
+|---|---|
+| **HeroAbout** | Static stacked: photo on top, text below. No scroll animation. Uses Tailwind `md:hidden` / `hidden md:block` — no JS needed. |
+| **WorkGrid** | Single column. Card animation changes from `clipPath` wipe to simple `opacity + y` fade. Header disclaimer wraps to second line. |
+| **ProcessTimeline** | Completely replaces the circle diagram with a clean vertical numbered list with divider lines. No sticky, no scroll animation. |
+| **ResultsReel** | Section height `180vh` (was `280vh`). Video starts `50vh` below (not `105vh`). Rises sooner in scroll (20–72% range vs 42–88%). Frame fills more width. |
+| **Testimonials** | `columns: "1"` (was `"3"`). Section height `220vh` (was `320vh`). |
+| **StickyWhatsApp** | Shows on mobile only (`lg:hidden`). Full-width green bar fixed to bottom. Uses `env(safe-area-inset-bottom)` for iPhone notch safety. |
+
+### The clipPath Bug (Important Lesson)
+
+Framer Motion's `initial` prop only applies when the component **first mounts**. If `isMobile` switches from `false` → `true` after mount, the component keeps its first-render initial state.
+
+Problem: cards mounted with `clipPath: 'inset(0 0 100% 0)'`. When `isMobile` became `true` and the scroll `inView` fired, the animate target only set `opacity` and `y` — but never reset `clipPath`. Cards stayed invisible.
+
+Fix: **always include `clipPath: 'inset(0 0 0% 0)'` in the inView animate target**, so it's explicitly cleared no matter what the initial state was:
+
+```tsx
+animate={inView ? { opacity: 1, y: 0, clipPath: 'inset(0 0 0% 0)' } : {}}
+```
+
+---
+
+## 15. The Logic We Used
 
 ### Design Philosophy
 **Every decision had a reason:**
@@ -923,7 +977,7 @@ Used in: WorkGrid cards
 
 ---
 
-## 15. What Can Be Improved
+## 16. What Can Be Improved
 
 These are honest improvements that would make you a better programmer and the site more robust.
 
@@ -1032,7 +1086,7 @@ Images are served as-is from `public/`. There's no build-time compression, no sr
 
 ---
 
-## 16. Glossary
+## 17. Glossary
 
 **Component:** A reusable piece of UI. In React, a function that returns JSX.
 
