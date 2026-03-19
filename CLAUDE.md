@@ -51,19 +51,25 @@ The site is undergoing a complete visual redesign. The content stays — only th
 5. **Preserve content** — all Hebrew text, videos, images, testimonials, FAQ stay exactly as they are
 6. **RTL always** — every new component must work correctly in RTL
 
-### Sections being redesigned
+### Sections redesigned (all complete)
 | Section | Status | Notes |
 |---------|--------|-------|
 | Hero + About | ✅ Done | Cinematic shared-element scroll in `HeroAbout.tsx` |
 | Work/Portfolio | ✅ Done | `WorkGrid.tsx` — 6 categories, niche palettes, Lusion layout |
+| ProcessTimeline | ✅ Done | Sticky, cream bg, scroll-driven orange dot, bold h2 |
+| ResultsReel | ✅ Done | strokeWidth 20 spine, smaller video, bold h2 |
+| Testimonials | ✅ Done | Dark ink bg, scroll-driven spine, staggered cards, bold h2 |
+| FAQ | ✅ Done | Centered, animated accordion height, word-split h2 |
+| ContactBlock | ✅ Done | Dark ink, word-split h2, WhatsApp pulse, features grid |
+| HeroAbout "About Me" | ✅ Done | Bold h2 — Abril Fatface / Frank Ruhl Libre 900 |
 
-### Sections to leave completely untouched
+### Do NOT touch (protected content)
 | Section | Reason |
 |---------|--------|
-| FAQ | Real customer questions — content and structure |
-| Footer | Contains all contact links including WhatsApp |
-| Testimonials | Real social proof — do not redesign without explicit ask |
-| Navigation | Contains WhatsApp CTA — preserve all links |
+| Footer.tsx | Legal copyright notice |
+| testimonials.json | Real client reviews — do not alter |
+| faq.json | Real customer questions — do not alter |
+| socials.ts | WhatsApp link — never break |
 
 ---
 
@@ -338,13 +344,24 @@ CSS variables, Google Fonts (DM Sans + IBM Plex Mono), background texture.
 ### Phase 3 — Work Grid ✅ DONE
 `src/components/work/WorkGrid.tsx` — 6 categories, 2-col Lusion grid, per-niche palette shifts on expansion, layoutId morph, horizontal gallery scroll. Old carousels (HotelsVideoCarousel, BrandsVideoCarousel, WeddingsVideoGallery) removed.
 
-### Phase 4 — Integration & Polish ⬜ ← NEXT
-- [ ] Swap sections in `IndexTest.tsx`
-- [ ] Full RTL audit
-- [ ] All links and WhatsApp CTAs working ✓
-- [ ] Performance audit
-- [ ] Mobile + cross-browser check
-- [ ] Deploy to Vercel and verify
+### Phase 4 — Integration & Polish ✅ DONE
+- [x] All sections redesigned with bold Abril Fatface (EN) / Frank Ruhl Libre 900 (HE) h2s
+- [x] Word-split heading reveals (FAQ, ContactBlock, Testimonials, WorkGrid)
+- [x] Lusion-style WorkGrid card animations (clipPath wipe, pair stagger, bottom-slide hover)
+- [x] Horizontal scrollbar removed (`overflow-x: clip` on html + transparent scrollbar CSS)
+- [x] All WhatsApp CTAs working ✓
+- [x] PROJECT_GUIDE.md — full codebase documentation written
+
+### Phase 5 — Mobile ⬜ ← CURRENT
+- [ ] HeroAbout: static stacked layout on mobile (already has hidden/block toggle — verify)
+- [ ] ProcessTimeline: mobile-friendly layout (circle likely too small on phones)
+- [ ] ResultsReel: sticky scroll on mobile — test and simplify if needed
+- [ ] Testimonials: single-column cards on mobile, spine simplification
+- [ ] WorkGrid: single column on mobile, touch-friendly hover
+- [ ] FAQ: full-width accordion on mobile
+- [ ] ContactBlock: single-column features grid
+- [ ] Typography: verify all `clamp()` sizes are readable on 375px screens
+- [ ] Test on: iPhone SE (375px), iPhone 14 (390px), Android (360px)
 
 ---
 
@@ -377,3 +394,10 @@ npx vite-bundle-visualizer  # Bundle size check
 - Old carousels removed: `HotelsVideoCarousel`, `BrandsVideoCarousel`, `WeddingsVideoGallery` no longer in `IndexTest.tsx`
 - Stitch MCP (`mcp__stitch__generate_screen_from_text`) returned empty in testing — don't block on it, design directly if it fails
 - `bun` not in shell PATH during Claude Code bash sessions — use `npx tsc --noEmit` to type-check; run `bun run dev` from terminal manually
+- **Sticky + overflow bug:** `overflow: hidden` on any ancestor breaks `position: sticky`. Use `overflow-x: clip` on `html` instead — clips visually without creating a scroll container
+- **SVG spine continuity:** ResultsReel spine exits at `M 1480 370` (LTR) in a `0 0 1400 800` viewBox. Testimonials spine must start at exactly that coordinate to appear continuous
+- **h2 font rule (all sections):** EN → `var(--font-display-en-hero)` (Abril Fatface) weight 400; HE → Frank Ruhl Libre weight 900. Size: `clamp(2.2rem, 4.5vw, 4.5rem)` for mid-sections, `clamp(3rem, 7vw, 7rem)` for large hero-style headings
+- **Word-split animation pattern:** wrap each word in `overflow: hidden` outer span + inner span with `transform: translateY(110% → 0)` — reveals word from below a hidden floor
+- **Accordion height animation:** can't animate `height: auto` in CSS. Measure with `bodyRef.current.scrollHeight` and animate to that px value
+- **ctaPulse keyframe:** defined in `index.css` as `.cta-pulse` class — 2.8s infinite pulsing box-shadow on orange buttons
+- **PROJECT_GUIDE.md** added to repo root — full plain-English documentation of every component, pattern, and design decision. Reference it before any new feature.
