@@ -1,6 +1,7 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence, useInView } from 'framer-motion'
 import { useI18n } from '@/i18n/simple'
+import { VIDEO_MANIFEST } from '@/content/videoManifest'
 
 const EASE: [number, number, number, number] = [0.35, 0, 0, 1]
 
@@ -100,6 +101,7 @@ interface WorkItem {
   services: string[]
   servicesEn: string[]
   gallery: string[]
+  videos?: string[]
 }
 
 const WORK_ITEMS: WorkItem[] = [
@@ -110,7 +112,7 @@ const WORK_ITEMS: WorkItem[] = [
     tagsEn: 'WEDDINGS • VIDEO • MOMENTS',
     title: 'חתונות',
     titleEn: 'Weddings',
-    coverAsset: '/posters/weddings/חתונה-W.webp',
+    coverAsset: '/posters/theme/weddings social.png',
     description:
       'תיעוד אותנטי של הרגעים הכי חשובים. כל חתונה היא סיפור ייחודי שמחכה להיספר — ואנחנו כאן כדי לספר אותו בדרך שתישאר לנצח.',
     descriptionEn:
@@ -124,6 +126,7 @@ const WORK_ITEMS: WorkItem[] = [
       '/posters/weddings/proposel.webp',
       '/posters/weddings/copy_4CB7BB16-8667-4394-9EFC-4820095F619E.webp',
     ],
+    videos: ['/story.mp4'],
   },
   {
     id: 'restaurants',
@@ -132,7 +135,7 @@ const WORK_ITEMS: WorkItem[] = [
     tagsEn: 'RESTAURANTS • FOOD • BRANDING',
     title: 'מסעדות',
     titleEn: 'Restaurants',
-    coverAsset: '/posters/brands/סרטון תדמית מסעדה-B.webp',
+    coverAsset: '/posters/theme/resturans and cafes.png',
     description:
       'תוכן ויזואלי שמעורר תיאבון ומביא לקוחות לדלת. ווידאו שמספר את הסיפור של המסעדה — את האווירה, הטעם והנשמה.',
     descriptionEn:
@@ -144,6 +147,7 @@ const WORK_ITEMS: WorkItem[] = [
       '/posters/brands/agalt-cafe.webp',
       '/posters/brands/streets.webp',
     ],
+    videos: ['/video-glam.mp4'],
   },
   {
     id: 'social',
@@ -152,7 +156,7 @@ const WORK_ITEMS: WorkItem[] = [
     tagsEn: 'SOCIAL • UGC • CONTENT',
     title: 'שוטים סושיאל',
     titleEn: 'Social Shoots',
-    coverAsset: '/posters/brands/ugc-B.webp',
+    coverAsset: '/posters/theme/social shoots.png',
     description:
       'שוטים סושיאל שמייצרים באזז ומניעים פעולה. תוכן UGC אותנטי לטיקטוק ורילס שמדבר ישירות לקהל היעד.',
     descriptionEn:
@@ -164,6 +168,7 @@ const WORK_ITEMS: WorkItem[] = [
       '/posters/brands/mahlevet evri.webp',
       '/posters/brands/agalt-cafe.webp',
     ],
+    videos: ['/story4.mp4', '/story8.mp4'],
   },
   {
     id: 'savethedate',
@@ -172,7 +177,7 @@ const WORK_ITEMS: WorkItem[] = [
     tagsEn: 'SAVE THE DATE • PROPOSAL • ENGAGEMENT',
     title: 'סייב דה דייט',
     titleEn: 'Save the Date',
-    coverAsset: '/posters/weddings/proposel.webp',
+    coverAsset: '/posters/theme/save the date.png',
     description:
       'הרגע שמכריז על האהבה — מצולם בצורה שתספר את הסיפור שלכם. סרטוני הצעת נישואין ואירוסין שנשארים לנצח.',
     descriptionEn:
@@ -184,6 +189,7 @@ const WORK_ITEMS: WorkItem[] = [
       '/posters/weddings/מסיבת אירוסין-W.webp',
       '/posters/weddings/סושיאל חתונה.webp',
     ],
+    videos: ['/story8.mp4'],
   },
   {
     id: 'hotels',
@@ -192,7 +198,7 @@ const WORK_ITEMS: WorkItem[] = [
     tagsEn: 'HOTELS • VACATIONS • DRONE',
     title: 'חופשות ומלונות',
     titleEn: 'Vacations & Hotels',
-    coverAsset: '/posters/hotels/hotel drone shot.webp',
+    coverAsset: '/posters/theme/hotels.png',
     description:
       'צילום דרון וסרטוני תדמית למלונות ואתרי נופש. תוכן שמראה את הניסיון, לא רק את החדר — ומביא אורחים שמחפשים בדיוק את מה שאתם מציעים.',
     descriptionEn:
@@ -205,6 +211,7 @@ const WORK_ITEMS: WorkItem[] = [
       '/posters/hotels/v14044g50000d1pk9hfog65ji0k9nub0.webp',
       '/posters/hotels/v1c044g50000d2qrjgfog65q8kapaf30.webp',
     ],
+    videos: ['/storis back ground.mp4'],
   },
   {
     id: 'brands',
@@ -213,7 +220,7 @@ const WORK_ITEMS: WorkItem[] = [
     tagsEn: 'BRANDS • CONTENT • STRATEGY',
     title: 'מותגים ותוכן',
     titleEn: 'Brands & Content',
-    coverAsset: '/posters/brands/streets.webp',
+    coverAsset: '/posters/theme/brands.png',
     description:
       'בניית נוכחות מותגית חזקה ברשתות החברתיות. מאסטרטגיה ועד הפקה — כל מותג מקבל את הקול הייחודי שלו.',
     descriptionEn:
@@ -226,6 +233,7 @@ const WORK_ITEMS: WorkItem[] = [
       '/posters/brands/agalt-cafe.webp',
       '/posters/brands/ugc-B.webp',
     ],
+    videos: ['/video-glam.mp4'],
   },
 ]
 
@@ -291,29 +299,35 @@ const WorkGrid = () => {
               gap: '2rem',
             }}
           >
-            {/* Masked title */}
-            <div style={{ overflow: 'hidden', flex: 1 }}>
-              <motion.h2
-                initial={{ y: '110%' }}
-                animate={titleInView ? { y: 0 } : {}}
-                transition={{ duration: 0.9, ease: EASE }}
-                style={{
-                  fontFamily: 'var(--font-body)',
-                  fontWeight: 400,
-                  fontSize: 'clamp(3rem, 8vw, 8rem)',
-                  lineHeight: 0.9,
-                  letterSpacing: '-0.02em',
-                  color: 'var(--color-ink)',
-                  margin: 0,
-                  // Orange underline accent
-                  borderBottom: '3px solid var(--color-orange)',
-                  paddingBottom: '0.15em',
-                  display: 'inline-block',
-                }}
-              >
-                {isRTL ? 'עבודות נבחרות' : 'Featured Work'}
-              </motion.h2>
-            </div>
+            {/* Word-by-word title reveal */}
+            <h2 style={{
+              fontFamily: isRTL ? 'var(--font-display)' : 'var(--font-display-en-hero)',
+              fontWeight: isRTL ? 900 : 400,
+              fontSize: 'clamp(3rem, 8vw, 8rem)',
+              lineHeight: 0.9,
+              letterSpacing: isRTL ? '-0.02em' : '-0.01em',
+              color: 'var(--color-ink)',
+              margin: 0,
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '0 0.22em',
+              flex: 1,
+            }}>
+              {(isRTL ? 'עבודות נבחרות' : 'Featured Work').split(' ').map((word, i) => (
+                <span key={i} style={{ display: 'inline-block', overflow: 'hidden' }}>
+                  <motion.span
+                    style={{ display: 'inline-block' }}
+                    initial={{ y: '110%' }}
+                    animate={titleInView ? { y: 0 } : {}}
+                    transition={{ duration: 0.9, delay: i * 0.13, ease: EASE }}
+                  >
+                    {word}
+                  </motion.span>
+                </span>
+              ))}
+              {/* Orange underline */}
+              <span style={{ display: 'block', width: '100%', height: '3px', background: 'var(--color-orange)', borderRadius: '9999px', marginTop: '0.2em' }} />
+            </h2>
 
             {/* Disclaimer */}
             <motion.p
@@ -392,12 +406,15 @@ const WorkCard = ({ item, index, isRTL, language, onClick }: WorkCardProps) => {
   const inView = useInView(cardRef, { once: true, margin: '-60px' })
   const palette = PALETTES[item.paletteKey]
 
+  // Row-pair stagger: cards 0&1 together, 2&3 together, 4&5 together
+  const pairDelay = (index % 2) * 0.18
+
   return (
     <motion.div
       ref={cardRef}
-      initial={{ opacity: 0, y: 60 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.85, delay: (index % 2) * 0.14, ease: EASE }}
+      initial={{ opacity: 0, y: 40, clipPath: 'inset(0 0 100% 0)' }}
+      animate={inView ? { opacity: 1, y: 0, clipPath: 'inset(0 0 0% 0)' } : {}}
+      transition={{ duration: 1.0, delay: pairDelay, ease: EASE }}
       style={{ marginTop: index >= 2 ? '5em' : 0 }}
     >
       {/* Image */}
@@ -430,39 +447,30 @@ const WorkCard = ({ item, index, isRTL, language, onClick }: WorkCardProps) => {
           }}
         />
 
-        {/* Niche color wash on hover */}
+        {/* Lusion-style bottom overlay — slides up on hover */}
         <motion.div
-          animate={{ opacity: hovered ? 0.18 : 0 }}
-          transition={{ duration: 0.4, ease: EASE }}
+          animate={{ y: hovered ? '0%' : '100%' }}
+          transition={{ duration: 0.55, ease: EASE }}
           style={{
             position: 'absolute',
             inset: 0,
-            background: palette.accent,
-            pointerEvents: 'none',
-          }}
-        />
-
-        {/* Arrow pill */}
-        <motion.div
-          animate={{ opacity: hovered ? 1 : 0, x: hovered ? 0 : isRTL ? 16 : -16 }}
-          transition={{ duration: 0.28, ease: EASE }}
-          style={{
-            position: 'absolute',
-            bottom: '1.25rem',
-            insetInlineStart: '1.25rem',
-            width: 44,
-            height: 44,
-            borderRadius: '50%',
-            background: 'var(--color-orange)',
+            background: `linear-gradient(to top, ${palette.bg}ee 0%, ${palette.bg}88 55%, transparent 100%)`,
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            alignItems: 'flex-end',
+            padding: '1.5rem',
             pointerEvents: 'none',
           }}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d={isRTL ? 'M19 12H5M12 19l-7-7 7-7' : 'M5 12h14M12 5l7 7-7 7'} />
-          </svg>
+          {/* Arrow pill inside overlay */}
+          <div style={{
+            width: 44, height: 44, borderRadius: '50%',
+            background: palette.accent,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={palette.accentText} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d={isRTL ? 'M19 12H5M12 19l-7-7 7-7' : 'M5 12h14M12 5l7 7-7 7'} />
+            </svg>
+          </div>
         </motion.div>
 
         {/* Niche accent dot — top corner */}
@@ -501,10 +509,10 @@ const WorkCard = ({ item, index, isRTL, language, onClick }: WorkCardProps) => {
           transition={{ duration: 0.28, ease: EASE }}
           onClick={onClick}
           style={{
-            fontFamily: 'var(--font-body)',
-            fontWeight: 400,
+            fontFamily: isRTL ? 'var(--font-display)' : 'var(--font-display-en)',
+            fontWeight: isRTL ? 700 : 600,
             fontSize: 'clamp(1.6rem, 3vw, 3rem)',
-            letterSpacing: '-0.01em',
+            letterSpacing: isRTL ? '-0.01em' : '-0.03em',
             color: 'var(--color-ink)',
             margin: 0,
             cursor: 'pointer',
@@ -513,6 +521,72 @@ const WorkCard = ({ item, index, isRTL, language, onClick }: WorkCardProps) => {
           {language === 'he' ? item.title : item.titleEn}
         </motion.h3>
       </div>
+    </motion.div>
+  )
+}
+
+// ─── Video lightbox ───────────────────────────────────────────────────────────
+const VideoLightbox = ({ src, onClose }: { src: string; onClose: () => void }) => {
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  useEffect(() => {
+    const v = videoRef.current
+    if (v) { v.muted = false; v.volume = 1; void v.play() }
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.25 }}
+      onClick={onClose}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 400,
+        background: 'rgba(0,0,0,0.92)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}
+    >
+      <motion.div
+        initial={{ scale: 0.88, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.88, opacity: 0 }}
+        transition={{ duration: 0.35, ease: EASE }}
+        onClick={e => e.stopPropagation()}
+        style={{
+          position: 'relative',
+          maxWidth: '90vw',
+          maxHeight: '90vh',
+          borderRadius: 16,
+          overflow: 'hidden',
+          background: '#000',
+        }}
+      >
+        <video
+          ref={videoRef}
+          src={src}
+          controls
+          autoPlay
+          playsInline
+          style={{ display: 'block', maxWidth: '90vw', maxHeight: '90vh', width: 'auto', height: 'auto' }}
+        />
+        <button
+          onClick={onClose}
+          style={{
+            position: 'absolute', top: '1rem', right: '1rem',
+            width: 36, height: 36, borderRadius: '50%',
+            background: 'rgba(255,255,255,0.15)',
+            backdropFilter: 'blur(8px)',
+            border: '1px solid rgba(255,255,255,0.25)',
+            color: '#fff', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '1rem', lineHeight: 1,
+          }}
+        >✕</button>
+      </motion.div>
     </motion.div>
   )
 }
@@ -528,13 +602,24 @@ interface DetailViewProps {
 
 const DetailView = ({ item, isRTL, language, onClose, onWhatsApp }: DetailViewProps) => {
   const p = PALETTES[item.paletteKey]
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null)
+
+  // Lock body scroll while open
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = '' }
+  }, [])
+
+  const videos = VIDEO_MANIFEST[item.id] ?? item.videos ?? []
+  const hasVideos = videos.length > 0
+  const galleryItems = item.gallery.slice(1)
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.35, ease: EASE }}
+      initial={{ y: '100%' }}
+      animate={{ y: 0 }}
+      exit={{ y: '100%' }}
+      transition={{ duration: 0.72, ease: EASE }}
       dir={isRTL ? 'rtl' : 'ltr'}
       style={{
         position: 'fixed',
@@ -542,35 +627,37 @@ const DetailView = ({ item, isRTL, language, onClose, onWhatsApp }: DetailViewPr
         zIndex: 200,
         background: p.bg,
         overflowY: 'auto',
-        // Smooth palette transition
-        transition: 'background 0.6s cubic-bezier(0.35,0,0,1)',
+        overflowX: 'hidden',
       }}
     >
-      {/* Sticky nav */}
-      <nav
-        style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-          padding: '1.4rem var(--base-padding-x)',
-          background: p.bg,
-          borderBottom: `1px solid ${p.divider}`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
+      {/* ── Fixed nav — floats over hero ── */}
+      <nav style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 10,
+        padding: '1.4rem var(--base-padding-x)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        background: 'linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, transparent 100%)',
+        pointerEvents: 'none',
+      }}>
         <button
           onClick={onClose}
           style={{
+            pointerEvents: 'auto',
             display: 'inline-flex',
             alignItems: 'center',
             gap: '0.5rem',
-            background: `${p.accent}18`,
-            border: `1px solid ${p.accent}40`,
-            color: p.heading,
+            background: 'rgba(255,255,255,0.12)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            border: '1px solid rgba(255,255,255,0.22)',
+            color: '#fff',
             borderRadius: '9999px',
-            padding: '0.5rem 1.4rem',
+            padding: '0.55rem 1.4rem',
             fontFamily: 'var(--font-mono)',
             fontSize: '0.68rem',
             textTransform: 'uppercase',
@@ -578,129 +665,190 @@ const DetailView = ({ item, isRTL, language, onClose, onWhatsApp }: DetailViewPr
             cursor: 'pointer',
             transition: 'background 0.2s',
           }}
-          onMouseEnter={e => (e.currentTarget.style.background = `${p.accent}28`)}
-          onMouseLeave={e => (e.currentTarget.style.background = `${p.accent}18`)}
+          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.22)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.12)')}
         >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <path d={isRTL ? 'M5 12h14M12 5l7 7-7 7' : 'M19 12H5M12 5l-7 7 7 7'} />
           </svg>
-          {isRTL ? '← חזרה' : '← Back'}
+          {isRTL ? 'חזרה' : 'Back'}
         </button>
-
-        {/* Accent tag */}
-        <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '0.62rem',
-            textTransform: 'uppercase',
-            letterSpacing: '0.14em',
-            color: p.accent,
-          }}
-        >
+        <span style={{
+          pointerEvents: 'none',
+          fontFamily: 'var(--font-mono)',
+          fontSize: '0.62rem',
+          textTransform: 'uppercase',
+          letterSpacing: '0.14em',
+          color: 'rgba(255,255,255,0.7)',
+        }}>
           {language === 'he' ? item.tags : item.tagsEn}
         </span>
       </nav>
 
-      {/* Body */}
-      <div style={{ padding: '5vh var(--base-padding-x) clamp(60px, 8vw, 100px)' }}>
-        {/* Top grid */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '4vw',
-            alignItems: 'start',
-            marginBottom: '6vh',
-          }}
+      {/* ── Full-bleed 100vh hero ── */}
+      <div style={{ position: 'relative', height: '100vh', overflow: 'hidden' }}>
+        <motion.div
+          layoutId={`card-img-${item.id}`}
+          style={{ position: 'absolute', inset: 0 }}
         >
-          {/* Left */}
-          <div>
+          <img
+            src={item.coverAsset}
+            alt={language === 'he' ? item.title : item.titleEn}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+        </motion.div>
+
+        {/* Dark gradient */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.08) 50%, rgba(0,0,0,0.35) 100%)',
+          pointerEvents: 'none',
+        }} />
+
+        {/* Title at bottom */}
+        <div style={{
+          position: 'absolute',
+          bottom: 'clamp(2.5rem, 5vh, 5rem)',
+          left: 'var(--base-padding-x)',
+          right: 'var(--base-padding-x)',
+        }}>
+          <div style={{ overflow: 'hidden' }}>
             <motion.h2
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, ease: EASE }}
+              initial={{ y: '110%' }}
+              animate={{ y: 0 }}
+              transition={{ duration: 0.85, delay: 0.25, ease: EASE }}
               style={{
-                fontFamily: 'var(--font-body)',
-                fontWeight: 400,
-                fontSize: 'clamp(2.5rem, 5vw, 5.5rem)',
-                letterSpacing: '-0.02em',
-                lineHeight: 0.95,
-                color: p.heading,
-                margin: '0 0 0.4em',
+                fontFamily: isRTL ? 'var(--font-display)' : 'var(--font-display-en)',
+                fontWeight: isRTL ? 700 : 600,
+                fontSize: 'clamp(3.5rem, 9vw, 10rem)',
+                lineHeight: 0.88,
+                letterSpacing: isRTL ? '-0.02em' : '-0.04em',
+                color: '#fff',
+                margin: 0,
               }}
             >
               {language === 'he' ? item.title : item.titleEn}
             </motion.h2>
+          </div>
+          <motion.div
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ duration: 0.9, delay: 0.6, ease: EASE }}
+            style={{
+              height: 3,
+              background: p.accent,
+              marginTop: '1.2rem',
+              width: '5rem',
+              borderRadius: 99,
+              transformOrigin: isRTL ? 'right' : 'left',
+            }}
+          />
+        </div>
 
-            {/* Orange accent line */}
-            <div
-              style={{
-                width: '3rem',
-                height: 3,
-                background: p.accent,
-                borderRadius: 99,
-                marginBottom: '1.8rem',
-              }}
-            />
+        {/* Scroll hint */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.1, duration: 0.6 }}
+          style={{
+            position: 'absolute',
+            bottom: '1.8rem',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '0.4rem',
+            pointerEvents: 'none',
+          }}
+        >
+          <span style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '0.48rem',
+            textTransform: 'uppercase',
+            letterSpacing: '0.22em',
+            color: 'rgba(255,255,255,0.45)',
+          }}>
+            {isRTL ? 'גלול' : 'scroll'}
+          </span>
+          <motion.div
+            animate={{ y: [0, 7, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+            style={{ width: 1, height: 28, background: 'rgba(255,255,255,0.35)' }}
+          />
+        </motion.div>
+      </div>
 
-            <motion.p
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.1, ease: EASE }}
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: '1rem',
-                lineHeight: 1.75,
-                color: p.body,
-                maxWidth: '42ch',
-                marginBottom: '2.5rem',
-              }}
-            >
-              {language === 'he' ? item.description : item.descriptionEn}
-            </motion.p>
+      {/* ── Content section ── */}
+      <div style={{
+        padding: 'clamp(3rem, 6vw, 6rem) var(--base-padding-x) clamp(60px, 8vw, 100px)',
+        background: p.bg,
+      }}>
+        {/* Two-column: description + services */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: '6vw',
+          alignItems: 'start',
+          marginBottom: 'clamp(3rem, 6vw, 6rem)',
+        }}>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, ease: EASE }}
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: 'clamp(1rem, 1.2vw, 1.18rem)',
+              lineHeight: 1.85,
+              color: p.body,
+            }}
+          >
+            {language === 'he' ? item.description : item.descriptionEn}
+          </motion.p>
 
-            {/* Services */}
-            <div style={{ marginBottom: '2.5rem' }}>
-              <p
+          <div>
+            <p style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.62rem',
+              textTransform: 'uppercase',
+              letterSpacing: '0.14em',
+              color: p.accent,
+              marginBottom: '1.2rem',
+            }}>
+              {isRTL ? 'שירותים' : 'SERVICES'}
+            </p>
+            {(language === 'he' ? item.services : item.servicesEn).map((s, i) => (
+              <motion.p
+                key={s}
+                initial={{ opacity: 0, x: isRTL ? 14 : -14 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: i * 0.07, ease: EASE }}
                 style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.62rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.14em',
-                  color: p.accent,
-                  marginBottom: '0.8rem',
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '1.05rem',
+                  color: p.heading,
+                  margin: '0.5rem 0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.6rem',
                 }}
               >
-                {isRTL ? 'שירותים' : 'SERVICES'}
-              </p>
-              {(language === 'he' ? item.services : item.servicesEn).map((s, i) => (
-                <motion.p
-                  key={s}
-                  initial={{ opacity: 0, x: isRTL ? 12 : -12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.4, delay: 0.2 + i * 0.07, ease: EASE }}
-                  style={{
-                    fontFamily: 'var(--font-body)',
-                    fontSize: '1.05rem',
-                    color: p.heading,
-                    margin: '0.3rem 0',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                  }}
-                >
-                  <span style={{ color: p.accent, fontSize: '0.5rem' }}>◆</span>
-                  {s}
-                </motion.p>
-              ))}
-            </div>
+                <span style={{ color: p.accent, fontSize: '0.45rem' }}>◆</span>
+                {s}
+              </motion.p>
+            ))}
 
             <motion.button
               initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.5, ease: EASE }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.35, ease: EASE }}
               onClick={onWhatsApp}
               style={{
+                marginTop: '2rem',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.5rem',
@@ -718,59 +866,109 @@ const DetailView = ({ item, isRTL, language, onClose, onWhatsApp }: DetailViewPr
               {isRTL ? 'בואו נעבוד יחד' : "Let's work together"}
             </motion.button>
           </div>
-
-          {/* Right: shared-element cover */}
-          <motion.div
-            layoutId={`card-img-${item.id}`}
-            style={{ borderRadius: 20, overflow: 'hidden', aspectRatio: '4/3' }}
-          >
-            <img
-              src={item.coverAsset}
-              alt={language === 'he' ? item.title : item.titleEn}
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            />
-          </motion.div>
         </div>
 
-        {/* Horizontal gallery */}
-        {item.gallery.length > 1 && (
+        {/* ── Video + gallery reel ── */}
+        {(hasVideos || galleryItems.length > 0) && (
           <div>
-            <p
-              style={{
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '1rem',
+              marginBottom: '1.5rem',
+            }}>
+              <div style={{ height: 1, flex: 1, background: p.divider }} />
+              <p style={{
                 fontFamily: 'var(--font-mono)',
-                fontSize: '0.62rem',
+                fontSize: '0.6rem',
                 textTransform: 'uppercase',
-                letterSpacing: '0.14em',
+                letterSpacing: '0.18em',
                 color: p.muted,
-                marginBottom: '1.2rem',
-              }}
-            >
-              {isRTL ? '← גלריה' : 'Gallery →'}
-            </p>
-            <div
-              style={{
-                display: 'flex',
-                gap: '1.5rem',
-                overflowX: 'auto',
-                paddingBottom: '1rem',
-                scrollbarWidth: 'thin',
-                scrollbarColor: `${p.scrollbar} transparent`,
-              }}
-            >
-              {item.gallery.map((src, i) => (
+                margin: 0,
+              }}>
+                {isRTL ? 'עבודות' : 'Work'}
+              </p>
+              <div style={{ height: 1, flex: 1, background: p.divider }} />
+            </div>
+
+            <div style={{
+              display: 'flex',
+              gap: '1.5rem',
+              overflowX: 'auto',
+              paddingBottom: '1.2rem',
+              scrollbarWidth: 'thin',
+              scrollbarColor: `${p.scrollbar} transparent`,
+            }}>
+              {/* Videos — tall 9:16 ratio, click to open lightbox */}
+              {videos.map((src, i) => (
                 <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.45, delay: i * 0.07, ease: EASE }}
+                  key={`v-${i}`}
+                  initial={{ opacity: 0, y: 28 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.55, delay: i * 0.1, ease: EASE }}
+                  onClick={() => setLightboxSrc(src)}
                   style={{
                     flexShrink: 0,
-                    width: 'clamp(220px, 32vw, 460px)',
+                    width: 'clamp(160px, 22vw, 300px)',
+                    aspectRatio: '9/16',
+                    borderRadius: 16,
+                    overflow: 'hidden',
+                    background: p.cardBg,
+                    border: `1px solid ${p.divider}`,
+                    position: 'relative',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <video
+                    src={src}
+                    muted
+                    loop
+                    playsInline
+                    autoPlay
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none' }}
+                  />
+                  {/* Play button overlay */}
+                  <div style={{
+                    position: 'absolute', inset: 0,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    background: 'rgba(0,0,0,0.22)',
+                    transition: 'background 0.2s',
+                  }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.42)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.22)')}
+                  >
+                    <div style={{
+                      width: 52, height: 52, borderRadius: '50%',
+                      background: 'rgba(255,255,255,0.92)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      boxShadow: '0 4px 24px rgba(0,0,0,0.3)',
+                    }}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill={p.accent}>
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+
+              {/* Gallery images — landscape */}
+              {galleryItems.map((src, i) => (
+                <motion.div
+                  key={`g-${i}`}
+                  initial={{ opacity: 0, y: 28 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.55, delay: videos.length * 0.1 + i * 0.08, ease: EASE }}
+                  style={{
+                    flexShrink: 0,
+                    width: 'clamp(240px, 34vw, 500px)',
                     aspectRatio: '4/3',
                     borderRadius: 16,
                     overflow: 'hidden',
                     background: p.cardBg,
                     border: `1px solid ${p.divider}`,
+                    alignSelf: 'center',
                   }}
                 >
                   <img
@@ -785,6 +983,13 @@ const DetailView = ({ item, isRTL, language, onClose, onWhatsApp }: DetailViewPr
           </div>
         )}
       </div>
+
+      {/* Video lightbox */}
+      <AnimatePresence>
+        {lightboxSrc && (
+          <VideoLightbox src={lightboxSrc} onClose={() => setLightboxSrc(null)} />
+        )}
+      </AnimatePresence>
     </motion.div>
   )
 }

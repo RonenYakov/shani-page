@@ -76,7 +76,7 @@
   --color-orange: #D4622A;
   --color-accent: #C8A882;
   --color-accent-dark: #A8845A;
-  --color-line: rgba(26, 24, 20, 0.05);
+  --color-line: rgba(26, 24, 20, 0.015);
 
   /* Interactive */
   --color-blue: #1a2ffb;
@@ -91,6 +91,9 @@
 
   /* Typography */
   --font-body: 'DM Sans', sans-serif;
+  --font-display: 'Frank Ruhl Libre', serif;
+  --font-display-en: 'Cormorant Garamond', serif;
+  --font-display-en-hero: 'Abril Fatface', serif;
   --font-mono: 'IBM Plex Mono', monospace;
 
   /* Easing */
@@ -136,13 +139,15 @@ body {
   font-weight: 400;
   color: var(--color-ink);
   background-color: var(--color-cream);
-  background-image: repeating-linear-gradient(
-    90deg,
-    var(--color-line) 0px,
-    var(--color-line) 1px,
-    transparent 1px,
-    transparent 80px
-  );
+  background-image:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(26,24,20,0.04) 0%, transparent 70%),
+    repeating-linear-gradient(
+      88deg,
+      var(--color-line) 0px,
+      var(--color-line) 1px,
+      transparent 1px,
+      transparent 80px
+    );
   overflow-x: hidden;
 }
 
@@ -268,4 +273,38 @@ html {
 }
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/* CTA button pulse glow */
+@keyframes ctaPulse {
+  0%, 100% { box-shadow: 0 8px 32px rgba(212,98,42,0.35); }
+  50%       { box-shadow: 0 8px 48px rgba(212,98,42,0.65), 0 0 0 6px rgba(212,98,42,0.1); }
+}
+.cta-pulse {
+  animation: ctaPulse 2.8s ease-in-out infinite;
+}
+
+/* Word-up reveal keyframe */
+@keyframes wordUp {
+  from { transform: translateY(110%); }
+  to   { transform: translateY(0);    }
+}
+
+/* Invisible page scrollbar */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+html::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+html::-webkit-scrollbar-track {
+  background: transparent;
+}
+html::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+html::-webkit-scrollbar-corner {
+  background: transparent;
 }

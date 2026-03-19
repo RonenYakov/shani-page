@@ -1,8 +1,7 @@
 import { useRef, useEffect } from "react";
-import { motion } from "framer-motion";
 import { useI18n } from "@/i18n/simple";
 
-const EASE: [number, number, number, number] = [0.35, 0, 0, 1];
+const EASE: [number, number, number, number] = [0.35, 0, 0, 1]; void EASE;
 
 const ANGLES = [-90, -18, 54, 126, 198]; // 72° apart, clockwise from top
 
@@ -42,42 +41,36 @@ const ProcessTimeline = () => {
   const isRTL = language === "he";
   const steps = isRTL ? STEPS_HE : STEPS_EN;
 
-  const outerRef     = useRef<HTMLDivElement>(null);
-  const ringRef      = useRef<HTMLDivElement>(null);
-  const centerRef    = useRef<HTMLDivElement>(null);
-  const noteRef      = useRef<HTMLParagraphElement>(null);
-  const listRefs     = useRef<(HTMLDivElement | null)[]>([]);
-  const dotRefs      = useRef<(HTMLDivElement | null)[]>([]);
-  const labelWrappers= useRef<(HTMLDivElement | null)[]>([]);
+  const outerRef      = useRef<HTMLDivElement>(null);
+  const ringRef       = useRef<HTMLDivElement>(null);
+  const centerRef     = useRef<HTMLDivElement>(null);
+  const noteRef       = useRef<HTMLParagraphElement>(null);
+  const listRefs      = useRef<(HTMLDivElement | null)[]>([]);
+  const dotRefs       = useRef<(HTMLDivElement | null)[]>([]);
+  const labelWrappers = useRef<(HTMLDivElement | null)[]>([]);
 
   // ── Scroll-driven sequential reveal ───────────────────────────────────
   useEffect(() => {
     const outer = outerRef.current;
     if (!outer) return;
 
-    const INTRO_FRAC = 0.58; // intro block is 58vh
-
     const update = () => {
-      const rect   = outer.getBoundingClientRect();
-      const total  = outer.offsetHeight - window.innerHeight;
+      const rect    = outer.getBoundingClientRect();
+      const total   = outer.offsetHeight - window.innerHeight;
       const scrolled = Math.max(0, -rect.top);
-      const sectionProgress = Math.min(1, scrolled / total);
+      const dwell   = Math.min(1, scrolled / total);
 
-      // stickyStart in section progress units
-      const stickyStartPx = INTRO_FRAC * window.innerHeight;
-      const dwellPx = total - stickyStartPx;
-      // dwell progress: 0 when sticky first locks → 1 when section ends
-      const dwell = Math.max(0, Math.min(1, (scrolled - stickyStartPx) / dwellPx));
+      // Ring + center fade in quickly
+      if (ringRef.current)   ringRef.current.style.opacity   = String(Math.min(1, dwell * 8));
+      if (centerRef.current) centerRef.current.style.opacity = String(Math.min(1, dwell * 6));
 
-      // Ring + center fade in immediately at start of dwell
-      const ringFade = Math.min(1, dwell * 10);
-      if (ringRef.current)   ringRef.current.style.opacity   = String(ringFade);
-      if (centerRef.current) centerRef.current.style.opacity = String(Math.min(1, dwell * 7));
+      // Which step is currently active (0-based)
+      const activeStep = Math.min(N - 1, Math.floor((dwell / 0.85) * N));
 
-      // Each step staggered across 0..0.85 of dwell
       for (let i = 0; i < N; i++) {
         const start = (i / N) * 0.80;
         const frac  = Math.max(0, Math.min(1, (dwell - start) / 0.14));
+        const isActive = i === activeStep;
 
         // List item
         const listEl = listRefs.current[i];
@@ -85,16 +78,25 @@ const ProcessTimeline = () => {
           listEl.style.opacity   = String(frac);
           const xOff = (isRTL ? 18 : -18) * (1 - frac);
           listEl.style.transform = `translateX(${xOff}px)`;
+          // Highlight active step number
+          const numSpan = listEl.querySelector("span") as HTMLSpanElement | null;
+          if (numSpan) {
+            numSpan.style.color = isActive ? "var(--color-orange)" : "rgba(26,24,20,0.38)";
+          }
         }
 
-        // Circle dot
+        // Circle dot — orange follows active step
         const dotEl = dotRefs.current[i];
         if (dotEl) {
-          dotEl.style.opacity   = String(frac);
-          dotEl.style.transform = `translate(-50%, -50%) scale(${0.3 + 0.7 * frac})`;
+          dotEl.style.opacity    = String(frac);
+          dotEl.style.transform  = `translate(-50%, -50%) scale(${0.3 + 0.7 * frac})`;
+          dotEl.style.background = isActive ? "var(--color-orange)" : "rgba(26,24,20,0.22)";
+          dotEl.style.width      = isActive ? "12px" : "7px";
+          dotEl.style.height     = isActive ? "12px" : "7px";
+          dotEl.style.transition = "background 0.4s ease, width 0.4s ease, height 0.4s ease, opacity 0.3s ease, transform 0.3s ease";
         }
 
-        // Label — combine base anchor + animated Y
+        // Label
         const labelEl = labelWrappers.current[i];
         if (labelEl) {
           const yOff = 10 * (1 - frac);
@@ -107,74 +109,20 @@ const ProcessTimeline = () => {
       if (noteRef.current) {
         noteRef.current.style.opacity = String(Math.max(0, Math.min(1, (dwell - 0.88) / 0.08)));
       }
-
-      // Unused to avoid lint: sectionProgress
-      void sectionProgress;
     };
 
     window.addEventListener("scroll", update, { passive: true });
-    update(); // run once on mount
+    update();
     return () => window.removeEventListener("scroll", update);
   }, [isRTL]);
 
   return (
-    // 300vh: 58vh entry + 100vh sticky + 142vh dwell = 5 steps spread across 142vh
+    // 250vh: title stays sticky, dwell time for 5 steps
     <div
       ref={outerRef}
       id="process"
-      style={{ height: "300vh", position: "relative", background: "var(--color-cream-dark)" }}
+      style={{ height: "250vh", position: "relative", background: "var(--color-cream)" }}
     >
-      {/* ── Block 1: title — normal flow, scrolls away ───────────────────── */}
-      <div
-        dir={isRTL ? "rtl" : "ltr"}
-        style={{
-          position: "relative",
-          height: "58vh",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "flex-end",
-          padding: "0 var(--base-padding-x) 6vh",
-        }}
-      >
-        <motion.p
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: EASE }}
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: "0.68rem",
-            textTransform: "uppercase",
-            letterSpacing: "0.18em",
-            color: "var(--color-orange)",
-            marginBottom: "1rem",
-          }}
-        >
-          — 02 / PROCESS
-        </motion.p>
-        <div style={{ overflow: "hidden" }}>
-          <motion.h2
-            initial={{ y: "110%" }}
-            animate={{ y: 0 }}
-            transition={{ duration: 0.9, ease: EASE }}
-            style={{
-              fontFamily: "var(--font-body)",
-              fontWeight: 400,
-              fontSize: "clamp(2.8rem, 6.5vw, 6.5rem)",
-              lineHeight: 0.9,
-              letterSpacing: "-0.02em",
-              color: "var(--color-ink)",
-              margin: 0,
-              borderBottom: "3px solid var(--color-orange)",
-              paddingBottom: "0.15em",
-              display: "inline-block",
-            }}
-          >
-            {isRTL ? "איך אני עובדת" : "How I Work"}
-          </motion.h2>
-        </div>
-      </div>
-
-      {/* ── Block 2: sticky — two-column, scroll-animated ────────────────── */}
       <div
         style={{
           position: "sticky",
@@ -183,8 +131,49 @@ const ProcessTimeline = () => {
           display: "flex",
           alignItems: "center",
           overflow: "visible",
+          background: "var(--color-cream)",
+          backgroundImage:
+            "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(26,24,20,0.04) 0%, transparent 70%), repeating-linear-gradient(88deg, var(--color-line) 0px, var(--color-line) 1px, transparent 1px, transparent 80px)",
         }}
       >
+        {/* ── Title — always visible at the top ────────────────────────────── */}
+        <div
+          dir={isRTL ? "rtl" : "ltr"}
+          style={{
+            position: "absolute",
+            top: "2.5rem",
+            ...(isRTL
+              ? { right: "var(--base-padding-x)" }
+              : { left: "var(--base-padding-x)" }),
+          }}
+        >
+          <p style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: "0.68rem",
+            textTransform: "uppercase",
+            letterSpacing: "0.18em",
+            color: "var(--color-orange)",
+            marginBottom: "0.5rem",
+          }}>
+            — 02 / PROCESS
+          </p>
+          <h2 style={{
+            fontFamily: isRTL ? "var(--font-display)" : "var(--font-display-en-hero)",
+            fontWeight: isRTL ? 900 : 400,
+            fontSize: "clamp(2.2rem, 4.5vw, 4.5rem)",
+            lineHeight: 0.88,
+            letterSpacing: isRTL ? "-0.02em" : "-0.01em",
+            color: "var(--color-ink)",
+            margin: 0,
+            borderBottom: "3px solid var(--color-orange)",
+            paddingBottom: "0.15em",
+            display: "inline-block",
+          }}>
+            {isRTL ? "איך אני עובדת" : "How I Work"}
+          </h2>
+        </div>
+
+        {/* ── Two-column body: list + circle ───────────────────────────────── */}
         <div
           dir={isRTL ? "rtl" : "ltr"}
           style={{
@@ -194,18 +183,17 @@ const ProcessTimeline = () => {
             height: "100%",
             padding: "0 var(--base-padding-x)",
             gap: "clamp(2rem, 4vw, 6rem)",
+            paddingTop: "7rem", // leave room for sticky title
           }}
         >
-          {/* ── Left: numbered step list ──────────────────────────────── */}
-          <div
-            style={{
-              flexShrink: 0,
-              width: "clamp(200px, 32%, 380px)",
-              display: "flex",
-              flexDirection: "column",
-              gap: "clamp(1.1rem, 2vh, 2rem)",
-            }}
-          >
+          {/* ── Left: numbered step list ──────────────────────────────────── */}
+          <div style={{
+            flexShrink: 0,
+            width: "clamp(200px, 32%, 380px)",
+            display: "flex",
+            flexDirection: "column",
+            gap: "clamp(1.1rem, 2vh, 2rem)",
+          }}>
             {steps.map((step, i) => (
               <div
                 key={step.num}
@@ -226,6 +214,7 @@ const ProcessTimeline = () => {
                   color: i === 0 ? "var(--color-orange)" : "rgba(26,24,20,0.38)",
                   flexShrink: 0,
                   paddingTop: "3px",
+                  transition: "color 0.4s ease",
                 }}>
                   {step.num}
                 </span>
@@ -233,16 +222,16 @@ const ProcessTimeline = () => {
                   <div style={{
                     fontFamily: "var(--font-body)",
                     fontWeight: 500,
-                    fontSize: "clamp(0.85rem, 1.3vw, 1.05rem)",
+                    fontSize: "clamp(1rem, 1.6vw, 1.3rem)",
                     color: "var(--color-ink)",
-                    marginBottom: "3px",
+                    marginBottom: "4px",
                     lineHeight: 1.2,
                   }}>
                     {step.title}
                   </div>
                   <div style={{
                     fontFamily: "var(--font-body)",
-                    fontSize: "clamp(0.72rem, 0.95vw, 0.82rem)",
+                    fontSize: "clamp(0.82rem, 1.1vw, 0.95rem)",
                     color: "var(--color-ink-muted)",
                     lineHeight: 1.55,
                   }}>
@@ -253,7 +242,7 @@ const ProcessTimeline = () => {
             ))}
           </div>
 
-          {/* ── Right: CSS circle diagram ──────────────────────────────── */}
+          {/* ── Right: CSS circle diagram ──────────────────────────────────── */}
           <div style={{
             flex: 1,
             display: "flex",
@@ -279,7 +268,7 @@ const ProcessTimeline = () => {
                 }}
               />
 
-              {/* Dots — one per step, scroll-revealed */}
+              {/* Dots — one per step, orange follows active */}
               {ANGLES.map((angle, i) => {
                 const dot = ptPct(50, angle);
                 return (
@@ -291,12 +280,11 @@ const ProcessTimeline = () => {
                       left: `${dot.x}%`,
                       top: `${dot.y}%`,
                       transform: "translate(-50%, -50%) scale(0.3)",
-                      width: i === 0 ? "10px" : "7px",
-                      height: i === 0 ? "10px" : "7px",
+                      width: i === 0 ? "12px" : "7px",
+                      height: i === 0 ? "12px" : "7px",
                       borderRadius: "50%",
                       background: i === 0 ? "var(--color-orange)" : "rgba(26,24,20,0.22)",
                       opacity: 0,
-                      transition: "opacity 0.3s ease, transform 0.3s ease",
                     }}
                   />
                 );
@@ -321,7 +309,7 @@ const ProcessTimeline = () => {
                 <div style={{
                   fontFamily: "var(--font-body)",
                   fontWeight: 400,
-                  fontSize: "clamp(0.9rem, 1.8vw, 1.7rem)",
+                  fontSize: "clamp(1.1rem, 2.2vw, 2.2rem)",
                   letterSpacing: "-0.02em",
                   color: "var(--color-ink)",
                   lineHeight: 1.1,
@@ -345,7 +333,6 @@ const ProcessTimeline = () => {
                 const lPos = ptPct(64, ANGLES[i]);
                 const cfg = ANCHORS[i];
                 return (
-                  // outer div: sets left/top (no transform)
                   <div
                     key={step.num}
                     style={{
@@ -356,7 +343,6 @@ const ProcessTimeline = () => {
                       pointerEvents: "none",
                     }}
                   >
-                    {/* inner div: anchor transform + scroll Y offset */}
                     <div
                       ref={el => { labelWrappers.current[i] = el; }}
                       dir={isRTL ? "rtl" : "ltr"}
@@ -380,7 +366,7 @@ const ProcessTimeline = () => {
                       <div style={{
                         fontFamily: "var(--font-body)",
                         fontWeight: 500,
-                        fontSize: "clamp(0.65rem, 0.95vw, 0.82rem)",
+                        fontSize: "clamp(0.78rem, 1.1vw, 0.95rem)",
                         color: "var(--color-ink)",
                         lineHeight: 1.2,
                       }}>

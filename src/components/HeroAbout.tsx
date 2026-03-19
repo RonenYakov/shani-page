@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { useI18n } from '@/i18n/simple'
 import StoriesGalleryModal from './StoriesGalleryModal'
@@ -20,8 +20,10 @@ interface HeroTextProps {
   onWhatsApp: () => void
 }
 
-const HeroText = ({ language, chips, onWhatsApp }: HeroTextProps) => (
-  <div>
+const HeroText = ({ language, chips, onWhatsApp }: HeroTextProps) => {
+  const isRTL = language === 'he';
+  return (
+    <div>
     <p style={{
       fontFamily: 'var(--font-mono)', fontSize: '0.7rem',
       textTransform: 'uppercase', letterSpacing: '0.15em',
@@ -31,9 +33,10 @@ const HeroText = ({ language, chips, onWhatsApp }: HeroTextProps) => (
     </p>
 
     <h1 style={{
-      fontFamily: 'var(--font-body)', fontWeight: 700,
-      fontSize: 'clamp(2.8rem, 6vw, 6rem)', lineHeight: 1,
-      letterSpacing: '-0.02em', margin: '0 0 1.25rem',
+      fontFamily: isRTL ? 'var(--font-display)' : 'var(--font-display-en-hero)',
+      fontWeight: isRTL ? 900 : 400,
+      fontSize: 'clamp(2.8rem, 6vw, 6rem)', lineHeight: isRTL ? 1 : 0.95,
+      letterSpacing: isRTL ? '-0.02em' : '-0.01em', margin: '0 0 1.25rem',
     }}>
       <span style={{ color: 'var(--color-orange)' }}>
         {language === 'he' ? 'סושיאל + וידאו' : 'Social + Video'}
@@ -73,8 +76,9 @@ const HeroText = ({ language, chips, onWhatsApp }: HeroTextProps) => (
         }}>{chip}</span>
       ))}
     </div>
-  </div>
-)
+    </div>
+  );
+}
 
 interface AboutTextProps {
   language: string
@@ -82,8 +86,10 @@ interface AboutTextProps {
   onGallery: () => void
 }
 
-const AboutText = ({ language, tags, onGallery }: AboutTextProps) => (
-  <div>
+const AboutText = ({ language, tags, onGallery }: AboutTextProps) => {
+  const isRTL = language === 'he';
+  return (
+    <div>
     <p style={{
       fontFamily: 'var(--font-mono)', fontSize: '0.7rem', textTransform: 'uppercase',
       letterSpacing: '0.15em', color: 'var(--color-orange)', marginBottom: '1.25rem',
@@ -92,9 +98,10 @@ const AboutText = ({ language, tags, onGallery }: AboutTextProps) => (
     </p>
 
     <h2 style={{
-      fontFamily: 'var(--font-body)', fontWeight: 700,
-      fontSize: 'clamp(2rem, 4vw, 3.5rem)', lineHeight: 1.05,
-      letterSpacing: '-0.02em', color: 'var(--color-ink)', margin: '0 0 1.25rem',
+      fontFamily: isRTL ? 'var(--font-display)' : 'var(--font-display-en-hero)',
+      fontWeight: isRTL ? 900 : 400,
+      fontSize: 'clamp(2.2rem, 4.5vw, 4rem)', lineHeight: 0.95,
+      letterSpacing: isRTL ? '-0.02em' : '-0.01em', color: 'var(--color-ink)', margin: '0 0 1.25rem',
     }}>
       {language === 'he' ? 'קצת עליי' : 'About Me'}
     </h2>
@@ -137,8 +144,9 @@ const AboutText = ({ language, tags, onGallery }: AboutTextProps) => (
     }}>
       {language === 'he' ? 'צפו בגלריית הסטוריז' : 'View Stories Gallery'}
     </button>
-  </div>
-)
+    </div>
+  );
+}
 
 // ── Nav ──────────────────────────────────────────────────────────────────────
 
@@ -165,7 +173,7 @@ const Nav = ({ language, setLanguage }: NavProps) => (
         </button>
       ))}
     </div>
-    <img src="/shani-logo2.webp" alt="Shani Social Media" style={{ height: '3.5rem' }} />
+    <img src="/shani-logo2.webp" alt="Shani Social Media" style={{ height: '4.8rem' }} />
   </nav>
 )
 
@@ -175,6 +183,7 @@ const HeroAbout = () => {
   const { language, setLanguage } = useI18n()
   const sectionRef = useRef<HTMLDivElement>(null)
   const [galleryOpen, setGalleryOpen] = useState(false)
+  const [showAbout, setShowAbout] = useState(false)
   const isRTL = language === 'he'
 
   const { scrollYProgress } = useScroll({
@@ -197,6 +206,11 @@ const HeroAbout = () => {
   const aboutYMotion = useTransform(scrollYProgress, [0.54, 0.78], ['14px', '0px'])
 
   const imageX = isRTL ? imageXRTL : imageXLTR
+
+  // Switch pointer events when about panel becomes dominant
+  useEffect(() => {
+    return scrollYProgress.on('change', (v) => setShowAbout(v > 0.5));
+  }, [scrollYProgress]);
 
   const chips = language === 'he'
     ? ['7+ מיליון צפיות', '40%+ עליה בפניות', 'מותגים מקומיים סומכים']
@@ -258,13 +272,13 @@ const HeroAbout = () => {
             </motion.div>
           </div>
 
-          {/* Hero text — fades out */}
-          <motion.div style={{ ...textSideStyle, translateY: '-50%', opacity: heroOpacity, y: heroY }}>
+          {/* Hero text — fades out, receives clicks only while hero is shown */}
+          <motion.div style={{ ...textSideStyle, translateY: '-50%', opacity: heroOpacity, y: heroY, pointerEvents: showAbout ? 'none' : 'auto' }}>
             <HeroText language={language} chips={chips} onWhatsApp={handleWhatsApp} />
           </motion.div>
 
-          {/* About text — fades in */}
-          <motion.div style={{ ...textSideStyle, translateY: '-50%', opacity: aboutOpacity, y: aboutYMotion }}>
+          {/* About text — fades in, receives clicks only once about is shown */}
+          <motion.div style={{ ...textSideStyle, translateY: '-50%', opacity: aboutOpacity, y: aboutYMotion, pointerEvents: showAbout ? 'auto' : 'none' }}>
             <AboutText language={language} tags={tags} onGallery={() => setGalleryOpen(true)} />
           </motion.div>
         </div>

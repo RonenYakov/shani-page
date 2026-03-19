@@ -141,7 +141,7 @@ const ResultsReel = () => {
               d={isRTL ? SPINE_RTL : SPINE_LTR}
               fill="none"
               stroke="var(--color-orange)"
-              strokeWidth="7"
+              strokeWidth="20"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
@@ -165,10 +165,10 @@ const ResultsReel = () => {
         <div
           style={{
             position: "absolute",
-            top: 0,
-            left: "5%",
-            right: "5%",
-            height: "100%",
+            top: "5%",
+            left: "12%",
+            right: "12%",
+            height: "90%",
           }}
         >
           <div
@@ -228,11 +228,11 @@ const ResultsReel = () => {
                 — 03 / RESULTS
               </p>
               <div style={{
-                fontFamily: "var(--font-body)",
-                fontWeight: 400,
-                fontSize: "clamp(1.4rem, 2.4vw, 2.8rem)",
-                lineHeight: 0.92,
-                letterSpacing: "-0.02em",
+                fontFamily: isRTL ? "var(--font-display)" : "var(--font-display-en-hero)",
+                fontWeight: isRTL ? 900 : 400,
+                fontSize: "clamp(1.6rem, 2.8vw, 3.2rem)",
+                lineHeight: 0.9,
+                letterSpacing: isRTL ? "-0.02em" : "-0.01em",
                 color: "var(--color-cream)",
                 borderBottom: "2.5px solid var(--color-orange)",
                 paddingBottom: "0.12em",
