@@ -305,6 +305,7 @@ const WorkGrid = () => {
               alignItems: 'flex-end',
               justifyContent: 'space-between',
               gap: '2rem',
+              flexWrap: isMobile ? 'wrap' : 'nowrap',
             }}
           >
             {/* Word-by-word title reveal */}
@@ -348,7 +349,7 @@ const WorkGrid = () => {
                 textTransform: 'uppercase',
                 letterSpacing: '0.12em',
                 color: 'var(--color-ink-muted)',
-                maxWidth: '24ch',
+                maxWidth: isMobile ? '100%' : '24ch',
                 lineHeight: 1.65,
                 textAlign: isRTL ? 'right' : 'left',
                 paddingBottom: '0.3em',
@@ -417,14 +418,18 @@ const WorkCard = ({ item, index, isRTL, language, isMobile, onClick }: WorkCardP
   const palette = PALETTES[item.paletteKey]
 
   // Row-pair stagger: cards 0&1 together, 2&3 together, 4&5 together
-  const pairDelay = (index % 2) * 0.18
+  const pairDelay = isMobile ? index * 0.08 : (index % 2) * 0.18
 
   return (
     <motion.div
       ref={cardRef}
-      initial={{ opacity: 0, y: 40, clipPath: 'inset(0 0 100% 0)' }}
-      animate={inView ? { opacity: 1, y: 0, clipPath: 'inset(0 0 0% 0)' } : {}}
-      transition={{ duration: 1.0, delay: pairDelay, ease: EASE }}
+      initial={isMobile
+        ? { opacity: 0, y: 20 }
+        : { opacity: 0, y: 40, clipPath: 'inset(0 0 100% 0)' }}
+      animate={inView
+        ? { opacity: 1, y: 0, clipPath: 'inset(0 0 0% 0)' }
+        : {}}
+      transition={{ duration: isMobile ? 0.5 : 1.0, delay: pairDelay, ease: EASE }}
       style={{ marginTop: !isMobile && index >= 2 ? '5em' : 0 }}
     >
       {/* Image */}

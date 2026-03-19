@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useI18n } from "@/i18n/simple";
 import testimonialsData from "@/content/testimonials.json";
 
@@ -48,6 +48,14 @@ const Testimonials = () => {
   const { language } = useI18n();
   const isRTL = language === "he";
   const showEnglishTestimonials = language === "en";
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   const outerRef   = useRef<HTMLDivElement>(null);
   const pathRef    = useRef<SVGPathElement>(null);
@@ -98,7 +106,7 @@ const Testimonials = () => {
     <div
       ref={outerRef}
       id="testimonials"
-      style={{ height: "320vh", position: "relative", background: "var(--color-ink)" }}
+      style={{ height: isMobile ? "220vh" : "320vh", position: "relative", background: "var(--color-ink)" }}
     >
       <div
         style={{
@@ -194,12 +202,12 @@ const Testimonials = () => {
           dir={isRTL ? "rtl" : "ltr"}
           style={{
             position: "absolute",
-            top: "clamp(10rem, 22vh, 18rem)",
+            top: isMobile ? "clamp(8rem, 28vw, 14rem)" : "clamp(10rem, 22vh, 18rem)",
             left: "var(--base-padding-x)",
             right: "var(--base-padding-x)",
             bottom: "2rem",
             zIndex: 2,
-            columns: "3",
+            columns: isMobile ? "1" : "3",
             columnGap: "clamp(0.75rem, 1.5vw, 1.5rem)",
             overflowY: "hidden",
           }}

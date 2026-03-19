@@ -67,7 +67,7 @@ const HeroText = ({ language, chips, onWhatsApp }: HeroTextProps) => {
       {language === 'he' ? 'בואו נתחיל לעבוד יחד' : "Let's work together"}
     </button>
 
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', justifyContent: 'inherit' }}>
       {chips.map((chip) => (
         <span key={chip} style={{
           background: 'rgba(26,24,20,0.06)', border: '1px solid rgba(26,24,20,0.12)',
@@ -305,7 +305,7 @@ const HeroAbout = () => {
             boxShadow: '0 24px 60px rgba(26,24,20,0.15)',
           }} />
 
-          <div style={{ position: 'relative', zIndex: 1, maxWidth: 360 }}>
+          <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: 400 }}>
             <HeroText language={language} chips={chips} onWhatsApp={handleWhatsApp} />
           </div>
         </section>
