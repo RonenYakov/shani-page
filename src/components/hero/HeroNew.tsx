@@ -181,8 +181,8 @@ const HeroNew = () => {
                 }}
               >
                 {language === 'he'
-                  ? 'ניהול סושיאל מדיה • תוכן וידאו'
-                  : 'SOCIAL MEDIA MANAGEMENT • VIDEO CONTENT'}
+                  ? 'ניהול סושיאל מדיה • צילומי סושיאל לכל אירוע'
+                  : 'SOCIAL MEDIA MANAGEMENT • SOCIAL SHOOTS FOR ANY OCCASION'}
               </p>
 
               <h1
@@ -198,21 +198,21 @@ const HeroNew = () => {
                 {language === 'he' ? (
                   <>
                     <span style={{ color: 'var(--color-orange)' }}>
-                      סושיאל + וידאו
+                      ניהול סושיאל מדיה
                     </span>
                     <br />
                     <span style={{ color: 'var(--color-ink)' }}>
-                      שמביא תוצאות
+                      וצילומים לכל אירוע
                     </span>
                   </>
                 ) : (
                   <>
                     <span style={{ color: 'var(--color-orange)' }}>
-                      Social + Video
+                      Social Media
                     </span>
                     <br />
                     <span style={{ color: 'var(--color-ink)' }}>
-                      that drives results
+                      Shoots for any occasion
                     </span>
                   </>
                 )}
@@ -228,8 +228,8 @@ const HeroNew = () => {
                 }}
               >
                 {language === 'he'
-                  ? 'טיקטוק/רילס שמייצרים באזז ופניות. הפקה + ניהול + שיפור.'
-                  : 'TikTok/Reels that create buzz and inquiries. Production + management + iteration.'}
+                  ? 'ניהול סושיאל מדיה וצילומי סושיאל לכל אירוע — הפקה, ניהול ותוצאות.'
+                  : 'Social media management & social shoots for every occasion — production, management, results.'}
               </p>
 
               <button
@@ -357,8 +357,8 @@ const MobileContent = ({
       }}
     >
       {language === 'he'
-        ? 'ניהול סושיאל מדיה • תוכן וידאו'
-        : 'SOCIAL MEDIA MANAGEMENT • VIDEO CONTENT'}
+        ? 'ניהול סושיאל מדיה • צילומי סושיאל לכל אירוע'
+        : 'SOCIAL MEDIA MANAGEMENT • SOCIAL SHOOTS FOR ANY OCCASION'}
     </p>
 
     <h1
@@ -373,15 +373,15 @@ const MobileContent = ({
     >
       {language === 'he' ? (
         <>
-          <span style={{ color: 'var(--color-orange)' }}>סושיאל + וידאו</span>
+          <span style={{ color: 'var(--color-orange)' }}>ניהול סושיאל מדיה</span>
           <br />
-          <span style={{ color: 'var(--color-ink)' }}>שמביא תוצאות</span>
+          <span style={{ color: 'var(--color-ink)' }}>וצילומים לכל אירוע</span>
         </>
       ) : (
         <>
-          <span style={{ color: 'var(--color-orange)' }}>Social + Video</span>
+          <span style={{ color: 'var(--color-orange)' }}>Social Media</span>
           <br />
-          <span style={{ color: 'var(--color-ink)' }}>that drives results</span>
+          <span style={{ color: 'var(--color-ink)' }}>Shoots for any occasion</span>
         </>
       )}
     </h1>
