@@ -581,6 +581,7 @@ const VideoLightbox = ({ src, onClose }: { src: string; onClose: () => void }) =
           src={src}
           controls
           autoPlay
+          preload="none"
           playsInline
           style={{ display: 'block', maxWidth: '90vw', maxHeight: '90vh', width: 'auto', height: 'auto' }}
         />
