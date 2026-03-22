@@ -114,7 +114,7 @@ const WORK_ITEMS: WorkItem[] = [
     tagsEn: 'WEDDINGS • VIDEO • MOMENTS',
     title: 'סושיאל חתונות',
     titleEn: 'Wedding Films',
-    coverAsset: '/posters/theme/weddings social.png',
+    coverAsset: '/posters/theme/weddings-social.png',
     description:
       "ניהול וצילום תוכן קולנועי (רילס, טיקטוק) ישירות מתוך אירוע החתונה שלכם. אנחנו לא רק מתעדים, אלא יוצרים Buzz סביב הרגעים המרגשים ביותר. בעזרת ציוד מקצועי ורחפן, אנחנו לוכדים זוויות ייחודיות שהאורחים שלכם ירצו לשתף. אני באה להפוך את היום המיוחד שלכם להכי קסום שיש בעזרת ליווי מההתארגנות ועד הריקודים, לתפוס כל רגע קטן שלא תשכחו לעד.",
     descriptionEn:
@@ -143,7 +143,7 @@ const WORK_ITEMS: WorkItem[] = [
     tagsEn: 'SOCIAL MEDIA • GROWTH • LEADS',
     title: 'ניהול סושיאל',
     titleEn: 'Social Media Management',
-    coverAsset: '/posters/theme/social managment.jpg',
+    coverAsset: '/posters/theme/social-managment.jpg',
     coverPosition: 'top',
     coverOverlay: 'rgba(212,98,42,0.18)',
     description:
@@ -163,7 +163,7 @@ const WORK_ITEMS: WorkItem[] = [
       '/videos/social-managment/IMG_1073.mp4',
       '/videos/social-managment/IMG_1682.mp4',
       '/videos/social-managment/copy_1B0F41C9-58B9-4C98-8C9F-7BCDA4318999.mp4',
-      '/videos/social-managment/סרטון תדמית מסעדה-B.mp4',
+      '/videos/social-managment/brand-video-restaurant.mp4',
     ],
   },
   {
@@ -173,7 +173,7 @@ const WORK_ITEMS: WorkItem[] = [
     tagsEn: 'SOCIAL • UGC • CONTENT',
     title: 'צילומי סושיאל',
     titleEn: 'Social Shoots',
-    coverAsset: '/posters/theme/social shoots (2).PNG',
+    coverAsset: '/posters/theme/social-shoots.png',
     coverPosition: 'center',
     coverOverlay: 'rgba(180,120,60,0.22)',
     description: 'יום צילום מרוכז ומדויק לעסקים שרוצים להרים את הרמה של הנראות שלהם בלי התחייבות לניהול חודשי. ביום אחד אנחנו מייצרים לכם "בנק תוכן" של סרטונים ותמונות בסטנדרט גבוה, מותאמים לטרנדים הכי חמים, כך שיהיה לכם תוכן איכותי להעלות בעצמכם לאורך חודש שלם. זה הפתרון האידיאלי למי שצריך תוצאה מקצועית ומהירה במינימום זמן ומקסימום אימפקט ויזואלי.',
@@ -201,7 +201,7 @@ const WORK_ITEMS: WorkItem[] = [
     tagsEn: 'SAVE THE DATE • PROPOSAL • ENGAGEMENT',
     title: 'סייב דה דייט',
     titleEn: 'Save the Date',
-    coverAsset: '/posters/theme/save the date.png',
+    coverAsset: '/posters/theme/save-the-date.png',
     description:
       'יצירת תוכן וידאו מקורי ומפתיע שיגרום לכל האורחים לסמן את התאריך. מרעיון קריאטיבי ועד צילום אווירי ברחפן — ה-Save the Date שלכם יהיה בלתי נשכח ובעל פוטנציאל ויראלי גבוה.',
     descriptionEn:
@@ -215,7 +215,7 @@ const WORK_ITEMS: WorkItem[] = [
     ],
     videos: [
       '/videos/savethedate/cf88b840faff4eb49de37d27f6079602.mp4',
-      '/videos/savethedate/6f0e8e98a5064a17b45c18a199e43359 (1).mp4',
+      '/videos/savethedate/6f0e8e98a5064a17b45c18a199e43359-1.mp4',
       '/videos/savethedate/IMG_9684.mp4',
     ],
   },
@@ -245,8 +245,8 @@ const WORK_ITEMS: WorkItem[] = [
       '/videos/hotels/VID_20260321_130914_326.mp4',
       '/videos/hotels/copy_5D2781DD-1C9B-4F48-8845-B3615FFD4A30.mp4',
       '/videos/hotels/copy_CEBE3CEA-EC9D-47D7-B191-094750BB9D9B.mp4',
-      '/videos/hotels/storis back ground.mp4',
-      '/videos/hotels/סרטון תדמית מלון-B.mp4',
+      '/videos/hotels/storis-background.mp4',
+      '/videos/hotels/brand-video-hotel.mp4',
     ],
   },
   {
@@ -269,7 +269,7 @@ const WORK_ITEMS: WorkItem[] = [
       '/posters/brands/agalt-cafe.webp',
       '/posters/brands/ugc-B.webp',
     ],
-    videos: ['/video-glam.mp4'],
+    videos: [],
   },
 ]
 
@@ -669,7 +669,7 @@ const DetailView = ({ item, isRTL, language, onClose, onWhatsApp }: DetailViewPr
     return () => { document.body.style.overflow = '' }
   }, [])
 
-  const videos = VIDEO_MANIFEST[item.id] ?? item.videos ?? []
+  const videos = (VIDEO_MANIFEST[item.id]?.length ? VIDEO_MANIFEST[item.id] : null) ?? item.videos ?? []
   const hasVideos = videos.length > 0
   const galleryItems = item.gallery.slice(1)
 
