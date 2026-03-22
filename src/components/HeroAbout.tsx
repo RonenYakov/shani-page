@@ -29,21 +29,33 @@ const HeroText = ({ language, chips, onWhatsApp }: HeroTextProps) => {
       textTransform: 'uppercase', letterSpacing: '0.15em',
       color: 'var(--color-ink)', marginBottom: '1.25rem',
     }}>
-      {language === 'he' ? 'ניהול סושיאל מדיה • תוכן וידאו' : 'SOCIAL MEDIA MANAGEMENT • VIDEO CONTENT'}
+      {language === 'he' ? 'צילום • ניהול סושיאל • אירועים' : 'SHOOTS • SOCIAL MEDIA • EVENTS'}
     </p>
 
-    <h1 style={{
-      fontFamily: isRTL ? 'var(--font-display)' : 'var(--font-display-en-hero)',
-      fontWeight: isRTL ? 900 : 400,
-      fontSize: 'clamp(2.8rem, 6vw, 6rem)', lineHeight: isRTL ? 1 : 0.95,
-      letterSpacing: isRTL ? '-0.02em' : '-0.01em', margin: '0 0 1.25rem',
-    }}>
-      <span style={{ color: 'var(--color-orange)' }}>
-        {language === 'he' ? 'סושיאל + וידאו' : 'Social + Video'}
+    <h1 style={{ margin: '0 0 1.25rem', lineHeight: 1 }}>
+      <span style={{
+        display: 'block',
+        fontFamily: isRTL ? 'var(--font-display)' : 'var(--font-display-en-hero)',
+        fontWeight: isRTL ? 900 : 400,
+        fontSize: 'clamp(3.2rem, 7vw, 7rem)',
+        letterSpacing: isRTL ? '-0.02em' : '-0.01em',
+        color: 'var(--color-orange)',
+        lineHeight: 1,
+      }}>
+        {language === 'he' ? 'יוצרת נוכחות.' : 'Creating presence.'}
       </span>
-      <br />
-      <span style={{ color: 'var(--color-ink)' }}>
-        {language === 'he' ? 'שמביא תוצאות' : 'that drives results'}
+      <span style={{
+        display: 'block',
+        fontFamily: isRTL ? 'var(--font-display)' : 'var(--font-display-en-hero)',
+        fontWeight: isRTL ? 900 : 400,
+        fontSize: 'clamp(1.9rem, 4vw, 4rem)',
+        letterSpacing: isRTL ? '-0.01em' : '-0.01em',
+        color: 'var(--color-ink)',
+        lineHeight: 1.15,
+        marginTop: '0.35em',
+        opacity: 0.85,
+      }}>
+        {language === 'he' ? 'מצלמת רגעים. בונה מותגים.' : 'Capturing moments. Building brands.'}
       </span>
     </h1>
 
@@ -52,8 +64,8 @@ const HeroText = ({ language, chips, onWhatsApp }: HeroTextProps) => {
       color: 'var(--color-ink-muted)', marginBottom: '2rem',
     }}>
       {language === 'he'
-        ? 'טיקטוק/רילס שמייצרים באזז ופניות. הפקה + ניהול + שיפור.'
-        : 'TikTok/Reels that create buzz and inquiries. Production + management + iteration.'}
+        ? 'ניהול סושיאל וצילום רילס/טיקטוק בסטנדרט של קולנוע. הופכת Buzz למכירות.'
+        : 'Social media management + cinematic Reels/TikTok. Turning Buzz into sales.'}
     </p>
 
     <button onClick={onWhatsApp} style={{
@@ -64,7 +76,7 @@ const HeroText = ({ language, chips, onWhatsApp }: HeroTextProps) => {
       cursor: 'pointer', marginBottom: '1.25rem',
     }}>
       <WhatsAppIcon />
-      {language === 'he' ? 'בואו נתחיל לעבוד יחד' : "Let's work together"}
+      {language === 'he' ? 'בואו ניצור buzz' : "Let's create buzz"}
     </button>
 
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', justifyContent: 'inherit' }}>
@@ -101,27 +113,36 @@ const AboutText = ({ language, tags, onGallery }: AboutTextProps) => {
       fontFamily: isRTL ? 'var(--font-display)' : 'var(--font-display-en-hero)',
       fontWeight: isRTL ? 900 : 400,
       fontSize: 'clamp(2.2rem, 4.5vw, 4rem)', lineHeight: 0.95,
-      letterSpacing: isRTL ? '-0.02em' : '-0.01em', color: 'var(--color-ink)', margin: '0 0 1.25rem',
+      letterSpacing: isRTL ? '-0.02em' : '-0.01em', color: 'var(--color-ink)', margin: '0 0 1.5rem',
     }}>
-      {language === 'he' ? 'קצת עליי' : 'About Me'}
+      {language === 'he' ? 'היי, אני שני.' : "Hi, I'm Shani."}
     </h2>
 
     <p style={{
-      fontFamily: 'var(--font-body)', fontSize: '1rem', lineHeight: 1.7,
-      color: 'var(--color-ink-muted)', marginBottom: '1rem',
+      fontFamily: 'var(--font-body)', fontSize: '1.05rem', lineHeight: 1.75,
+      color: 'var(--color-ink)', marginBottom: '1rem', fontWeight: 500,
     }}>
       {language === 'he'
-        ? 'אני שני, יוצרת תוכן ומנהלת סושיאל מדיה. אני מאמינה שכל מותג יש לו סיפור ייחודי שמחכה להיספר. המומחיות שלי היא ליצור תוכן וידאו אותנטי שמתחבר לקהל ומניע פעולה.'
-        : "I'm Shani, a content creator and social media manager. I believe every brand has a unique story waiting to be told. My expertise is creating authentic video content that connects with audiences and drives action."}
+        ? 'מאז גיל צעיר התאהבתי בצילום, עריכה וכל מה שיש לו אסתטיקה. תמיד ידעתי שאני רוצה ליצור דברים שנראים טוב — שכל פרט קטן יהיה מכוון ומושלם.'
+        : 'From a young age I fell in love with photography, editing and everything aesthetic. I always knew I wanted to create things that look beautiful — where every small detail is intentional and perfect.'}
     </p>
 
     <p style={{
-      fontFamily: 'var(--font-body)', fontSize: '1rem', lineHeight: 1.7,
+      fontFamily: 'var(--font-body)', fontSize: '0.95rem', lineHeight: 1.75,
+      color: 'var(--color-ink-muted)', marginBottom: '0.75rem',
+    }}>
+      {language === 'he'
+        ? 'היום אני מביאה את האהבה הזו לכל פרויקט — מחתונות ואירועים מרגשים, דרך ימי צילום לעסקים, ועד לניהול סושיאל שוטף שבונה נוכחות אמיתית ברשת.'
+        : 'Today I bring that love to every project — from weddings and emotional events, through business shoot days, to ongoing social media management that builds a real presence online.'}
+    </p>
+
+    <p style={{
+      fontFamily: 'var(--font-body)', fontSize: '0.95rem', lineHeight: 1.75,
       color: 'var(--color-ink-muted)', marginBottom: '1.5rem',
     }}>
       {language === 'he'
-        ? 'המטרה שלי היא לעזור לעסקים לבנות נוכחות חזקה ברשתות החברתיות דרך סיפורים אמיתיים ותוכן שמדבר אל הלב.'
-        : 'My goal is to help businesses build a strong social media presence through authentic stories and content that speaks to the heart.'}
+        ? 'בשבילי כל פרט קטן חשוב. אני לא מוסרת עבודה שאני לא מאה אחוז מרוצה ממנה — כי בסוף זה הסיפור שלכם, ואני רוצה שהוא יהיה מושלם.'
+        : "For me every small detail matters. I don't deliver work I'm not a hundred percent proud of — because at the end of the day, it's your story, and I want it to be perfect."}
     </p>
 
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1.75rem' }}>

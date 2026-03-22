@@ -96,6 +96,8 @@ interface WorkItem {
   title: string
   titleEn: string
   coverAsset: string
+  coverPosition?: string
+  coverOverlay?: string
   description: string
   descriptionEn: string
   services: string[]
@@ -110,13 +112,13 @@ const WORK_ITEMS: WorkItem[] = [
     paletteKey: 'weddings',
     tags: 'חתונות • וידאו • רגעים',
     tagsEn: 'WEDDINGS • VIDEO • MOMENTS',
-    title: 'חתונות',
-    titleEn: 'Weddings',
+    title: 'סושיאל חתונות',
+    titleEn: 'Wedding Films',
     coverAsset: '/posters/theme/weddings social.png',
     description:
-      'תיעוד אותנטי של הרגעים הכי חשובים. כל חתונה היא סיפור ייחודי שמחכה להיספר — ואנחנו כאן כדי לספר אותו בדרך שתישאר לנצח.',
+      "ניהול וצילום תוכן קולנועי (רילס, טיקטוק) ישירות מתוך אירוע החתונה שלכם. אנחנו לא רק מתעדים, אלא יוצרים Buzz סביב הרגעים המרגשים ביותר. בעזרת ציוד מקצועי ורחפן, אנחנו לוכדים זוויות ייחודיות שהאורחים שלכם ירצו לשתף. אני באה להפוך את היום המיוחד שלכם להכי קסום שיש בעזרת ליווי מההתארגנות ועד הריקודים, לתפוס כל רגע קטן שלא תשכחו לעד.",
     descriptionEn:
-      'Authentic documentation of the most important moments. Every wedding is a unique story waiting to be told — we are here to tell it in a way that lasts forever.',
+      'Cinematic social content (Reels, TikTok) captured live from your wedding day. We don\'t just document — we create Buzz around your most emotional moments. With professional gear and a drone, we capture unique angles your guests will want to share.',
     services: ['וידאו חתונות', 'רילס ותוכן', 'אינסטגרם סטוריז', 'עריכה'],
     servicesEn: ['Wedding Video', 'Reels & Content', 'Instagram Stories', 'Editing'],
     gallery: [
@@ -126,41 +128,57 @@ const WORK_ITEMS: WorkItem[] = [
       '/posters/weddings/proposel.webp',
       '/posters/weddings/copy_4CB7BB16-8667-4394-9EFC-4820095F619E.webp',
     ],
-    videos: ['/story.mp4'],
+    videos: [
+      '/videos/weddings/3325b41d9ff84aac99fffe62b5818863.mp4',
+      '/videos/weddings/65259cb11a2c4ddfa02131c5be588092.mp4',
+      '/videos/weddings/6f0e8e98a5064a17b45c18a199e43359.mp4',
+      '/videos/weddings/VID_20260321_130846_626.mp4',
+      '/videos/weddings/c35aef4ab07645b99bb7903c646ecc61.mp4',
+    ],
   },
   {
     id: 'restaurants',
     paletteKey: 'restaurants',
-    tags: 'מסעדות • אוכל • תדמית',
-    tagsEn: 'RESTAURANTS • FOOD • BRANDING',
-    title: 'מסעדות',
-    titleEn: 'Restaurants',
-    coverAsset: '/posters/theme/resturans and cafes.png',
+    tags: 'קידום עסקים • סושיאל • יצירת לידים',
+    tagsEn: 'SOCIAL MEDIA • GROWTH • LEADS',
+    title: 'ניהול סושיאל',
+    titleEn: 'Social Media Management',
+    coverAsset: '/posters/theme/social managment.jpg',
+    coverPosition: 'top',
+    coverOverlay: 'rgba(212,98,42,0.18)',
     description:
-      'תוכן ויזואלי שמעורר תיאבון ומביא לקוחות לדלת. ווידאו שמספר את הסיפור של המסעדה — את האווירה, הטעם והנשמה.',
+      "אנחנו בונים לעסק מנוע צמיחה דיגיטלי המבוסס על תוכן אורגני ויראלי, ניתוח אלגוריתמים ומערך הבאת לידים חכם. השירות כולל ניהול שוטף וימי צילום ברמה הכי גבוה בשוק, אופטימיזציה לביצועים ואופציה לקידום ממומן ממוקד, קיריאייטיב מדויק והכי חשוב ניצור סיבבת עבודה שרק תצמח — הכל כדי להפוך צפיות לתוצאות עסקיות בשטח.",
     descriptionEn:
-      'Visual content that stimulates appetite and brings customers to the door. Video that tells the story of the restaurant — the atmosphere, the flavor, the soul.',
-    services: ['הפקת וידאו תדמית', 'צילום מוצר', 'סטוריז ורילס', 'UGC'],
+      'We build a digital growth engine for your business — organic viral content, algorithm analysis, and smart lead generation. Includes ongoing management, premium shoot days, performance optimisation, and targeted paid promotion. Everything to turn views into real business results.',
+    services: ['הפקת וידאו תדמית', 'צילום מוצר', 'סטוריז ורילס', 'קידום ממומן'],
     servicesEn: ['Brand Video Production', 'Product Photography', 'Stories & Reels', 'UGC'],
     gallery: [
       '/posters/brands/סרטון תדמית מסעדה-B.webp',
       '/posters/brands/agalt-cafe.webp',
       '/posters/brands/streets.webp',
     ],
-    videos: ['/video-glam.mp4'],
+    videos: [
+      '/videos/social managment/a529c7ea-166d-46a5-91b3-ad3526017ea6.mp4',
+      '/videos/social managment/IMG_0979.mp4',
+      '/videos/social managment/IMG_1073.mp4',
+      '/videos/social managment/IMG_1682.mp4',
+      '/videos/social managment/copy_1B0F41C9-58B9-4C98-8C9F-7BCDA4318999.mp4',
+      '/videos/social managment/סרטון תדמית מסעדה-B.mp4',
+    ],
   },
   {
     id: 'social',
     paletteKey: 'social',
-    tags: 'סושיאל • UGC • תוכן',
+    tags: 'סושיאל • ימי צילום • תוכן',
     tagsEn: 'SOCIAL • UGC • CONTENT',
-    title: 'שוטים סושיאל',
+    title: 'צילומי סושיאל',
     titleEn: 'Social Shoots',
-    coverAsset: '/posters/theme/social shoots.png',
-    description:
-      'שוטים סושיאל שמייצרים באזז ומניעים פעולה. תוכן UGC אותנטי לטיקטוק ורילס שמדבר ישירות לקהל היעד.',
+    coverAsset: '/posters/theme/social shoots (2).PNG',
+    coverPosition: 'center',
+    coverOverlay: 'rgba(180,120,60,0.22)',
+    description: 'יום צילום מרוכז ומדויק לעסקים שרוצים להרים את הרמה של הנראות שלהם בלי התחייבות לניהול חודשי. ביום אחד אנחנו מייצרים לכם "בנק תוכן" של סרטונים ותמונות בסטנדרט גבוה, מותאמים לטרנדים הכי חמים, כך שיהיה לכם תוכן איכותי להעלות בעצמכם לאורך חודש שלם. זה הפתרון האידיאלי למי שצריך תוצאה מקצועית ומהירה במינימום זמן ומקסימום אימפקט ויזואלי.',
     descriptionEn:
-      'Social shoots that generate buzz and drive action. Authentic UGC content for TikTok and Reels that speaks directly to your target audience.',
+      'Short-form video production (Reels, TikTok) tailored to your brand. Smart content strategy meets high production quality — videos that don\'t just look great, they drive action and boost engagement.',
     services: ['תוכן UGC', 'רילס וטיקטוק', 'ניהול קמפיינים', 'אסטרטגיה'],
     servicesEn: ['UGC Content', 'Reels & TikTok', 'Campaign Management', 'Strategy'],
     gallery: [
@@ -168,7 +186,13 @@ const WORK_ITEMS: WorkItem[] = [
       '/posters/brands/mahlevet evri.webp',
       '/posters/brands/agalt-cafe.webp',
     ],
-    videos: ['/story4.mp4', '/story8.mp4'],
+    videos: [
+      '/videos/social/VID_20260321_125846_870.mp4',
+      '/videos/social/a553ec9620b24d8b8ad319a889ab3821.mp4',
+      '/videos/social/f876f334e71347faa8ad4779a37b5759.mp4',
+      '/videos/social/IMG_2424.mp4',
+      '/videos/social/copy_9BB61E2F-0894-4FB9-B7F3-C301CDDBF5D7.mp4',
+    ],
   },
   {
     id: 'savethedate',
@@ -179,9 +203,9 @@ const WORK_ITEMS: WorkItem[] = [
     titleEn: 'Save the Date',
     coverAsset: '/posters/theme/save the date.png',
     description:
-      'הרגע שמכריז על האהבה — מצולם בצורה שתספר את הסיפור שלכם. סרטוני הצעת נישואין ואירוסין שנשארים לנצח.',
+      'יצירת תוכן וידאו מקורי ומפתיע שיגרום לכל האורחים לסמן את התאריך. מרעיון קריאטיבי ועד צילום אווירי ברחפן — ה-Save the Date שלכם יהיה בלתי נשכח ובעל פוטנציאל ויראלי גבוה.',
     descriptionEn:
-      'The moment that announces love — filmed in a way that tells your story. Proposal and engagement videos that last forever.',
+      'Original, surprising video content that makes every guest mark the date. From creative concept to aerial drone footage — your Save the Date will be unforgettable and highly shareable.',
     services: ['סרטוני הצעה', 'אירוסין', 'סייב דה דייט', 'רגעים'],
     servicesEn: ['Proposal Videos', 'Engagement', 'Save the Date', 'Moments'],
     gallery: [
@@ -189,20 +213,24 @@ const WORK_ITEMS: WorkItem[] = [
       '/posters/weddings/מסיבת אירוסין-W.webp',
       '/posters/weddings/סושיאל חתונה.webp',
     ],
-    videos: ['/story8.mp4'],
+    videos: [
+      '/videos/savethedate/cf88b840faff4eb49de37d27f6079602.mp4',
+      '/videos/savethedate/6f0e8e98a5064a17b45c18a199e43359 (1).mp4',
+      '/videos/savethedate/IMG_9684.mp4',
+    ],
   },
   {
     id: 'hotels',
     paletteKey: 'hotels',
     tags: 'מלונות • חופשות • דרון',
     tagsEn: 'HOTELS • VACATIONS • DRONE',
-    title: 'חופשות ומלונות',
-    titleEn: 'Vacations & Hotels',
+    title: 'צילומי מלונאות',
+    titleEn: 'The Great Escape',
     coverAsset: '/posters/theme/hotels.png',
     description:
-      'צילום דרון וסרטוני תדמית למלונות ואתרי נופש. תוכן שמראה את הניסיון, לא רק את החדר — ומביא אורחים שמחפשים בדיוק את מה שאתם מציעים.',
+      'אנו משתמשים בצילום אווירי ברחפן להדגשת הנוף המרהיב ובצילום קרוב ללכידת פרטי החופשה המושלמת. תוכן שמוכר חווייה — לא רק חדר.',
     descriptionEn:
-      'Drone footage and brand videos for hotels and resorts. Content that shows the experience, not just the room — attracting guests looking for exactly what you offer.',
+      'Aerial drone shots highlight breathtaking views while close-up footage captures the details of the perfect getaway. Content that sells an experience — not just a room.',
     services: ['צילום דרון', 'וידאו תדמית', 'ניהול סושיאל', 'רילס'],
     servicesEn: ['Drone Photography', 'Brand Video', 'Social Management', 'Reels'],
     gallery: [
@@ -211,20 +239,28 @@ const WORK_ITEMS: WorkItem[] = [
       '/posters/hotels/v14044g50000d1pk9hfog65ji0k9nub0.webp',
       '/posters/hotels/v1c044g50000d2qrjgfog65q8kapaf30.webp',
     ],
-    videos: ['/storis back ground.mp4'],
+    videos: [
+      '/videos/hotels/VID_20260321_130726_487.mp4',
+      '/videos/hotels/VID_20260321_130746_721.mp4',
+      '/videos/hotels/VID_20260321_130914_326.mp4',
+      '/videos/hotels/copy_5D2781DD-1C9B-4F48-8845-B3615FFD4A30.mp4',
+      '/videos/hotels/copy_CEBE3CEA-EC9D-47D7-B191-094750BB9D9B.mp4',
+      '/videos/hotels/storis back ground.mp4',
+      '/videos/hotels/סרטון תדמית מלון-B.mp4',
+    ],
   },
   {
     id: 'brands',
     paletteKey: 'brands',
     tags: 'מותגים • תוכן • אסטרטגיה',
     tagsEn: 'BRANDS • CONTENT • STRATEGY',
-    title: 'מותגים ותוכן',
-    titleEn: 'Brands & Content',
+    title: 'פיתוח מותגים',
+    titleEn: 'Growth Lab',
     coverAsset: '/posters/theme/brands.png',
     description:
-      'בניית נוכחות מותגית חזקה ברשתות החברתיות. מאסטרטגיה ועד הפקה — כל מותג מקבל את הקול הייחודי שלו.',
+      'ניהול מקיף של כל הפלטפורמות החברתיות שלכם — מאסטרטגיית תוכן, דרך הפקה מקורית (כולל וידאו וצילום אווירי), ועד לניהול קהילה וניתוח ביצועים. בניית מותג חזק, הגברת מעורבות והגדלת מכירות.',
     descriptionEn:
-      'Building a strong brand presence on social media. From strategy to production — every brand gets its unique voice.',
+      'Full-service social media management across all platforms — from content strategy through original production (including video and drone) to community management and analytics. Build a strong brand, boost engagement, grow sales.',
     services: ['אסטרטגיה דיגיטלית', 'ניהול סושיאל מדיה', 'הפקת תוכן', 'ברנדינג'],
     servicesEn: ['Digital Strategy', 'Social Media Management', 'Content Production', 'Branding'],
     gallery: [
@@ -453,10 +489,14 @@ const WorkCard = ({ item, index, isRTL, language, isMobile, onClick }: WorkCardP
             width: '100%',
             height: '100%',
             objectFit: 'cover',
+            objectPosition: item.coverPosition ?? 'center',
             transition: 'transform 0.65s cubic-bezier(0.35,0,0,1)',
             transform: hovered ? 'scale(1.04)' : 'scale(1)',
           }}
         />
+        {item.coverOverlay && (
+          <div style={{ position: 'absolute', inset: 0, background: item.coverOverlay, mixBlendMode: 'multiply' }} />
+        )}
 
         {/* Lusion-style bottom overlay — slides up on hover */}
         <motion.div

@@ -1,8 +1,8 @@
 export const translations = {
   he: {
-    "hero.headline": "יוצרת תוכן וידאו אותנטי שמספר את הסיפור של המותג שלך",
-    "hero.sub": "מתמחה בסרטוני UGC קצרים לטיקטוק ואינסטגרם שמתחברים לקהל ויוצרים אינטראקציה אמיתית.",
-    "cta.whatsapp": "בואו נתחיל לעבוד יחד",
+    "hero.headline": "יוצרת נוכחות. מצלמת רגעים. בונה מותגים.",
+    "hero.sub": "ניהול סושיאל וצילום רילס/טיקטוק בסטנדרט של קולנוע. הופכת Buzz למכירות.",
+    "cta.whatsapp": "בואו ניצור buzz",
     "cta.book": "קבעו שיחת היכרות",
     "services.title": "איך אני עובדת",
     "services.package.starter": "סטארטר",
@@ -24,7 +24,7 @@ export const translations = {
     "lead.urgency": "🚀 נותרו 3 מקומות ללקוחות חדשים החודש.",
     "lead.cta": "קבל/י 3 רעיונות חינם",
     "faq.title": "שאלות נפוצות",
-    "contact.title": "בואו נצמח יחד"
+    "contact.title": "שריינו הפקה"
   },
   en: {
     "hero.headline": "Social Media Management + Video Content that makes your brand stand out",
