@@ -122,11 +122,7 @@ const WORK_ITEMS: WorkItem[] = [
     services: ['וידאו חתונות', 'רילס ותוכן', 'אינסטגרם סטוריז', 'עריכה'],
     servicesEn: ['Wedding Video', 'Reels & Content', 'Instagram Stories', 'Editing'],
     gallery: [
-      '/posters/weddings/חתונה-W.webp',
-      '/posters/weddings/מסיבת אירוסין-W.webp',
-      '/posters/weddings/סושיאל חתונה.webp',
       '/posters/weddings/proposel.webp',
-      '/posters/weddings/copy_4CB7BB16-8667-4394-9EFC-4820095F619E.webp',
     ],
     videos: [
       '/videos/weddings/3325b41d9ff84aac99fffe62b5818863.mp4',
@@ -153,9 +149,7 @@ const WORK_ITEMS: WorkItem[] = [
     services: ['הפקת וידאו תדמית', 'צילום מוצר', 'סטוריז ורילס', 'קידום ממומן'],
     servicesEn: ['Brand Video Production', 'Product Photography', 'Stories & Reels', 'UGC'],
     gallery: [
-      '/posters/brands/סרטון תדמית מסעדה-B.webp',
-      '/posters/brands/agalt-cafe.webp',
-      '/posters/brands/streets.webp',
+
     ],
     videos: [
       '/videos/social-managment/a529c7ea-166d-46a5-91b3-ad3526017ea6.mp4',
@@ -163,7 +157,6 @@ const WORK_ITEMS: WorkItem[] = [
       '/videos/social-managment/IMG_1073.mp4',
       '/videos/social-managment/IMG_1682.mp4',
       '/videos/social-managment/copy_1B0F41C9-58B9-4C98-8C9F-7BCDA4318999.mp4',
-      '/videos/social-managment/brand-video-restaurant.mp4',
     ],
   },
   {
@@ -183,8 +176,6 @@ const WORK_ITEMS: WorkItem[] = [
     servicesEn: ['UGC Content', 'Reels & TikTok', 'Campaign Management', 'Strategy'],
     gallery: [
       '/posters/brands/ugc-B.webp',
-      '/posters/brands/mahlevet evri.webp',
-      '/posters/brands/agalt-cafe.webp',
     ],
     videos: [
       '/videos/social/VID_20260321_125846_870.mp4',
@@ -209,9 +200,7 @@ const WORK_ITEMS: WorkItem[] = [
     services: ['סרטוני הצעה', 'אירוסין', 'סייב דה דייט', 'רגעים'],
     servicesEn: ['Proposal Videos', 'Engagement', 'Save the Date', 'Moments'],
     gallery: [
-      '/posters/weddings/proposel.webp',
-      '/posters/weddings/מסיבת אירוסין-W.webp',
-      '/posters/weddings/סושיאל חתונה.webp',
+
     ],
     videos: [
       '/videos/savethedate/cf88b840faff4eb49de37d27f6079602.mp4',

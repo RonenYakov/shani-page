@@ -193,4 +193,16 @@ npx tsc --noEmit   # TypeScript check
 | 3 — Work Grid | ✅ Done | Lusion 6-niche grid, niche palettes, detail view |
 | 4 — All sections | ✅ Done | Bold h2s, word-split reveals, spine animations, scrollbar fix |
 | 5 — Mobile | ✅ Done | isMobile pattern, simplified layouts, StickyWhatsApp fix |
-| 6 — Deploy & QA | ⬜ Next | Full device test, RTL audit, Vercel domain, performance |
+| 6 — Hero Polish | ✅ Done | Cutout PNGs (rembg), crossfade scroll transition, decorative arc, marquee strip, floating badge |
+| 7 — Deploy & QA | ⬜ Next | Full device test, RTL audit, Vercel domain, performance |
+
+---
+
+## Hero Image System
+
+- `public/profile1-cutout.png` — raw background-removed cutout (rembg u2net)
+- `public/profile1-styled.png` — color-graded version used in production (subtle contrast boost, edge softening)
+- `public/profile2-cutout.png` / `profile2-styled.png` — same for second pose
+- Desktop: crossfade from profile1 → profile2 during Hero→About scroll (progress 35–72%)
+- Mobile: profile1 in Hero section, profile2 in About section (static)
+- Decorative elements: SVG arc circles behind photo, floating "available" badge, bottom marquee strip

@@ -3,8 +3,8 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import { useI18n } from '@/i18n/simple'
 import StoriesGalleryModal from './StoriesGalleryModal'
 
-// TODO: swap /profile.webp for a background-removed PNG cutout for the floating effect
-const HERO_IMAGE = '/profile.webp'
+const HERO_IMAGE_1 = '/profile1-styled.png'
+const HERO_IMAGE_2 = '/profile2-styled.png'
 
 const WhatsAppIcon = () => (
   <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
@@ -212,11 +212,11 @@ const HeroAbout = () => {
     offset: ['start start', 'end end'],
   })
 
-  // Image: starts RIGHT side in Hero (small), grows larger as About arrives
-  const imageScale = useTransform(scrollYProgress, [0, 0.35, 0.78], [0.65, 0.67, 1.0])
-  const imageXLTR = useTransform(scrollYProgress, [0, 0.35, 0.78], ['22vw', '22vw', '20vw'])
-  const imageXRTL = useTransform(scrollYProgress, [0, 0.35, 0.78], ['-22vw', '-22vw', '-20vw'])
-  const imageY = useTransform(scrollYProgress, [0, 0.35, 0.78], ['2vh', '2vh', '0vh'])
+  // Image: stays left, subtle scale growth into About phase
+  const imageScale = useTransform(scrollYProgress, [0, 0.35, 0.78], [1.0, 1.0, 1.05])
+  const imageXLTR = useTransform(scrollYProgress, [0, 0.78], ['0vw', '2vw'])
+  const imageXRTL = useTransform(scrollYProgress, [0, 0.78], ['0vw', '2vw'])
+  const imageY = useTransform(scrollYProgress, [0, 0.35, 0.78], ['0vh', '0vh', '0vh'])
 
   // Hero text: fades out as you scroll
   const heroOpacity = useTransform(scrollYProgress, [0, 0.22, 0.42], [1, 1, 0])
@@ -226,7 +226,13 @@ const HeroAbout = () => {
   const aboutOpacity = useTransform(scrollYProgress, [0.54, 0.78], [0, 1])
   const aboutYMotion = useTransform(scrollYProgress, [0.54, 0.78], ['14px', '0px'])
 
-  const imageX = isRTL ? imageXRTL : imageXLTR
+  const imageX = imageXLTR
+
+  // Image crossfade — profile1 fades out, profile2 fades in, with a slight scale lift
+  const image1Opacity = useTransform(scrollYProgress, [0.35, 0.58], [1, 0])
+  const image2Opacity = useTransform(scrollYProgress, [0.48, 0.72], [0, 1])
+  const image1Scale  = useTransform(scrollYProgress, [0.35, 0.58], [1, 1.04])
+  const image2Scale  = useTransform(scrollYProgress, [0.48, 0.72], [0.96, 1])
 
   // Switch pointer events when about panel becomes dominant
   useEffect(() => {
@@ -243,12 +249,13 @@ const HeroAbout = () => {
 
   const handleWhatsApp = () => window.open('https://wa.me/message/D4AOECDSG35YE1', '_blank')
 
+  // Photo always on left, text always on right side of viewport
   const textSideStyle: React.CSSProperties = {
     position: 'absolute',
     top: '50%',
-    left: isRTL ? 'auto' : 'var(--base-padding-x)',
-    right: isRTL ? 'var(--base-padding-x)' : 'auto',
-    maxWidth: '42%',
+    right: 'var(--base-padding-x)',
+    left: 'auto',
+    maxWidth: '44%',
     zIndex: 10,
   }
 
@@ -274,22 +281,113 @@ const HeroAbout = () => {
 
           <Nav language={language} setLanguage={setLanguage} />
 
-          {/* THE shared image — centered, then drifts to About side on scroll */}
-          <div style={{
-            position: 'absolute', left: '50%', top: '50%',
-            transform: 'translate(-50%, -50%)', zIndex: 2,
-          }}>
-            <motion.div style={{
+          {/* Decorative background arc */}
+          <svg
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 1 }}
+            viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice"
+          >
+            <circle cx="420" cy="520" r="420" fill="none" stroke="rgba(26,24,20,0.055)" strokeWidth="1.5" />
+            <circle cx="420" cy="520" r="310" fill="none" stroke="rgba(26,24,20,0.035)" strokeWidth="1" />
+          </svg>
+
+          {/* THE shared image — bottom-anchored, full height */}
+          <motion.div
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              left: '4vw',
+              right: 'auto',
               x: imageX, y: imageY, scale: imageScale,
-              width: 'clamp(300px, 34vw, 460px)', height: '72vh',
-              borderRadius: 20, overflow: 'hidden', willChange: 'transform',
-              boxShadow: '0 32px 80px rgba(26,24,20,0.18)',
+              width: 'clamp(320px, 36vw, 500px)',
+              height: '96vh',
+              willChange: 'transform',
+              zIndex: 2,
+            }}
+          >
+            {/* Floating editorial badge */}
+            <div style={{
+              position: 'absolute',
+              top: '18%',
+              right: '-2rem',
+              left: 'auto',
+              zIndex: 10,
+              background: 'var(--color-ink)',
+              color: 'white',
+              borderRadius: '9999px',
+              padding: '0.4rem 1rem',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.65rem',
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              whiteSpace: 'nowrap',
+              boxShadow: '0 4px 16px rgba(26,24,20,0.18)',
             }}>
-              <img
-                src={HERO_IMAGE}
-                alt="Shani"
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
+              {language === 'he' ? '✦ זמינה לפרויקטים' : '✦ Available for projects'}
+            </div>
+
+            {/* Profile 1 — hero phase */}
+            <motion.img
+              src={HERO_IMAGE_1}
+              alt="Shani"
+              style={{
+                position: 'absolute', bottom: 0, left: '50%', translateX: '-50%',
+                width: '100%', height: '100%', objectFit: 'contain',
+                objectPosition: 'bottom center',
+                opacity: image1Opacity,
+                scale: image1Scale,
+                transformOrigin: 'bottom center',
+                filter: 'drop-shadow(0 20px 40px rgba(26,24,20,0.18))',
+              }}
+            />
+            {/* Profile 2 — about phase */}
+            <motion.img
+              src={HERO_IMAGE_2}
+              alt="Shani"
+              style={{
+                position: 'absolute', bottom: 0, left: '50%', translateX: '-50%',
+                width: '100%', height: '100%', objectFit: 'contain',
+                objectPosition: 'bottom center',
+                opacity: image2Opacity,
+                scale: image2Scale,
+                transformOrigin: 'bottom center',
+                filter: 'drop-shadow(0 20px 40px rgba(26,24,20,0.18))',
+              }}
+            />
+          </motion.div>
+
+          {/* Bottom marquee strip */}
+          <div style={{
+            position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 5,
+            borderTop: '1px solid rgba(26,24,20,0.10)',
+            background: 'var(--color-cream)',
+            overflow: 'hidden', height: '2.8rem', display: 'flex', alignItems: 'center',
+          }}>
+            <motion.div
+              animate={{ x: isRTL ? ['0%', '50%'] : ['0%', '-50%'] }}
+              transition={{ duration: 28, repeat: Infinity, ease: 'linear' }}
+              style={{ display: 'flex', gap: '3rem', whiteSpace: 'nowrap', paddingInline: '2rem' }}
+            >
+              {Array(6).fill(null).map((_, i) => (
+                <span key={i} style={{
+                  fontFamily: 'var(--font-mono)', fontSize: '0.65rem',
+                  letterSpacing: '0.18em', textTransform: 'uppercase',
+                  color: 'var(--color-ink-muted)',
+                  display: 'flex', alignItems: 'center', gap: '2rem',
+                }}>
+                  <span>ניהול סושיאל</span>
+                  <span style={{ color: 'var(--color-orange)' }}>✦</span>
+                  <span>צילום רילס</span>
+                  <span style={{ color: 'var(--color-orange)' }}>✦</span>
+                  <span>אירועים וחתונות</span>
+                  <span style={{ color: 'var(--color-orange)' }}>✦</span>
+                  <span>Save The Date</span>
+                  <span style={{ color: 'var(--color-orange)' }}>✦</span>
+                  <span>צילומי מלונאות</span>
+                  <span style={{ color: 'var(--color-orange)' }}>✦</span>
+                  <span>בניית מותג</span>
+                  <span style={{ color: 'var(--color-orange)' }}>✦</span>
+                </span>
+              ))}
             </motion.div>
           </div>
 
@@ -320,10 +418,10 @@ const HeroAbout = () => {
           }} />
           <Nav language={language} setLanguage={setLanguage} />
 
-          <img src={HERO_IMAGE} alt="Shani" style={{
-            width: 'clamp(220px, 70vw, 320px)', height: 'auto', aspectRatio: '3/4',
-            objectFit: 'cover', borderRadius: 20, position: 'relative', zIndex: 1,
-            boxShadow: '0 24px 60px rgba(26,24,20,0.15)',
+          <img src={HERO_IMAGE_1} alt="Shani" style={{
+            width: 'clamp(240px, 72vw, 340px)', height: 'auto',
+            objectFit: 'contain', position: 'relative', zIndex: 1,
+            filter: 'drop-shadow(0 16px 32px rgba(26,24,20,0.18))',
           }} />
 
           <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: 400 }}>
@@ -335,7 +433,13 @@ const HeroAbout = () => {
         <section id="about" style={{
           background: 'var(--color-cream)', padding: '4rem var(--base-padding-x)',
           borderTop: '1px solid var(--color-line)',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2rem',
         }}>
+          <img src={HERO_IMAGE_2} alt="Shani" style={{
+            width: 'clamp(240px, 72vw, 340px)', height: 'auto',
+            objectFit: 'contain',
+            filter: 'drop-shadow(0 16px 32px rgba(26,24,20,0.18))',
+          }} />
           <AboutText language={language} tags={tags} onGallery={() => setGalleryOpen(true)} />
         </section>
       </div>
