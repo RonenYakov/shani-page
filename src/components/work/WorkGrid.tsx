@@ -158,12 +158,12 @@ const WORK_ITEMS: WorkItem[] = [
       '/posters/brands/streets.webp',
     ],
     videos: [
-      '/videos/social managment/a529c7ea-166d-46a5-91b3-ad3526017ea6.mp4',
-      '/videos/social managment/IMG_0979.mp4',
-      '/videos/social managment/IMG_1073.mp4',
-      '/videos/social managment/IMG_1682.mp4',
-      '/videos/social managment/copy_1B0F41C9-58B9-4C98-8C9F-7BCDA4318999.mp4',
-      '/videos/social managment/סרטון תדמית מסעדה-B.mp4',
+      '/videos/social-managment/a529c7ea-166d-46a5-91b3-ad3526017ea6.mp4',
+      '/videos/social-managment/IMG_0979.mp4',
+      '/videos/social-managment/IMG_1073.mp4',
+      '/videos/social-managment/IMG_1682.mp4',
+      '/videos/social-managment/copy_1B0F41C9-58B9-4C98-8C9F-7BCDA4318999.mp4',
+      '/videos/social-managment/סרטון תדמית מסעדה-B.mp4',
     ],
   },
   {
