@@ -1,10 +1,47 @@
 import { useRef, useState, useEffect } from 'react'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion, useScroll, useTransform, useInView } from 'framer-motion'
 import { useI18n } from '@/i18n/simple'
 import StoriesGalleryModal from './StoriesGalleryModal'
 
+// Counts from 0 to target when triggerRef enters view (mobile only)
+function useCountUp(target: number, duration = 1200, trigger: boolean) {
+  const [value, setValue] = useState(0)
+  useEffect(() => {
+    if (!trigger) return
+    let start: number | null = null
+    const step = (ts: number) => {
+      if (!start) start = ts
+      const progress = Math.min((ts - start) / duration, 1)
+      setValue(Math.floor(progress * target))
+      if (progress < 1) requestAnimationFrame(step)
+    }
+    requestAnimationFrame(step)
+  }, [trigger, target, duration])
+  return value
+}
+
 const HERO_IMAGE_1 = '/profile1-styled.png'
 const HERO_IMAGE_2 = '/profile2-styled.png'
+
+// Animated stat chips for mobile hero
+const AnimatedStatChips = ({ language }: { language: string }) => {
+  const ref = useRef<HTMLDivElement>(null)
+  const inView = useInView(ref, { once: true, margin: '-20px' })
+  const views = useCountUp(7, 1200, inView)
+  const lift = useCountUp(40, 1000, inView)
+  const chipStyle: React.CSSProperties = {
+    background: 'rgba(26,24,20,0.06)', border: '1px solid rgba(26,24,20,0.12)',
+    color: 'var(--color-ink)', borderRadius: '9999px',
+    padding: '0.25rem 0.75rem', fontSize: '0.8rem', fontFamily: 'var(--font-body)',
+  }
+  return (
+    <div ref={ref} style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', justifyContent: 'center' }}>
+      <span style={chipStyle}>{language === 'he' ? `${views}+ מיליון צפיות` : `${views}M+ views`}</span>
+      <span style={chipStyle}>{language === 'he' ? `${lift}%+ עליה בפניות` : `${lift}%+ lift in inquiries`}</span>
+      <span style={chipStyle}>{language === 'he' ? 'מותגים מקומיים סומכים' : 'Trusted by local brands'}</span>
+    </div>
+  )
+}
 
 const WhatsAppIcon = () => (
   <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
@@ -418,14 +455,24 @@ const HeroAbout = () => {
           }} />
           <Nav language={language} setLanguage={setLanguage} />
 
-          <img src={HERO_IMAGE_1} alt="Shani" style={{
-            width: 'clamp(240px, 72vw, 340px)', height: 'auto',
-            objectFit: 'contain', position: 'relative', zIndex: 1,
-            filter: 'drop-shadow(0 16px 32px rgba(26,24,20,0.18))',
-          }} />
+          {/* Animation 3: scale-in entrance on load */}
+          <motion.img
+            src={HERO_IMAGE_1}
+            alt="Shani"
+            initial={{ opacity: 0, scale: 0.92 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, ease: [0.35, 0, 0, 1] }}
+            style={{
+              width: 'clamp(240px, 72vw, 340px)', height: 'auto',
+              objectFit: 'contain', position: 'relative', zIndex: 1,
+              filter: 'drop-shadow(0 16px 32px rgba(26,24,20,0.18))',
+            }}
+          />
 
           <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: 400 }}>
-            <HeroText language={language} chips={chips} onWhatsApp={handleWhatsApp} />
+            {/* Animation 4: animated stat counters replace static chips on mobile */}
+            <HeroText language={language} chips={[]} onWhatsApp={handleWhatsApp} />
+            <AnimatedStatChips language={language} />
           </div>
         </section>
 

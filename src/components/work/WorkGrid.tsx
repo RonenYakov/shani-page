@@ -448,9 +448,15 @@ const WorkCard = ({ item, index, isRTL, language, isMobile, onClick }: WorkCardP
   return (
     <motion.div
       ref={cardRef}
-      initial={{ opacity: 0, y: isMobile ? 20 : 40 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: isMobile ? 0.5 : 1.0, delay: pairDelay, ease: EASE }}
+      initial={isMobile
+        ? { clipPath: 'inset(0 0 100% 0)', opacity: 1 }
+        : { opacity: 0, y: 40 }
+      }
+      animate={inView
+        ? (isMobile ? { clipPath: 'inset(0 0 0% 0)', opacity: 1 } : { opacity: 1, y: 0 })
+        : {}
+      }
+      transition={{ duration: isMobile ? 0.65 : 1.0, delay: pairDelay, ease: EASE }}
       style={{ marginTop: !isMobile && index >= 2 ? '5em' : 0 }}
     >
       {/* Image */}
