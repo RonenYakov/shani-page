@@ -8,10 +8,12 @@ import ContactBlock from "@/components/ContactBlock";
 import StickyWhatsApp from "@/components/StickyWhatsApp";
 import Analytics from "@/components/Analytics";
 import Footer from "@/components/Footer";
+import IntroShutter from "@/components/IntroShutter";
 
 const IndexTest = () => {
   return (
     <div className="min-h-screen">
+      <IntroShutter />
       <Analytics />
       <HeroAbout />
       <WorkGrid />

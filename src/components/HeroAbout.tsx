@@ -206,6 +206,53 @@ const AboutText = ({ language, tags, onGallery }: AboutTextProps) => {
   );
 }
 
+// ── Diagonal Slash transition (mobile only) ───────────────────────────────────
+const DiagonalSlash = ({ language }: { language: string }) => {
+  const ref = useRef<HTMLDivElement>(null)
+  const inView = useInView(ref, { once: true, margin: '-40px' })
+  const isRTL = language === 'he'
+
+  return (
+    <div ref={ref} style={{ position: 'relative', height: 72, overflow: 'hidden', background: 'var(--color-cream)' }}>
+      <motion.svg
+        viewBox="0 0 390 72"
+        preserveAspectRatio="none"
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
+        initial={{ opacity: 0 }}
+        animate={inView ? { opacity: 1 } : {}}
+        transition={{ duration: 0.5, ease: [0.35, 0, 0, 1] }}
+      >
+        {/* Ink diagonal fills bottom-half, points up on one side */}
+        <polygon points="0,72 390,20 390,72" fill="#1A1814" />
+        {/* Cream-dark layer below the ink — becomes the About background */}
+        <polygon points="0,72 390,28 390,72" fill="var(--color-cream-dark)" />
+      </motion.svg>
+
+      {/* "אודות" label riding the diagonal edge */}
+      <motion.div
+        initial={{ opacity: 0, x: isRTL ? 12 : -12 }}
+        animate={inView ? { opacity: 1, x: 0 } : {}}
+        transition={{ duration: 0.55, delay: 0.18, ease: [0.35, 0, 0, 1] }}
+        style={{
+          position: 'absolute',
+          top: 14,
+          left: isRTL ? 'auto' : '1.5rem',
+          right: isRTL ? '1.5rem' : 'auto',
+          fontFamily: 'var(--font-mono)',
+          fontSize: '0.6rem',
+          letterSpacing: '0.18em',
+          textTransform: 'uppercase',
+          color: 'var(--color-orange)',
+          zIndex: 2,
+          pointerEvents: 'none',
+        }}
+      >
+        ✦ {language === 'he' ? 'אודות' : 'ABOUT'}
+      </motion.div>
+    </div>
+  )
+}
+
 // ── Nav ──────────────────────────────────────────────────────────────────────
 
 interface NavProps {
@@ -476,10 +523,12 @@ const HeroAbout = () => {
           </div>
         </section>
 
+        {/* ── Diagonal slash transition ── */}
+        <DiagonalSlash language={language} />
+
         {/* Mobile About */}
         <section id="about" style={{
-          background: 'var(--color-cream)', padding: '4rem var(--base-padding-x)',
-          borderTop: '1px solid var(--color-line)',
+          background: 'var(--color-cream-dark)', padding: '4rem var(--base-padding-x)',
           display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2rem',
         }}>
           <img src={HERO_IMAGE_2} alt="Shani" style={{
