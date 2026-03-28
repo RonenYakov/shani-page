@@ -370,15 +370,24 @@ const HeroAbout = () => {
             style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 1 }}
             viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice"
           >
+            <defs>
+              <radialGradient id="orangeOrb" cx="50%" cy="42%" r="50%">
+                <stop offset="0%"   stopColor="rgba(212,98,42,0.32)" />
+                <stop offset="50%"  stopColor="rgba(212,98,42,0.13)" />
+                <stop offset="100%" stopColor="rgba(212,98,42,0)" />
+              </radialGradient>
+            </defs>
+            {/* Outer stroke ring — depth context */}
             <circle cx="420" cy="520" r="420" fill="none" stroke="rgba(26,24,20,0.055)" strokeWidth="1.5" />
-            <circle cx="420" cy="520" r="310" fill="none" stroke="rgba(26,24,20,0.035)" strokeWidth="1" />
+            {/* Inner orb — filled orange radial gradient for 3D sphere feel */}
+            <circle cx="420" cy="520" r="310" fill="url(#orangeOrb)" />
           </svg>
 
-          {/* THE shared image — bottom-anchored, full height */}
+          {/* THE shared image — slightly raised for 3D elevation */}
           <motion.div
             style={{
               position: 'absolute',
-              bottom: 0,
+              bottom: '2vh',
               left: '4vw',
               right: 'auto',
               x: imageX, y: imageY, scale: imageScale,
@@ -388,6 +397,18 @@ const HeroAbout = () => {
               zIndex: 2,
             }}
           >
+            {/* Contact shadow — simulates the photo floating above the ground */}
+            <div style={{
+              position: 'absolute',
+              bottom: -12,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: '68%',
+              height: 36,
+              background: 'radial-gradient(ellipse at center, rgba(26,24,20,0.22) 0%, transparent 70%)',
+              pointerEvents: 'none',
+              zIndex: 0,
+            }} />
             {/* Floating editorial badge */}
             <div style={{
               position: 'absolute',
@@ -420,7 +441,7 @@ const HeroAbout = () => {
                 opacity: image1Opacity,
                 scale: image1Scale,
                 transformOrigin: 'bottom center',
-                filter: 'drop-shadow(0 20px 40px rgba(26,24,20,0.18))',
+                filter: 'drop-shadow(0 32px 56px rgba(26,24,20,0.28)) drop-shadow(0 8px 16px rgba(26,24,20,0.14))',
               }}
             />
             {/* Profile 2 — about phase */}
@@ -434,7 +455,7 @@ const HeroAbout = () => {
                 opacity: image2Opacity,
                 scale: image2Scale,
                 transformOrigin: 'bottom center',
-                filter: 'drop-shadow(0 20px 40px rgba(26,24,20,0.18))',
+                filter: 'drop-shadow(0 32px 56px rgba(26,24,20,0.28)) drop-shadow(0 8px 16px rgba(26,24,20,0.14))',
               }}
             />
           </motion.div>
