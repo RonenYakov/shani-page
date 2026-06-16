@@ -917,9 +917,10 @@
    =========================================================================== */
 @media (max-width: 860px) {
 
-  /* headline sits lower so it stays connected to the figure top */
+  /* headline sits high enough that the tagline clears the top of her head
+     (lands over white space above the figure, not over her hair) */
   .shani-hero .headline {
-    padding-top: 25vh;
+    padding-top: 20vh;
   }
 
   /* crop the wide cutout into a tall portrait that rises into MANAGER and
@@ -933,7 +934,7 @@
 
   .shani-hero .figure-wrap {
     width: 100vw;
-    height: 64vh;
+    height: 60vh;
     aspect-ratio: auto;
   }
 
@@ -950,22 +951,24 @@
     max-width: 64vw;
   }
 
-  /* --- three foreground elements aligned on one bottom baseline --- */
+  /* --- bottom band: caption left + badge right share a low baseline,
+     the scroll cue lifts to center-above them so nothing collides
+     (the sticky WhatsApp bar is hidden on the hero, so this space is free) --- */
   .shani-hero .caption {
     left: 6vw;
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 80px);
-  }
-
-  .shani-hero .scroll-hint {
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 80px);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 32px);
   }
 
   .shani-hero .badge {
     width: 72px;
     height: 72px;
-    right: 5vw;
+    right: 6vw;
     top: auto;
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 80px);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 32px);
+  }
+
+  .shani-hero .scroll-hint {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 32px);
   }
 }
 
@@ -985,10 +988,10 @@
     width: 68px;
     height: 68px;
     top: auto;
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 80px);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 32px);
   }
 
   .shani-hero .headline {
-    padding-top: 22vh;
+    padding-top: 18vh;
   }
 }

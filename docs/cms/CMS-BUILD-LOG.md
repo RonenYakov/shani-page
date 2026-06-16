@@ -4,7 +4,7 @@
 > "Where we left off" + checklist every session so we can always catch up
 > on what we did and why. Read this top-to-bottom to get back up to speed.
 
-Last updated: **2026-06-16** · Status: **Phase 1 — not started yet (design approved)**
+Last updated: **2026-06-16** · Status: **Phase 1 — in progress** (Node v22 / npm 10 confirmed)
 
 ---
 
