@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence, useInView } from 'framer-motion'
-import { useI18n } from '@/i18n/simple'
-import { VIDEO_MANIFEST } from '@/content/videoManifest'
+import { WORK_MEDIA } from '@/content/workMedia'
+import { socials } from '@/content/socials'
+import './WorkGrid.css'
 
 const EASE: [number, number, number, number] = [0.35, 0, 0, 1]
 
@@ -18,7 +19,18 @@ interface NichePalette {
   scrollbar: string
 }
 
-const PALETTES: Record<string, NichePalette> = {
+const PALETTES = {
+  photoshoot: {
+    bg: '#080C14',
+    cardBg: '#0F1422',
+    accent: '#1a2ffb',
+    accentText: '#fff',
+    heading: '#F0F4FF',
+    body: '#B0B8D0',
+    muted: '#506080',
+    divider: 'rgba(240,244,255,0.08)',
+    scrollbar: 'rgba(26,47,251,0.5)',
+  },
   weddings: {
     bg: '#FBF4F0',
     cardBg: '#F5EBE6',
@@ -30,7 +42,7 @@ const PALETTES: Record<string, NichePalette> = {
     divider: 'rgba(58,21,32,0.12)',
     scrollbar: 'rgba(196,137,154,0.4)',
   },
-  restaurants: {
+  management: {
     bg: '#1C0F08',
     cardBg: '#2A1810',
     accent: '#C4622A',
@@ -41,382 +53,239 @@ const PALETTES: Record<string, NichePalette> = {
     divider: 'rgba(245,232,216,0.1)',
     scrollbar: 'rgba(196,98,42,0.4)',
   },
-  social: {
-    bg: '#080C14',
-    cardBg: '#0F1422',
-    accent: '#1a2ffb',
+  ugc: {
+    bg: '#F8F2F5',
+    cardBg: '#F1E7EC',
+    accent: '#F2B1B1',
     accentText: '#fff',
-    heading: '#F0F4FF',
-    body: '#B0B8D0',
-    muted: '#506080',
-    divider: 'rgba(240,244,255,0.08)',
-    scrollbar: 'rgba(26,47,251,0.5)',
+    heading: '#2E1B26',
+    body: '#5A4150',
+    muted: '#9A7A8B',
+    divider: 'rgba(46,27,38,0.1)',
+    scrollbar: 'rgba(154,111,134,0.4)',
   },
-  savethedate: {
-    bg: '#F8F0EE',
-    cardBg: '#F0E5E0',
-    accent: '#9B6878',
-    accentText: '#fff',
-    heading: '#2A1520',
-    body: '#5C3040',
-    muted: '#9B7080',
-    divider: 'rgba(42,21,32,0.1)',
-    scrollbar: 'rgba(155,104,120,0.4)',
-  },
-  hotels: {
-    bg: '#091522',
-    cardBg: '#0F2035',
-    accent: '#C8A882',
-    accentText: '#091522',
-    heading: '#F0EBE0',
-    body: '#C0B8A8',
-    muted: '#607080',
-    divider: 'rgba(240,235,224,0.1)',
-    scrollbar: 'rgba(200,168,130,0.4)',
-  },
-  brands: {
-    bg: '#1A1814',
-    cardBg: '#231F1A',
-    accent: '#D4622A',
-    accentText: '#fff',
-    heading: '#F5F0E8',
-    body: '#C0BAB0',
-    muted: '#706860',
-    divider: 'rgba(245,240,232,0.1)',
-    scrollbar: 'rgba(212,98,42,0.4)',
-  },
-}
+} satisfies Record<string, NichePalette>
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 interface WorkItem {
-  id: string
-  paletteKey: keyof typeof PALETTES
+  id: keyof typeof PALETTES
   tags: string
-  tagsEn: string
   title: string
-  titleEn: string
   coverAsset: string
   coverPosition?: string
   coverOverlay?: string
   description: string
-  descriptionEn: string
   services: string[]
-  servicesEn: string[]
-  gallery: string[]
-  videos?: string[]
 }
 
 const WORK_ITEMS: WorkItem[] = [
   {
-    id: 'weddings',
-    paletteKey: 'weddings',
-    tags: 'חתונות • וידאו • רגעים',
-    tagsEn: 'WEDDINGS • VIDEO • MOMENTS',
-    title: 'סושיאל חתונות',
-    titleEn: 'Wedding Films',
-    coverAsset: '/posters/theme/weddings-social.png',
-    description:
-      "ניהול וצילום תוכן קולנועי (רילס, טיקטוק) ישירות מתוך אירוע החתונה שלכם. אנחנו לא רק מתעדים, אלא יוצרים Buzz סביב הרגעים המרגשים ביותר. בעזרת ציוד מקצועי ורחפן, אנחנו לוכדים זוויות ייחודיות שהאורחים שלכם ירצו לשתף. אני באה להפוך את היום המיוחד שלכם להכי קסום שיש בעזרת ליווי מההתארגנות ועד הריקודים, לתפוס כל רגע קטן שלא תשכחו לעד.",
-    descriptionEn:
-      'Cinematic social content (Reels, TikTok) captured live from your wedding day. We don\'t just document — we create Buzz around your most emotional moments. With professional gear and a drone, we capture unique angles your guests will want to share.',
-    services: ['וידאו חתונות', 'רילס ותוכן', 'אינסטגרם סטוריז', 'עריכה'],
-    servicesEn: ['Wedding Video', 'Reels & Content', 'Instagram Stories', 'Editing'],
-    gallery: [
-      '/posters/weddings/proposel.webp',
-    ],
-    videos: [
-      '/videos/weddings/3325b41d9ff84aac99fffe62b5818863.mp4',
-      '/videos/weddings/65259cb11a2c4ddfa02131c5be588092.mp4',
-      '/videos/weddings/6f0e8e98a5064a17b45c18a199e43359.mp4',
-      '/videos/weddings/VID_20260321_130846_626.mp4',
-      '/videos/weddings/c35aef4ab07645b99bb7903c646ecc61.mp4',
-    ],
-  },
-  {
-    id: 'restaurants',
-    paletteKey: 'restaurants',
-    tags: 'קידום עסקים • סושיאל • יצירת לידים',
-    tagsEn: 'SOCIAL MEDIA • GROWTH • LEADS',
-    title: 'ניהול סושיאל',
-    titleEn: 'Social Media Management',
-    coverAsset: '/posters/theme/social-managment.jpg',
-    coverPosition: 'top',
-    coverOverlay: 'rgba(212,98,42,0.18)',
-    description:
-      "אנחנו בונים לעסק מנוע צמיחה דיגיטלי המבוסס על תוכן אורגני ויראלי, ניתוח אלגוריתמים ומערך הבאת לידים חכם. השירות כולל ניהול שוטף וימי צילום ברמה הכי גבוה בשוק, אופטימיזציה לביצועים ואופציה לקידום ממומן ממוקד, קיריאייטיב מדויק והכי חשוב ניצור סיבבת עבודה שרק תצמח — הכל כדי להפוך צפיות לתוצאות עסקיות בשטח.",
-    descriptionEn:
-      'We build a digital growth engine for your business — organic viral content, algorithm analysis, and smart lead generation. Includes ongoing management, premium shoot days, performance optimisation, and targeted paid promotion. Everything to turn views into real business results.',
-    services: ['הפקת וידאו תדמית', 'צילום מוצר', 'סטוריז ורילס', 'קידום ממומן'],
-    servicesEn: ['Brand Video Production', 'Product Photography', 'Stories & Reels', 'UGC'],
-    gallery: [
-
-    ],
-    videos: [
-      '/videos/social-managment/a529c7ea-166d-46a5-91b3-ad3526017ea6.mp4',
-      '/videos/social-managment/IMG_0979.mp4',
-      '/videos/social-managment/IMG_1073.mp4',
-      '/videos/social-managment/IMG_1682.mp4',
-      '/videos/social-managment/copy_1B0F41C9-58B9-4C98-8C9F-7BCDA4318999.mp4',
-    ],
-  },
-  {
-    id: 'social',
-    paletteKey: 'social',
+    id: 'photoshoot',
     tags: 'סושיאל • ימי צילום • תוכן',
-    tagsEn: 'SOCIAL • UGC • CONTENT',
     title: 'צילומי סושיאל',
-    titleEn: 'Social Shoots',
     coverAsset: '/posters/theme/social-shoots.png',
     coverPosition: 'center',
     coverOverlay: 'rgba(180,120,60,0.22)',
     description: 'יום צילום מרוכז ומדויק לעסקים שרוצים להרים את הרמה של הנראות שלהם בלי התחייבות לניהול חודשי. ביום אחד אנחנו מייצרים לכם "בנק תוכן" של סרטונים ותמונות בסטנדרט גבוה, מותאמים לטרנדים הכי חמים, כך שיהיה לכם תוכן איכותי להעלות בעצמכם לאורך חודש שלם. זה הפתרון האידיאלי למי שצריך תוצאה מקצועית ומהירה במינימום זמן ומקסימום אימפקט ויזואלי.',
-    descriptionEn:
-      'Short-form video production (Reels, TikTok) tailored to your brand. Smart content strategy meets high production quality — videos that don\'t just look great, they drive action and boost engagement.',
     services: ['תוכן UGC', 'רילס וטיקטוק', 'ניהול קמפיינים', 'אסטרטגיה'],
-    servicesEn: ['UGC Content', 'Reels & TikTok', 'Campaign Management', 'Strategy'],
-    gallery: [
-      '/posters/brands/ugc-B.webp',
-    ],
-    videos: [
-      '/videos/social/VID_20260321_125846_870.mp4',
-      '/videos/social/a553ec9620b24d8b8ad319a889ab3821.mp4',
-      '/videos/social/f876f334e71347faa8ad4779a37b5759.mp4',
-      '/videos/social/IMG_2424.mp4',
-      '/videos/social/copy_9BB61E2F-0894-4FB9-B7F3-C301CDDBF5D7.mp4',
-    ],
   },
   {
-    id: 'savethedate',
-    paletteKey: 'savethedate',
-    tags: 'סייב דה דייט • הצעה • אירוסין',
-    tagsEn: 'SAVE THE DATE • PROPOSAL • ENGAGEMENT',
-    title: 'סייב דה דייט',
-    titleEn: 'Save the Date',
-    coverAsset: '/posters/theme/save-the-date.png',
+    id: 'weddings',
+    tags: 'חתונות • וידאו • רגעים',
+    title: 'סושיאל חתונות',
+    coverAsset: '/posters/theme/weddings-social.png',
     description:
-      'יצירת תוכן וידאו מקורי ומפתיע שיגרום לכל האורחים לסמן את התאריך. מרעיון קריאטיבי ועד צילום אווירי ברחפן — ה-Save the Date שלכם יהיה בלתי נשכח ובעל פוטנציאל ויראלי גבוה.',
-    descriptionEn:
-      'Original, surprising video content that makes every guest mark the date. From creative concept to aerial drone footage — your Save the Date will be unforgettable and highly shareable.',
-    services: ['סרטוני הצעה', 'אירוסין', 'סייב דה דייט', 'רגעים'],
-    servicesEn: ['Proposal Videos', 'Engagement', 'Save the Date', 'Moments'],
-    gallery: [
+      "ניהול וצילום תוכן קולנועי (רילס, טיקטוק) ישירות מתוך אירוע החתונה שלכם. אנחנו לא רק מתעדים, אלא יוצרים תהודה סביב הרגעים המרגשים ביותר. בעזרת ציוד מקצועי ורחפן, אנחנו לוכדים זוויות ייחודיות שהאורחים שלכם ירצו לשתף. אני באה להפוך את היום המיוחד שלכם להכי קסום שיש בעזרת ליווי מההתארגנות ועד הריקודים, לתפוס כל רגע קטן שלא תשכחו לעד.",
+    services: ['וידאו חתונות', 'רילס ותוכן', 'אינסטגרם סטוריז', 'עריכה'],
+  },
+  {
+    id: 'management',
+    tags: 'קידום עסקים • סושיאל • יצירת לידים',
+    title: 'ניהול סושיאל',
+    coverAsset: '/posters/theme/social-managment.jpg',
+    coverPosition: 'top',
+    coverOverlay: 'rgba(155,143,168,0.18)',
+    description:
+      "אנחנו בונים לעסק מנוע צמיחה דיגיטלי המבוסס על תוכן אורגני ויראלי, ניתוח אלגוריתמים ומערך הבאת לידים חכם. השירות כולל ניהול שוטף וימי צילום ברמה הכי גבוה בשוק, אופטימיזציה לביצועים ואופציה לקידום ממומן ממוקד, קיריאייטיב מדויק והכי חשוב ניצור סיבבת עבודה שרק תצמח - הכל כדי להפוך צפיות לתוצאות עסקיות בשטח.",
+    services: ['הפקת וידאו תדמית', 'צילום מוצר', 'סטוריז ורילס', 'קידום ממומן'],
+  },
+  {
+    id: 'ugc',
+    tags: 'המלצות • UGC • תוכן גולשים',
+    title: 'המלצות ו-UGC',
+    coverAsset: '/posters/brands/ugc-B.webp',
+    description:
+      'הכוח של המלצה אמיתית: תוכן גולשים (UGC) והמלצות מצולמות של לקוחות מרוצים הם הכלי החזק ביותר לבניית אמון. אנחנו מפיקים סרטוני המלצות אותנטיים וקליפים בסגנון UGC שמרגישים אמיתיים, מדברים בגובה העיניים - וגורמים ללקוחות הבאים להגיד כן.',
+    services: ['סרטוני המלצות', 'תוכן UGC', 'עדויות לקוחות', 'קריאייטיב'],
+  },
+]
 
-    ],
-    videos: [
-      '/videos/savethedate/cf88b840faff4eb49de37d27f6079602.mp4',
-      '/videos/savethedate/6f0e8e98a5064a17b45c18a199e43359-1.mp4',
-      '/videos/savethedate/IMG_9684.mp4',
-    ],
+// ─── Featured cards — the 4 categories shown on the page ─────────────────────
+interface FeaturedCard {
+  itemId: WorkItem['id']
+  n: string
+  /** English header — design language of the new hero */
+  title: string
+  desc: string
+  chip: string
+}
+
+const FEATURED: FeaturedCard[] = [
+  {
+    itemId: 'photoshoot',
+    n: '01',
+    title: 'Photoshoot Days',
+    desc: 'יום צילום אחד - בנק תוכן שלם של סרטונים ותמונות.',
+    chip: 'shoot day',
   },
   {
-    id: 'hotels',
-    paletteKey: 'hotels',
-    tags: 'מלונות • חופשות • דרון',
-    tagsEn: 'HOTELS • VACATIONS • DRONE',
-    title: 'צילומי מלונאות',
-    titleEn: 'The Great Escape',
-    coverAsset: '/posters/theme/hotels.png',
-    description:
-      'אנו משתמשים בצילום אווירי ברחפן להדגשת הנוף המרהיב ובצילום קרוב ללכידת פרטי החופשה המושלמת. תוכן שמוכר חווייה — לא רק חדר.',
-    descriptionEn:
-      'Aerial drone shots highlight breathtaking views while close-up footage captures the details of the perfect getaway. Content that sells an experience — not just a room.',
-    services: ['צילום דרון', 'וידאו תדמית', 'ניהול סושיאל', 'רילס'],
-    servicesEn: ['Drone Photography', 'Brand Video', 'Social Management', 'Reels'],
-    gallery: [
-      '/posters/hotels/hotel drone shot.webp',
-      '/posters/hotels/v14044g50000d1ma62vog65k1sjdbu90.webp',
-      '/posters/hotels/v14044g50000d1pk9hfog65ji0k9nub0.webp',
-      '/posters/hotels/v1c044g50000d2qrjgfog65q8kapaf30.webp',
-    ],
-    videos: [
-      '/videos/hotels/VID_20260321_130726_487.mp4',
-      '/videos/hotels/VID_20260321_130746_721.mp4',
-      '/videos/hotels/VID_20260321_130914_326.mp4',
-      '/videos/hotels/copy_5D2781DD-1C9B-4F48-8845-B3615FFD4A30.mp4',
-      '/videos/hotels/copy_CEBE3CEA-EC9D-47D7-B191-094750BB9D9B.mp4',
-      '/videos/hotels/storis-background.mp4',
-      '/videos/hotels/brand-video-hotel.mp4',
-    ],
+    itemId: 'weddings',
+    n: '02',
+    title: 'Social for Weddings',
+    desc: 'סטוריז חיים, רילס וסרטוני תקציר - ישר מתוך היום הגדול.',
+    chip: 'live stories',
   },
   {
-    id: 'brands',
-    paletteKey: 'brands',
-    tags: 'מותגים • תוכן • אסטרטגיה',
-    tagsEn: 'BRANDS • CONTENT • STRATEGY',
-    title: 'פיתוח מותגים',
-    titleEn: 'Growth Lab',
-    coverAsset: '/posters/theme/brands.png',
-    description:
-      'ניהול מקיף של כל הפלטפורמות החברתיות שלכם — מאסטרטגיית תוכן, דרך הפקה מקורית (כולל וידאו וצילום אווירי), ועד לניהול קהילה וניתוח ביצועים. בניית מותג חזק, הגברת מעורבות והגדלת מכירות.',
-    descriptionEn:
-      'Full-service social media management across all platforms — from content strategy through original production (including video and drone) to community management and analytics. Build a strong brand, boost engagement, grow sales.',
-    services: ['אסטרטגיה דיגיטלית', 'ניהול סושיאל מדיה', 'הפקת תוכן', 'ברנדינג'],
-    servicesEn: ['Digital Strategy', 'Social Media Management', 'Content Production', 'Branding'],
-    gallery: [
-      '/posters/brands/streets.webp',
-      '/posters/brands/mahlevet evri.webp',
-      '/posters/brands/agalt-cafe.webp',
-      '/posters/brands/ugc-B.webp',
-    ],
-    videos: [],
+    itemId: 'management',
+    n: '03',
+    title: 'Social Management',
+    desc: 'אסטרטגיה, לוח תוכן וצמיחה - מנוע דיגיטלי לעסק שלכם.',
+    chip: 'the feed',
+  },
+  {
+    itemId: 'ugc',
+    n: '04',
+    title: 'Recommendations & UGC',
+    desc: 'המלצות אמיתיות ותוכן גולשים שבונים אמון וממירים.',
+    chip: 'real talk',
   },
 ]
 
 // ─── Main section ─────────────────────────────────────────────────────────────
 const WorkGrid = () => {
-  const { language } = useI18n()
-  const isRTL = language === 'he'
   const [selected, setSelected] = useState<WorkItem | null>(null)
-  const [isMobile, setIsMobile] = useState(false)
-  const sectionRef = useRef<HTMLElement>(null)
-  const titleInView = useInView(sectionRef, { once: true, margin: '-80px' })
+  const headRef = useRef<HTMLHeadingElement>(null)
+  const headInView = useInView(headRef, { once: true, margin: '-60px' })
 
+  // Mobile carousel: track which card is centred so the dots reflect position
+  const cardsRef = useRef<HTMLDivElement>(null)
+  const [active, setActive] = useState(0)
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768)
-    check()
-    window.addEventListener('resize', check)
-    return () => window.removeEventListener('resize', check)
+    const el = cardsRef.current
+    if (!el) return
+    const onScroll = () => {
+      const slots = Array.from(el.querySelectorAll<HTMLElement>('.wg-slot'))
+      if (!slots.length) return
+      const center = el.getBoundingClientRect().left + el.clientWidth / 2
+      let best = 0
+      let bestDist = Infinity
+      slots.forEach((s, i) => {
+        const r = s.getBoundingClientRect()
+        const dist = Math.abs(r.left + r.width / 2 - center)
+        if (dist < bestDist) { bestDist = dist; best = i }
+      })
+      setActive(best)
+    }
+    onScroll()
+    el.addEventListener('scroll', onScroll, { passive: true })
+    return () => el.removeEventListener('scroll', onScroll)
   }, [])
 
+  const scrollToCard = (i: number) => {
+    const slot = cardsRef.current?.querySelectorAll<HTMLElement>('.wg-slot')[i]
+    slot?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
+  }
+
   const handleWhatsApp = () => {
-    window.open('https://wa.me/message/D4AOECDSG35YE1', '_blank')
+    window.open(socials.whatsappUrl, '_blank')
   }
 
   return (
     <>
-      <motion.section
-        ref={sectionRef}
-        id="work"
-        dir={isRTL ? 'rtl' : 'ltr'}
-        style={{
-          background: 'var(--color-cream)',
-          padding: `0 var(--base-padding-x) clamp(80px, 10vw, 140px)`,
-          position: 'relative',
-        }}
-      >
-        {/* ── Divider line ── */}
-        <div style={{ overflow: 'hidden', marginBottom: 'clamp(50px, 6vw, 80px)' }}>
+      <section className="shani-work" id="work">
+        {/* ── label + lead ── */}
+        <div className="wg-top">
           <motion.div
-            initial={{ scaleX: 0, transformOrigin: isRTL ? 'right' : 'left' }}
-            animate={titleInView ? { scaleX: 1 } : {}}
-            transition={{ duration: 1.1, ease: EASE }}
-            style={{ height: 1, background: 'rgba(26,24,20,0.14)', width: '100%' }}
-          />
-        </div>
+            className="wg-labelwrap"
+            initial={{ opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.7, ease: EASE }}
+          >
+            <i className="wg-cross" />
+            <div className="wg-label">
+              View the
+              <br />
+              latest work
+            </div>
+          </motion.div>
 
-        {/* ── Section counter + header ── */}
-        <div style={{ marginBottom: 'clamp(48px, 5vw, 72px)' }}>
-          {/* Orange index label */}
           <motion.p
-            initial={{ opacity: 0, y: 6 }}
-            animate={titleInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, ease: EASE }}
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '0.68rem',
-              textTransform: 'uppercase',
-              letterSpacing: '0.18em',
-              color: 'var(--color-orange)',
-              marginBottom: '1rem',
-            }}
+            className="wg-lead"
+            dir="rtl"
+            initial={{ opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.7, delay: 0.12, ease: EASE }}
           >
-            — 01 / WORK
+            מבחר עבודות מארבעת התחומים שבהם אני עוזרת ללקוחות לצמוח.{' '}
+            <b>לחצו על קטגוריה</b> לצפייה בפרויקטים המלאים.
           </motion.p>
-
-          {/* Title row */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'flex-end',
-              justifyContent: 'space-between',
-              gap: '2rem',
-              flexWrap: isMobile ? 'wrap' : 'nowrap',
-            }}
-          >
-            {/* Word-by-word title reveal */}
-            <h2 style={{
-              fontFamily: isRTL ? 'var(--font-display)' : 'var(--font-display-en-hero)',
-              fontWeight: isRTL ? 900 : 400,
-              fontSize: 'clamp(3rem, 8vw, 8rem)',
-              lineHeight: 0.9,
-              letterSpacing: isRTL ? '-0.02em' : '-0.01em',
-              color: 'var(--color-ink)',
-              margin: 0,
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '0 0.22em',
-              flex: 1,
-            }}>
-              {(isRTL ? 'עבודות נבחרות' : 'Featured Work').split(' ').map((word, i) => (
-                <span key={i} style={{ display: 'inline-block', overflow: 'hidden' }}>
-                  <motion.span
-                    style={{ display: 'inline-block' }}
-                    initial={{ y: '110%' }}
-                    animate={titleInView ? { y: 0 } : {}}
-                    transition={{ duration: 0.9, delay: i * 0.13, ease: EASE }}
-                  >
-                    {word}
-                  </motion.span>
-                </span>
-              ))}
-              {/* Orange underline */}
-              <span style={{ display: 'block', width: '100%', height: '3px', background: 'var(--color-orange)', borderRadius: '9999px', marginTop: '0.2em' }} />
-            </h2>
-
-            {/* Disclaimer */}
-            <motion.p
-              initial={{ opacity: 0, y: 8 }}
-              animate={titleInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.7, delay: 0.5, ease: EASE }}
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '0.6rem',
-                textTransform: 'uppercase',
-                letterSpacing: '0.12em',
-                color: 'var(--color-ink-muted)',
-                maxWidth: isMobile ? '100%' : '24ch',
-                lineHeight: 1.65,
-                textAlign: isRTL ? 'right' : 'left',
-                paddingBottom: '0.3em',
-                flexShrink: 0,
-              }}
-            >
-              {isRTL
-                ? 'מבחר עבודות שנוצרו עם מותגים ועסקים שאנחנו אוהבים'
-                : 'A selection of passionately crafted works with brands we love'}
-            </motion.p>
-          </div>
         </div>
 
-        {/* ── 6-card grid ── */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
-            gap: isMobile ? '1.5rem' : '2vw',
-          }}
-        >
-          {WORK_ITEMS.map((item, i) => (
-            <WorkCard
-              key={item.id}
-              item={item}
-              index={i}
-              isRTL={isRTL}
-              language={language}
-              isMobile={isMobile}
-              onClick={() => setSelected(item)}
+        {/* ── giant centered headline ── */}
+        <h2 className="wg-giant" ref={headRef}>
+          {['The', 'Work'].map((word, i) => (
+            <span className="wg-word" key={word}>
+              <motion.span
+                className={i === 1 ? 'ac' : undefined}
+                initial={{ y: '110%' }}
+                animate={headInView ? { y: 0 } : {}}
+                transition={{ duration: 0.9, delay: i * 0.12, ease: EASE }}
+              >
+                {word}
+              </motion.span>
+            </span>
+          ))}
+        </h2>
+
+        {/* ── 4 staggered cards ── */}
+        <div className="wg-cards" ref={cardsRef}>
+          {FEATURED.map((card, i) => {
+            const item = WORK_ITEMS.find(w => w.id === card.itemId)
+            if (!item) return null
+            return (
+              <WorkCard
+                key={card.itemId}
+                card={card}
+                item={item}
+                index={i}
+                onClick={() => setSelected(item)}
+              />
+            )
+          })}
+        </div>
+
+        {/* ── mobile position indicator ── */}
+        <div className="wg-dots" role="tablist" aria-label="Work categories">
+          {FEATURED.map((card, i) => (
+            <button
+              key={card.itemId}
+              className={`wg-dot${i === active ? ' on' : ''}`}
+              aria-label={card.title}
+              aria-selected={i === active}
+              role="tab"
+              onClick={() => scrollToCard(i)}
             />
           ))}
         </div>
-      </motion.section>
+      </section>
 
       {/* ── Detail overlay ── */}
       <AnimatePresence>
         {selected && (
           <DetailView
             item={selected}
-            isRTL={isRTL}
-            language={language}
             onClose={() => setSelected(null)}
             onWhatsApp={handleWhatsApp}
           />
@@ -428,148 +297,48 @@ const WorkGrid = () => {
 
 // ─── Card ─────────────────────────────────────────────────────────────────────
 interface WorkCardProps {
+  card: FeaturedCard
   item: WorkItem
   index: number
-  isRTL: boolean
-  language: string
-  isMobile: boolean
   onClick: () => void
 }
 
-const WorkCard = ({ item, index, isRTL, language, isMobile, onClick }: WorkCardProps) => {
-  const [hovered, setHovered] = useState(false)
-  const cardRef = useRef<HTMLDivElement>(null)
-  const inView = useInView(cardRef, { once: true, margin: '-20px' })
-  const palette = PALETTES[item.paletteKey]
-
-  // Row-pair stagger: cards 0&1 together, 2&3 together, 4&5 together
-  const pairDelay = isMobile ? index * 0.08 : (index % 2) * 0.18
-
-  return (
-    <motion.div
-      ref={cardRef}
-      initial={isMobile
-        ? { clipPath: 'inset(0 0 100% 0)', opacity: 1 }
-        : { opacity: 0, y: 40 }
-      }
-      animate={inView
-        ? (isMobile ? { clipPath: 'inset(0 0 0% 0)', opacity: 1 } : { opacity: 1, y: 0 })
-        : {}
-      }
-      transition={{ duration: isMobile ? 0.65 : 1.0, delay: pairDelay, ease: EASE }}
-      style={{ marginTop: !isMobile && index >= 2 ? '5em' : 0 }}
-    >
-      {/* Image */}
-      <motion.div
-        layoutId={`card-img-${item.id}`}
-        onHoverStart={() => setHovered(true)}
-        onHoverEnd={() => setHovered(false)}
-        onClick={onClick}
-        style={{
-          position: 'relative',
-          borderRadius: 20,
-          overflow: 'hidden',
-          cursor: 'pointer',
-          paddingTop: '65%',
-          background: 'var(--color-cream-dark)',
-        }}
-      >
+const WorkCard = ({ card, item, index, onClick }: WorkCardProps) => (
+  <motion.div
+    className="wg-slot"
+    initial={{ opacity: 0, y: 48 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: '-40px' }}
+    transition={{ duration: 0.9, delay: index * 0.12, ease: EASE }}
+  >
+    <div className="wg-cat" onClick={onClick}>
+      <motion.div className="wg-cat-media" layoutId={`card-img-${item.id}`}>
         <img
           src={item.coverAsset}
-          alt={language === 'he' ? item.title : item.titleEn}
+          alt={item.title}
           loading="lazy"
-          style={{
-            position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            objectPosition: item.coverPosition ?? 'center',
-            transition: 'transform 0.65s cubic-bezier(0.35,0,0,1)',
-            transform: hovered ? 'scale(1.04)' : 'scale(1)',
-          }}
+          style={{ objectPosition: item.coverPosition ?? 'center' }}
         />
         {item.coverOverlay && (
           <div style={{ position: 'absolute', inset: 0, background: item.coverOverlay, mixBlendMode: 'multiply' }} />
         )}
-
-        {/* Lusion-style bottom overlay — slides up on hover */}
-        <motion.div
-          animate={{ y: hovered ? '0%' : '100%' }}
-          transition={{ duration: 0.55, ease: EASE }}
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background: `linear-gradient(to top, ${palette.bg}ee 0%, ${palette.bg}88 55%, transparent 100%)`,
-            display: 'flex',
-            alignItems: 'flex-end',
-            padding: '1.5rem',
-            pointerEvents: 'none',
-          }}
-        >
-          {/* Arrow pill inside overlay */}
-          <div style={{
-            width: 44, height: 44, borderRadius: '50%',
-            background: palette.accent,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={palette.accentText} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d={isRTL ? 'M19 12H5M12 19l-7-7 7-7' : 'M5 12h14M12 5l7 7-7 7'} />
-            </svg>
-          </div>
-        </motion.div>
-
-        {/* Niche accent dot — top corner */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '1rem',
-            insetInlineEnd: '1rem',
-            width: 10,
-            height: 10,
-            borderRadius: '50%',
-            background: palette.accent,
-            opacity: 0.9,
-          }}
-        />
       </motion.div>
-
-      {/* Card text */}
-      <div style={{ paddingTop: '1rem' }}>
-        {/* Tags with orange dots */}
-        <p
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 'clamp(0.58rem, 0.82vw, 0.72rem)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.08em',
-            color: 'var(--color-ink-muted)',
-            margin: '0 0 0.45rem',
-          }}
-        >
-          <span style={{ color: 'var(--color-orange)', marginInlineEnd: '0.4em' }}>◆</span>
-          {language === 'he' ? item.tags : item.tagsEn}
-        </p>
-        <motion.h3
-          animate={{ x: hovered ? (isRTL ? -8 : 8) : 0 }}
-          transition={{ duration: 0.28, ease: EASE }}
-          onClick={onClick}
-          style={{
-            fontFamily: isRTL ? 'var(--font-display)' : 'var(--font-display-en)',
-            fontWeight: isRTL ? 700 : 600,
-            fontSize: 'clamp(1.6rem, 3vw, 3rem)',
-            letterSpacing: isRTL ? '-0.01em' : '-0.03em',
-            color: 'var(--color-ink)',
-            margin: 0,
-            cursor: 'pointer',
-          }}
-        >
-          {language === 'he' ? item.title : item.titleEn}
-        </motion.h3>
+      <div className="wg-scrim" />
+      <span className="wg-idx">{card.n}</span>
+      <span className="wg-chip">
+        <span className="dot" />
+        {card.chip}
+      </span>
+      <div className="wg-meta" dir="rtl">
+        <h4>{card.title}</h4>
+        <p>{card.desc}</p>
+        <span className="wg-view">
+          View Work <span className="arr">→</span>
+        </span>
       </div>
-    </motion.div>
-  )
-}
+    </div>
+  </motion.div>
+)
 
 // ─── Video lightbox ───────────────────────────────────────────────────────────
 const VideoLightbox = ({ src, onClose }: { src: string; onClose: () => void }) => {
@@ -641,14 +410,12 @@ const VideoLightbox = ({ src, onClose }: { src: string; onClose: () => void }) =
 // ─── Detail view ──────────────────────────────────────────────────────────────
 interface DetailViewProps {
   item: WorkItem
-  isRTL: boolean
-  language: string
   onClose: () => void
   onWhatsApp: () => void
 }
 
-const DetailView = ({ item, isRTL, language, onClose, onWhatsApp }: DetailViewProps) => {
-  const p = PALETTES[item.paletteKey]
+const DetailView = ({ item, onClose, onWhatsApp }: DetailViewProps) => {
+  const p = PALETTES[item.id]
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null)
   const [isMobile, setIsMobile] = useState(false)
   useEffect(() => {
@@ -664,9 +431,10 @@ const DetailView = ({ item, isRTL, language, onClose, onWhatsApp }: DetailViewPr
     return () => { document.body.style.overflow = '' }
   }, [])
 
-  const videos = (VIDEO_MANIFEST[item.id]?.length ? VIDEO_MANIFEST[item.id] : null) ?? item.videos ?? []
+  const media = WORK_MEDIA[item.id] ?? { videos: [], photos: [] }
+  const videos = media.videos
   const hasVideos = videos.length > 0
-  const galleryItems = item.gallery.slice(1)
+  const galleryItems = media.photos
 
   return (
     <motion.div
@@ -674,7 +442,7 @@ const DetailView = ({ item, isRTL, language, onClose, onWhatsApp }: DetailViewPr
       animate={{ y: 0 }}
       exit={{ y: '100%' }}
       transition={{ duration: 0.72, ease: EASE }}
-      dir={isRTL ? 'rtl' : 'ltr'}
+      dir="rtl"
       style={{
         position: 'fixed',
         inset: 0,
@@ -723,9 +491,9 @@ const DetailView = ({ item, isRTL, language, onClose, onWhatsApp }: DetailViewPr
           onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.12)')}
         >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <path d={isRTL ? 'M5 12h14M12 5l7 7-7 7' : 'M19 12H5M12 5l-7 7 7 7'} />
+            <path d="M5 12h14M12 5l7 7-7 7" />
           </svg>
-          {isRTL ? 'חזרה' : 'Back'}
+          חזרה
         </button>
         <span style={{
           pointerEvents: 'none',
@@ -735,7 +503,7 @@ const DetailView = ({ item, isRTL, language, onClose, onWhatsApp }: DetailViewPr
           letterSpacing: '0.14em',
           color: 'rgba(255,255,255,0.7)',
         }}>
-          {language === 'he' ? item.tags : item.tagsEn}
+          {item.tags}
         </span>
       </nav>
 
@@ -747,7 +515,7 @@ const DetailView = ({ item, isRTL, language, onClose, onWhatsApp }: DetailViewPr
         >
           <img
             src={item.coverAsset}
-            alt={language === 'he' ? item.title : item.titleEn}
+            alt={item.title}
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           />
         </motion.div>
@@ -773,16 +541,16 @@ const DetailView = ({ item, isRTL, language, onClose, onWhatsApp }: DetailViewPr
               animate={{ y: 0 }}
               transition={{ duration: 0.85, delay: 0.25, ease: EASE }}
               style={{
-                fontFamily: isRTL ? 'var(--font-display)' : 'var(--font-display-en)',
-                fontWeight: isRTL ? 700 : 600,
+                fontFamily: 'var(--font-display)',
+                fontWeight: 700,
                 fontSize: 'clamp(3.5rem, 9vw, 10rem)',
                 lineHeight: 0.88,
-                letterSpacing: isRTL ? '-0.02em' : '-0.04em',
+                letterSpacing: '-0.02em',
                 color: '#fff',
                 margin: 0,
               }}
             >
-              {language === 'he' ? item.title : item.titleEn}
+              {item.title}
             </motion.h2>
           </div>
           <motion.div
@@ -795,7 +563,7 @@ const DetailView = ({ item, isRTL, language, onClose, onWhatsApp }: DetailViewPr
               marginTop: '1.2rem',
               width: '5rem',
               borderRadius: 99,
-              transformOrigin: isRTL ? 'right' : 'left',
+              transformOrigin: 'right',
             }}
           />
         </div>
@@ -824,7 +592,7 @@ const DetailView = ({ item, isRTL, language, onClose, onWhatsApp }: DetailViewPr
             letterSpacing: '0.22em',
             color: 'rgba(255,255,255,0.45)',
           }}>
-            {isRTL ? 'גלול' : 'scroll'}
+            גלול
           </span>
           <motion.div
             animate={{ y: [0, 7, 0] }}
@@ -854,12 +622,13 @@ const DetailView = ({ item, isRTL, language, onClose, onWhatsApp }: DetailViewPr
             transition={{ duration: 0.7, ease: EASE }}
             style={{
               fontFamily: 'var(--font-body)',
+              fontWeight: 300,
               fontSize: 'clamp(1rem, 1.2vw, 1.18rem)',
               lineHeight: 1.85,
               color: p.body,
             }}
           >
-            {language === 'he' ? item.description : item.descriptionEn}
+            {item.description}
           </motion.p>
 
           <div>
@@ -871,17 +640,18 @@ const DetailView = ({ item, isRTL, language, onClose, onWhatsApp }: DetailViewPr
               color: p.accent,
               marginBottom: '1.2rem',
             }}>
-              {isRTL ? 'שירותים' : 'SERVICES'}
+              שירותים
             </p>
-            {(language === 'he' ? item.services : item.servicesEn).map((s, i) => (
+            {item.services.map((s, i) => (
               <motion.p
                 key={s}
-                initial={{ opacity: 0, x: isRTL ? 14 : -14 }}
+                initial={{ opacity: 0, x: 14 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: i * 0.07, ease: EASE }}
                 style={{
                   fontFamily: 'var(--font-body)',
+                  fontWeight: 300,
                   fontSize: '1.05rem',
                   color: p.heading,
                   margin: '0.5rem 0',
@@ -917,7 +687,7 @@ const DetailView = ({ item, isRTL, language, onClose, onWhatsApp }: DetailViewPr
                 cursor: 'pointer',
               }}
             >
-              {isRTL ? 'בואו נעבוד יחד' : "Let's work together"}
+              בואו נעבוד יחד
             </motion.button>
           </div>
         </div>
@@ -940,7 +710,7 @@ const DetailView = ({ item, isRTL, language, onClose, onWhatsApp }: DetailViewPr
                 color: p.muted,
                 margin: 0,
               }}>
-                {isRTL ? 'עבודות' : 'Work'}
+                עבודות
               </p>
               <div style={{ height: 1, flex: 1, background: p.divider }} />
             </div>

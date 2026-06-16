@@ -1,0 +1,994 @@
+/* ============================================================================
+   Hero — "SHANI · Social Media Manager"
+   Ported pixel-for-pixel from the Claude Design handoff (Shani.html), in its
+   saved state: light theme + tweak defaults (accent #F2B1B1, Cinematic mood,
+   Balanced subject). All selectors are scoped under .shani-hero and the design
+   tokens live on the root element so nothing leaks into the rest of the site.
+   ============================================================================ */
+
+.shani-hero {
+  /* themeable tokens — resolved to the saved light + cinematic state */
+  --rose: #F2B1B1;
+  --rose-deep: #E08F8F;
+  --rose-dim: rgba(242, 177, 177, 0.72);
+  --paper: #141011;
+  --muted: #4a403e;
+  --bg-grad: #ffffff;
+  --giant: #100c0d;
+  --giant-shadow: 0 1px 16px rgba(120, 86, 86, 0.05);
+  --bloom: rgba(194, 127, 126, 0.16);
+  --vig: linear-gradient(to bottom, rgba(255, 255, 255, 0.4) 0%, transparent 15%, transparent 84%, rgba(249, 247, 246, 0.42) 100%),
+    radial-gradient(130% 110% at 50% 50%, transparent 70%, rgba(232, 224, 221, 0.18) 100%);
+  --grain-opacity: 0.08;
+  --grain-blend: multiply;
+  --img-filter: contrast(1.14) brightness(1) saturate(1.12);
+  --fig-w: min(58vw, 720px);
+
+  /* the design is built LTR — keep it LTR even though the site is RTL */
+  direction: ltr;
+  font-family: "Archivo", system-ui, sans-serif;
+  color: var(--paper);
+  -webkit-font-smoothing: antialiased;
+
+  /* ===== Stage ===== */
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100svh;
+  overflow: hidden;
+  background: var(--bg-grad);
+  isolation: isolate;
+  transition: background 0.5s ease;
+}
+
+.shani-hero,
+.shani-hero *::before,
+.shani-hero *::after,
+.shani-hero * {
+  box-sizing: border-box;
+}
+
+/* faint warm rose bloom behind subject */
+.shani-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(38% 46% at 62% 42%, var(--bloom), transparent 60%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ===== Layers ===== */
+.shani-hero .layer {
+  position: absolute;
+  inset: 0;
+}
+
+/* Headline behind figure */
+.shani-hero .headline {
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.shani-hero .kicker {
+  position: absolute;
+  left: 0.2em;
+  bottom: 100%;
+  margin-bottom: 0.08em;
+  font-family: "Archivo", system-ui, sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: clamp(1.5rem, 3.6vw, 3.6rem);
+  letter-spacing: 0.04em;
+  line-height: 0.95;
+  color: var(--paper);
+  text-transform: none;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.shani-hero .kicker .kx {
+  position: absolute;
+  left: -0.9em;
+  top: 0.18em;
+  bottom: auto;
+  width: 0.52em;
+  height: 0.52em;
+  opacity: 0.65;
+}
+
+.shani-hero .kicker .kx::before,
+.shani-hero .kicker .kx::after {
+  content: "";
+  position: absolute;
+  background: var(--rose);
+}
+
+.shani-hero .kicker .kx::before {
+  left: 50%;
+  top: 0;
+  width: 1.5px;
+  height: 100%;
+  transform: translateX(-50%);
+}
+
+.shani-hero .kicker .kx::after {
+  top: 50%;
+  left: 0;
+  height: 1.5px;
+  width: 100%;
+  transform: translateY(-50%);
+}
+
+.shani-hero .giant-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.shani-hero .kicker .line2 {
+  display: block;
+  color: var(--rose);
+}
+
+.shani-hero .headline .giant {
+  font-family: "Archivo", system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(4rem, 14.5vw, 14.5rem);
+  line-height: 0.88;
+  letter-spacing: 0.015em;
+  text-transform: uppercase;
+  color: var(--giant);
+  margin-left: -0.02em;
+  text-shadow: var(--giant-shadow);
+}
+
+.shani-hero .headline .giant span {
+  color: var(--rose);
+}
+
+/* Subject (transparent cutout, grounded to bottom) */
+.shani-hero .figure {
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.shani-hero .figure-wrap {
+  position: relative;
+  width: var(--fig-w);
+  aspect-ratio: 2390 / 1792;
+  margin-top: 0;
+}
+
+/* soft dark glow grounding her in the scene */
+.shani-hero .figure-wrap::before {
+  content: "";
+  position: absolute;
+  inset: -22% -14% -30%;
+  background: radial-gradient(48% 52% at 50% 46%, rgba(201, 160, 160, 0.1), rgba(10, 9, 9, 0) 60%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.shani-hero .figure img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  filter: var(--img-filter);
+  -webkit-filter: var(--img-filter);
+  -webkit-mask-image: linear-gradient(to bottom, #000 97%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 97%, transparent 100%);
+}
+
+/* ===== Foreground UI ===== */
+.shani-hero .ui {
+  z-index: 3;
+  pointer-events: none;
+}
+
+.shani-hero .ui a,
+.shani-hero .ui button {
+  pointer-events: auto;
+}
+
+/* top bar */
+.shani-hero .topbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2.2vh 5.5vw;
+  gap: 2rem;
+}
+
+.shani-hero .brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 900;
+  font-size: 1.5rem;
+  letter-spacing: 0.18em;
+  color: #000;
+  text-decoration: none;
+}
+
+.shani-hero .brand .flower {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.shani-hero .brand .flower path,
+.shani-hero .brand .flower circle {
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform-origin: center;
+}
+
+.shani-hero .brand:hover .flower {
+  transform: rotate(72deg);
+}
+
+.shani-hero nav.menu {
+  display: flex;
+  gap: 2.6rem;
+}
+
+.shani-hero nav.menu a {
+  color: var(--paper);
+  text-decoration: none;
+  font-weight: 400;
+  font-size: 0.92rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  position: relative;
+  opacity: 1;
+  transition: opacity 0.25s;
+}
+
+.shani-hero nav.menu a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 100%;
+  height: 1px;
+  background: var(--rose);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.shani-hero nav.menu a:hover {
+  opacity: 1;
+}
+
+.shani-hero nav.menu a:hover::after {
+  transform: scaleX(1);
+}
+
+.shani-hero .cta {
+  font-family: inherit;
+  background: #F2B1B1;
+  color: #000;
+  border: none;
+  border-radius: 999px;
+  width: 160px;
+  height: 40px;
+  padding: 0.78rem 1.7rem;
+  font-weight: 800;
+  font-size: 12px;
+  line-height: 1.2;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s, background 0.3s;
+  box-shadow: 0 0 0 0 rgba(201, 160, 160, 0.5);
+  white-space: nowrap;
+}
+
+.shani-hero .cta:hover {
+  background: #E89E9E;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 34px -10px rgba(242, 177, 177, 0.65);
+}
+
+.shani-hero .cta:active {
+  transform: translateY(0) scale(0.97);
+}
+
+/* bottom-left caption */
+.shani-hero .caption {
+  position: absolute;
+  left: 5.5vw;
+  bottom: 6vh;
+}
+
+.shani-hero .caption .lead {
+  font-weight: 800;
+  font-size: clamp(1.15rem, 1.8vw, 1.6rem);
+  line-height: 1.1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.shani-hero .caption .lead em {
+  font-family: "Archivo", system-ui, sans-serif;
+  font-style: italic;
+  font-weight: 800;
+  font-size: 1.18em;
+  text-transform: none;
+  color: var(--rose-deep);
+}
+
+/* tagline cluster — anchored to the right edge below MANAGER */
+.shani-hero .tagline {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 0.45em;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  max-width: 230px;
+  text-align: right;
+  font-weight: 500;
+  font-size: clamp(0.8rem, 0.95vw, 0.95rem);
+  line-height: 1.45;
+  letter-spacing: 0.04em;
+  color: var(--paper);
+  pointer-events: none;
+}
+
+.shani-hero .tagline .txt {
+  margin: 0;
+}
+
+.shani-hero .tagline .bar {
+  display: block;
+  width: 46px;
+  height: 1px;
+  background: var(--rose);
+  margin: 0;
+}
+
+.shani-hero .tagline .mk {
+  position: relative;
+  width: 15px;
+  height: 15px;
+  opacity: 0.7;
+  align-self: flex-end;
+  margin-bottom: 2px;
+}
+
+.shani-hero .tagline .mk::before,
+.shani-hero .tagline .mk::after {
+  content: "";
+  position: absolute;
+  background: var(--rose);
+}
+
+.shani-hero .tagline .mk::before {
+  left: 50%;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  transform: translateX(-50%);
+}
+
+.shani-hero .tagline .mk::after {
+  top: 50%;
+  left: 0;
+  height: 1px;
+  width: 100%;
+  transform: translateY(-50%);
+}
+
+/* rotating badge bottom-right */
+.shani-hero .badge {
+  position: absolute;
+  right: 5vw;
+  bottom: 4vh;
+  width: 128px;
+  height: 128px;
+  pointer-events: auto;
+}
+
+.shani-hero .badge svg {
+  width: 100%;
+  height: 100%;
+}
+
+.shani-hero .badge .ring {
+  animation: shaniSpin 26s linear infinite;
+  transform-origin: 50% 50%;
+}
+
+.shani-hero .badge text {
+  fill: var(--rose-deep);
+  font-family: "Archivo", sans-serif;
+  font-size: 8.4px;
+  font-weight: 600;
+  letter-spacing: 0.085em;
+  text-transform: uppercase;
+}
+
+.shani-hero .badge .core {
+  fill: none;
+  stroke: var(--rose-dim);
+  stroke-width: 1;
+}
+
+.shani-hero .badge .flower-mark path {
+  fill: var(--rose);
+}
+
+@keyframes shaniSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* corner cross / plus hairlines */
+.shani-hero .cross {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  opacity: 0.5;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.shani-hero .cross::before,
+.shani-hero .cross::after {
+  content: "";
+  position: absolute;
+  background: var(--rose);
+}
+
+.shani-hero .cross::before {
+  left: 50%;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  transform: translateX(-50%);
+}
+
+.shani-hero .cross::after {
+  top: 50%;
+  left: 0;
+  height: 1px;
+  width: 100%;
+  transform: translateY(-50%);
+}
+
+.shani-hero .cross.tl {
+  top: 14vh;
+  left: 5.5vw;
+}
+
+.shani-hero .cross.center {
+  top: 41%;
+  right: 8.5vw;
+  left: auto;
+}
+
+.shani-hero .cross.br {
+  bottom: 5vh;
+  right: 5.5vw;
+  opacity: 0.4;
+}
+
+/* film grain over everything */
+.shani-hero .grain {
+  position: absolute;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  z-index: 6;
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+  mix-blend-mode: var(--grain-blend);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: shaniGrain 1.1s steps(5) infinite;
+}
+
+@keyframes shaniGrain {
+  0% {
+    transform: translate(0, 0);
+  }
+
+  20% {
+    transform: translate(-4%, 3%);
+  }
+
+  40% {
+    transform: translate(3%, -4%);
+  }
+
+  60% {
+    transform: translate(-3%, 2%);
+  }
+
+  80% {
+    transform: translate(4%, -2%);
+  }
+
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+/* top + bottom cinematic falloff */
+.shani-hero .vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: var(--vig);
+}
+
+/* ===== entrance ===== */
+@media (prefers-reduced-motion: no-preference) {
+  .shani-hero .anim {
+    opacity: 0;
+    transform: translateY(18px);
+    animation: shaniRise 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  }
+
+  .shani-hero .figure {
+    opacity: 0;
+    animation: shaniFadeUp 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.15s forwards;
+  }
+
+  .shani-hero .d1 {
+    animation-delay: 0.05s;
+  }
+
+  .shani-hero .d2 {
+    animation-delay: 0.18s;
+  }
+
+  .shani-hero .d3 {
+    animation-delay: 0.3s;
+  }
+
+  .shani-hero .d4 {
+    animation-delay: 0.5s;
+  }
+
+  .shani-hero .d5 {
+    animation-delay: 0.66s;
+  }
+
+  .shani-hero .d6 {
+    animation-delay: 0.8s;
+  }
+
+  @keyframes shaniRise {
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes shaniFadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(26px) scale(1.01);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+
+/* hamburger (mobile) */
+.shani-hero .burger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.shani-hero .burger span {
+  width: 26px;
+  height: 2px;
+  background: var(--paper);
+  display: block;
+}
+
+/* ===== mobile full-screen menu ===== */
+.shani-hero .mobile-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(28px, 5vh, 44px);
+  background:
+    radial-gradient(70% 50% at 50% 30%, rgba(242, 177, 177, 0.22), transparent 70%),
+    rgba(253, 250, 249, 0.96);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s cubic-bezier(0.35, 0, 0, 1);
+}
+
+.shani-hero .mobile-menu.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.shani-hero .mm-close {
+  position: absolute;
+  top: calc(2.4vh - 2px);
+  right: 5vw;
+  width: 42px;
+  height: 42px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.shani-hero .mm-close span {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 26px;
+  height: 2px;
+  background: var(--paper);
+  display: block;
+}
+
+.shani-hero .mm-close span:first-child {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.shani-hero .mm-close span:last-child {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.shani-hero .mm-links {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(18px, 3.4vh, 30px);
+}
+
+.shani-hero .mm-links a {
+  font-family: "Archivo", system-ui, sans-serif;
+  font-weight: 600;
+  font-style: italic;
+  font-size: clamp(2rem, 8vw, 2.8rem);
+  line-height: 1;
+  color: var(--paper);
+  text-decoration: none;
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.55s cubic-bezier(0.35, 0, 0, 1), transform 0.55s cubic-bezier(0.35, 0, 0, 1);
+}
+
+.shani-hero .mobile-menu.open .mm-links a {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.shani-hero .mobile-menu.open .mm-links a:nth-child(1) {
+  transition-delay: 0.08s;
+}
+
+.shani-hero .mobile-menu.open .mm-links a:nth-child(2) {
+  transition-delay: 0.15s;
+}
+
+.shani-hero .mobile-menu.open .mm-links a:nth-child(3) {
+  transition-delay: 0.22s;
+}
+
+.shani-hero .mobile-menu.open .mm-links a:nth-child(4) {
+  transition-delay: 0.29s;
+}
+
+.shani-hero .mobile-menu.open .mm-links a:nth-child(5) {
+  transition-delay: 0.36s;
+}
+
+.shani-hero .mm-cta {
+  font-family: "Archivo", system-ui, sans-serif;
+  background: #F2B1B1;
+  color: #141011;
+  border: none;
+  border-radius: 999px;
+  padding: 1rem 2.6rem;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 14px 38px -12px rgba(242, 177, 177, 0.8);
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.55s cubic-bezier(0.35, 0, 0, 1) 0.44s, transform 0.55s cubic-bezier(0.35, 0, 0, 1) 0.44s;
+}
+
+.shani-hero .mobile-menu.open .mm-cta {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.shani-hero .mm-cta:active {
+  transform: scale(0.96);
+}
+
+/* ===== scroll hint (mobile) ===== */
+.shani-hero .scroll-hint {
+  display: none;
+  position: absolute;
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 76px);
+  transform: translateX(-50%);
+  z-index: 4;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  pointer-events: none;
+}
+
+.shani-hero .scroll-hint .sh-txt {
+  font-family: "Archivo", system-ui, sans-serif;
+  font-style: italic;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, 0.92);
+  /* sits over the dark photo */
+  text-shadow: 0 1px 10px rgba(20, 16, 17, 0.45);
+}
+
+.shani-hero .scroll-hint .sh-line {
+  width: 1px;
+  height: 34px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.75), transparent);
+  overflow: hidden;
+  position: relative;
+}
+
+.shani-hero .scroll-hint .sh-line::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, transparent, #fff 60%, transparent);
+  animation: shaniScrollHint 1.8s cubic-bezier(0.35, 0, 0, 1) infinite;
+}
+
+@keyframes shaniScrollHint {
+  0% {
+    top: -100%;
+  }
+
+  60%,
+  100% {
+    top: 100%;
+  }
+}
+
+/* ===== responsive ===== */
+@media (max-width: 860px) {
+  .shani-hero nav.menu {
+    display: none;
+  }
+
+  .shani-hero .burger {
+    display: flex;
+  }
+
+  .shani-hero .topbar {
+    padding: 2.4vh 6vw;
+  }
+
+  /* headline block — sized to ALWAYS fit the viewport */
+  .shani-hero .headline {
+    padding-left: 6vw;
+    padding-right: 6vw;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding-top: 19vh;
+  }
+
+  .shani-hero .giant-wrap {
+    max-width: 100%;
+  }
+
+  .shani-hero .headline .kicker {
+    font-size: clamp(1.5rem, 6.4vw, 2.2rem);
+  }
+
+  .shani-hero .kicker .kx {
+    display: none;
+  }
+
+  /* hairline cross hangs off-screen at left edge */
+  .shani-hero .headline .giant {
+    font-size: clamp(3rem, 16.5vw, 7rem);
+    line-height: 0.9;
+    white-space: nowrap;
+  }
+
+  .shani-hero .figure {
+    align-items: flex-end;
+  }
+
+  .shani-hero .figure-wrap {
+    width: min(118vw, 580px);
+    margin-top: 0;
+  }
+
+  .shani-hero .figure img {
+    -webkit-mask-image: linear-gradient(to bottom, #000 95%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 95%, transparent 100%);
+  }
+
+  .shani-hero .tagline {
+    position: relative;
+    top: auto;
+    right: auto;
+    margin-top: 1.1rem;
+    max-width: 72vw;
+    text-align: left;
+    align-items: flex-start;
+  }
+
+  .shani-hero .tagline .mk {
+    display: none;
+  }
+
+  .shani-hero .tagline .bar {
+    align-self: flex-start;
+  }
+
+  .shani-hero .badge {
+    width: 88px;
+    height: 88px;
+    right: 6vw;
+    bottom: auto;
+    top: 44%;
+  }
+
+  /* keep the caption clear of the sticky WhatsApp bar + readable over the photo */
+  .shani-hero .caption {
+    left: 6vw;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 74px);
+  }
+
+  .shani-hero .caption .lead {
+    display: inline-block;
+    padding: 10px 14px;
+    border-radius: 14px;
+    background: rgba(253, 250, 249, 0.6);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+
+  .shani-hero .scroll-hint {
+    display: flex;
+  }
+
+  .shani-hero .cross.center {
+    display: none;
+  }
+
+  .shani-hero .cross.br {
+    display: none;
+  }
+}
+
+/* ===========================================================================
+   MOBILE HERO — "She fills the frame"
+   Fixes the old "type clustered top / photo clustered bottom / dead middle"
+   layout: the cutout is cropped to a tall portrait that rises into MANAGER
+   (restoring the desktop layered depth), the headline drops to stay connected
+   to it, and the caption / scroll cue / badge align on one bottom baseline.
+   =========================================================================== */
+@media (max-width: 860px) {
+
+  /* headline sits lower so it stays connected to the figure top */
+  .shani-hero .headline {
+    padding-top: 25vh;
+  }
+
+  /* crop the wide cutout into a tall portrait that rises into MANAGER and
+     runs to the bottom — no dead middle, intimate framing. Full-bleed window
+     centred on her face so it never clips; the apparent size is set by the
+     box height, so this stays "small" while showing the whole face + lens. */
+  .shani-hero .figure {
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .shani-hero .figure-wrap {
+    width: 100vw;
+    height: 64vh;
+    aspect-ratio: auto;
+  }
+
+  .shani-hero .figure img {
+    object-fit: cover;
+    object-position: 60% 6%;
+    -webkit-mask-image: linear-gradient(to bottom, #000 95%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 95%, transparent 100%);
+  }
+
+  /* tagline tucks tight under MANAGER — the figure climbs up beside it */
+  .shani-hero .tagline {
+    margin-top: 0.7rem;
+    max-width: 64vw;
+  }
+
+  /* --- three foreground elements aligned on one bottom baseline --- */
+  .shani-hero .caption {
+    left: 6vw;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 80px);
+  }
+
+  .shani-hero .scroll-hint {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 80px);
+  }
+
+  .shani-hero .badge {
+    width: 72px;
+    height: 72px;
+    right: 5vw;
+    top: auto;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 80px);
+  }
+}
+
+@media (max-width: 520px) {
+  .shani-hero .cta {
+    width: auto;
+    height: 36px;
+    padding: 0.55rem 1.1rem;
+    font-size: 0.68rem;
+  }
+
+  .shani-hero .brand {
+    font-size: 1.15rem;
+  }
+
+  .shani-hero .badge {
+    width: 68px;
+    height: 68px;
+    top: auto;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 80px);
+  }
+
+  .shani-hero .headline {
+    padding-top: 22vh;
+  }
+}

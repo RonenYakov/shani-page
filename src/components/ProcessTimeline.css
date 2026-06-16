@@ -1,0 +1,225 @@
+/* ============================================================================
+   Process — "The Process" horizontal scroll-scrubbed filmstrip
+   New design language: Archivo, white, rose #F2B1B1. Scoped under .shani-process.
+   Desktop: sticky 100vh, scroll scrubs the card track sideways.
+   Mobile: simple vertical numbered list with reveals.
+   ============================================================================ */
+
+.shani-process {
+  --rose: #F2B1B1;
+  --rose-bright: #F2B1B1;
+  --proc-ink: #100c0d;
+  --proc-muted: #6a605f;
+  --proc-line: rgba(16, 12, 13, 0.1);
+
+  position: relative;
+  background: #ffffff;
+  direction: ltr;
+  font-family: "Archivo", system-ui, sans-serif;
+  color: var(--proc-ink);
+  -webkit-font-smoothing: antialiased;
+}
+.shani-process * { box-sizing: border-box; }
+
+.sp-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(20px, 3vh, 40px);
+  padding: clamp(50px, 7vh, 80px) 0 clamp(30px, 4vh, 50px);
+  background: #ffffff;
+}
+
+/* ── header (same pattern as About/Work) ── */
+.sp-head { padding: 0 var(--base-padding-x); }
+.sp-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 40px;
+}
+.sp-labelwrap { display: flex; gap: 14px; align-items: flex-start; }
+.sp-cross { position: relative; width: 18px; height: 18px; opacity: 0.65; flex: none; margin-top: 2px; }
+.sp-cross::before, .sp-cross::after { content: ""; position: absolute; background: var(--rose); }
+.sp-cross::before { left: 50%; top: 0; width: 1.5px; height: 100%; transform: translateX(-50%); }
+.sp-cross::after { top: 50%; left: 0; height: 1.5px; width: 100%; transform: translateY(-50%); }
+.sp-label {
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+.sp-lead {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: clamp(0.9rem, 1vw, 1rem);
+  line-height: 1.75;
+  color: var(--proc-muted);
+  max-width: 380px;
+  margin: 0;
+}
+.sp-lead b { font-weight: 600; color: var(--proc-ink); }
+
+.sp-giant {
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 0.88;
+  letter-spacing: -0.02em;
+  font-size: clamp(2.4rem, 5.6vw, 5.2rem);
+  margin: clamp(16px, 2.4vh, 28px) 0 0;
+}
+.sp-giant .ac { color: var(--rose); }
+.sp-word { display: inline-block; overflow: hidden; vertical-align: bottom; padding-bottom: 0.06em; margin-bottom: -0.06em; }
+.sp-word:not(:last-child) { margin-right: 0.24em; }
+.sp-word > span { display: inline-block; }
+
+/* ── horizontal track ── */
+.sp-viewport { overflow: hidden; width: 100%; }
+.sp-track {
+  display: flex;
+  align-items: stretch;
+  gap: clamp(18px, 2vw, 30px);
+  width: max-content;
+  padding: 0 var(--base-padding-x);
+  will-change: transform;
+}
+
+.sp-card {
+  position: relative;
+  width: clamp(300px, 34vw, 440px);
+  min-height: clamp(240px, 34vh, 330px);
+  border: 1px solid var(--proc-line);
+  border-radius: 24px;
+  padding: clamp(20px, 2vw, 30px);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background: #fff;
+  transition: border-color 0.5s ease, background 0.5s ease, transform 0.5s cubic-bezier(0.35, 0, 0, 1);
+  overflow: hidden;
+}
+.sp-card.active {
+  border-color: rgba(242, 177, 177, 0.45);
+  background: #FBF7F9;
+  transform: translateY(-8px);
+}
+
+/* ghost number clipped at the top edge */
+.sp-num {
+  position: absolute;
+  top: -0.16em;
+  right: 14px;
+  font-weight: 900;
+  font-size: clamp(84px, 9vw, 130px);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(16, 12, 13, 0.18);
+  pointer-events: none;
+  transition: -webkit-text-stroke-color 0.5s ease;
+}
+.sp-card.active .sp-num { -webkit-text-stroke-color: var(--rose); }
+
+.sp-card h3 {
+  font-weight: 800;
+  font-size: clamp(19px, 1.8vw, 26px);
+  line-height: 1.05;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  margin: 0 0 10px;
+}
+.sp-card p {
+  font-family: var(--font-he-display);
+  font-weight: 400;
+  font-size: clamp(0.88rem, 1vw, 1rem);
+  line-height: 1.75;
+  color: var(--proc-muted);
+  margin: 0;
+}
+.sp-card .sp-minicross {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 13px;
+  height: 13px;
+  opacity: 0.45;
+}
+.sp-card .sp-minicross::before, .sp-card .sp-minicross::after { content: ""; position: absolute; background: var(--rose); }
+.sp-card .sp-minicross::before { left: 50%; top: 0; width: 1px; height: 100%; transform: translateX(-50%); }
+.sp-card .sp-minicross::after { top: 50%; left: 0; height: 1px; width: 100%; transform: translateY(-50%); }
+
+/* ── progress row ── */
+.sp-progress {
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 2vw, 28px);
+  padding: 0 var(--base-padding-x);
+}
+.sp-counter {
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  white-space: nowrap;
+}
+.sp-counter .cur { color: var(--rose); }
+.sp-bar { position: relative; flex: 1; height: 1.5px; background: var(--proc-line); overflow: hidden; }
+.sp-bar-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--rose);
+  transform-origin: left;
+  transform: scaleX(0);
+}
+.sp-note {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--proc-muted);
+  white-space: nowrap;
+  margin: 0;
+}
+.sp-note .dot { color: var(--rose); }
+
+/* ── mobile vertical list ── */
+.sp-mobile { padding: clamp(60px, 14vw, 90px) var(--base-padding-x); }
+.sp-mobile .sp-top { flex-direction: column; gap: 22px; }
+.sp-mobile .sp-lead { max-width: 100%; }
+.sp-mobile .sp-giant { font-size: clamp(2.1rem, 10.2vw, 3.2rem); margin-top: 22px; }
+.sp-msteps { margin-top: 36px; }
+.sp-mstep {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  border-top: 1px solid var(--proc-line);
+  padding: 22px 0;
+}
+.sp-mstep .sp-mnum {
+  font-weight: 900;
+  font-size: 38px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: transparent;
+  -webkit-text-stroke: 1.2px var(--rose);
+  flex-shrink: 0;
+  min-width: 56px;
+}
+.sp-mstep h3 {
+  font-weight: 800;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin: 2px 0 6px;
+}
+.sp-mstep p {
+  font-family: var(--font-he-display);
+  font-size: 0.9rem;
+  line-height: 1.75;
+  color: var(--proc-muted);
+  margin: 0;
+}

@@ -23,11 +23,6 @@ export default {
 				'inter': ['Inter', 'sans-serif'],
 			},
 			colors: {
-				'cinematic-black': '#0D0D0F',
-				'cream': '#FDF8F2',
-				'light-brown': '#C8A97E',
-				'gold': '#E6B325',
-				'sand': '#EDE3D9',
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
@@ -121,15 +116,9 @@ export default {
 				'float': 'float 3s ease-in-out infinite',
 				'glow': 'glow 2s ease-in-out infinite'
 			},
-			backgroundImage: {
-				'gradient-hero': 'var(--gradient-hero)',
-				'gradient-warm': 'var(--gradient-warm)',
-				'gradient-overlay': 'var(--gradient-overlay)'
-			},
 			boxShadow: {
 				'warm': 'var(--shadow-warm)',
 				'cinematic': 'var(--shadow-cinematic)',
-				'glow': 'var(--glow-primary)'
 			}
 		}
 	},

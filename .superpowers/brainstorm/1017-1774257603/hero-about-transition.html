@@ -1,0 +1,101 @@
+<h2>Hero → About Transition</h2>
+<p class="subtitle">Which connecting element feels right? These are mobile-only ideas.</p>
+
+<div class="cards">
+
+  <!-- OPTION A: Diagonal slash divider -->
+  <div class="card" data-choice="diagonal" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#F5F0E8;padding:0;overflow:hidden;min-height:260px;position:relative">
+      <!-- Hero bottom -->
+      <div style="background:#F5F0E8;padding:1.2rem 1.4rem 0;position:relative;z-index:2">
+        <div style="display:flex;justify-content:center;margin-bottom:0.5rem">
+          <div style="width:55px;height:90px;background:linear-gradient(to top,#C8A882,transparent);border-radius:4px 4px 0 0;filter:drop-shadow(0 8px 16px rgba(26,24,20,0.15))"></div>
+        </div>
+        <div style="text-align:center;font-family:serif;font-size:1rem;font-weight:900;color:#D4622A;line-height:1">יוצרת נוכחות.</div>
+      </div>
+
+      <!-- Diagonal slash -->
+      <div style="position:relative;height:60px;z-index:3;margin:0.5rem 0 0">
+        <svg viewBox="0 0 320 60" style="width:100%;height:60px;display:block">
+          <polygon points="0,60 320,0 320,60" fill="#1A1814"/>
+          <polygon points="0,60 320,8 320,60" fill="#EDE8DF"/>
+        </svg>
+        <div style="position:absolute;top:8px;right:1.4rem;font-family:monospace;font-size:0.55rem;letter-spacing:0.15em;text-transform:uppercase;color:#D4622A;z-index:10">✦ אודות</div>
+      </div>
+
+      <!-- About top -->
+      <div style="background:#EDE8DF;padding:0.8rem 1.4rem 1.2rem">
+        <div style="font-family:serif;font-size:1.1rem;font-weight:900;color:#1A1814">היי, אני שני.</div>
+        <div style="font-size:0.7rem;color:#6B6560;margin-top:0.3rem;line-height:1.5">מאז גיל צעיר התאהבתי בצילום...</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Diagonal Slash</h3>
+      <p>A bold ink diagonal cuts across full-width between sections. "אודות" label rides the edge. Background shifts from cream to cream-dark. Feels like a magazine layout breaking the grid.</p>
+    </div>
+  </div>
+
+  <!-- OPTION B: Full-width ink band with name -->
+  <div class="card" data-choice="inkband" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#F5F0E8;padding:0;overflow:hidden;min-height:260px">
+      <!-- Hero bottom -->
+      <div style="background:#F5F0E8;padding:1.2rem 1.4rem 1rem">
+        <div style="display:flex;justify-content:center;margin-bottom:0.5rem">
+          <div style="width:55px;height:90px;background:linear-gradient(to top,#C8A882,transparent);border-radius:4px 4px 0 0;filter:drop-shadow(0 8px 16px rgba(26,24,20,0.15))"></div>
+        </div>
+        <div style="text-align:center;font-family:serif;font-size:1rem;font-weight:900;color:#D4622A">יוצרת נוכחות.</div>
+      </div>
+
+      <!-- Ink band -->
+      <div style="background:#1A1814;padding:1rem 1.4rem;display:flex;align-items:center;justify-content:space-between">
+        <span style="font-family:monospace;font-size:0.55rem;letter-spacing:0.2em;text-transform:uppercase;color:#C8A882">ABOUT</span>
+        <span style="font-family:serif;font-size:1.4rem;font-weight:900;color:#F5F0E8;letter-spacing:-0.02em">שני בסא</span>
+        <span style="font-family:monospace;font-size:0.55rem;letter-spacing:0.2em;text-transform:uppercase;color:#D4622A">✦</span>
+      </div>
+
+      <!-- About top -->
+      <div style="background:#F5F0E8;padding:1rem 1.4rem">
+        <div style="font-family:serif;font-size:1.1rem;font-weight:900;color:#1A1814">היי, אני שני.</div>
+        <div style="font-size:0.7rem;color:#6B6560;margin-top:0.3rem;line-height:1.5">מאז גיל צעיר התאהבתי בצילום...</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Ink Name Band</h3>
+      <p>Full-width dark ink strip between sections, showing "שני בסא" in large serif white — her name as the visual bridge. Slides in from the side as you scroll past the hero. Strong editorial identity moment.</p>
+    </div>
+  </div>
+
+  <!-- OPTION C: Horizontal marquee reveal + photo morph -->
+  <div class="card" data-choice="morph" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#F5F0E8;padding:0;overflow:hidden;min-height:260px;position:relative">
+      <!-- Hero bottom -->
+      <div style="background:#F5F0E8;padding:1.2rem 1.4rem 0.5rem">
+        <div style="display:flex;justify-content:center;margin-bottom:0.4rem">
+          <div style="width:55px;height:90px;background:linear-gradient(to top,#C8A882,transparent);border-radius:4px 4px 0 0;filter:drop-shadow(0 8px 16px rgba(26,24,20,0.15))"></div>
+        </div>
+      </div>
+
+      <!-- Scrolling service tape -->
+      <div style="background:#D4622A;padding:0.45rem 0;overflow:hidden;white-space:nowrap">
+        <span style="font-family:monospace;font-size:0.6rem;color:white;letter-spacing:0.14em;text-transform:uppercase">
+          ניהול סושיאל &nbsp;✦&nbsp; צילום רילס &nbsp;✦&nbsp; אירועים &nbsp;✦&nbsp; save the date &nbsp;✦&nbsp; מלונאות &nbsp;✦&nbsp; ניהול סושיאל &nbsp;✦&nbsp;
+        </span>
+      </div>
+
+      <!-- Thin line -->
+      <div style="height:1px;background:rgba(26,24,20,0.08);margin:0"></div>
+
+      <!-- About top -->
+      <div style="background:#F5F0E8;padding:1rem 1.4rem">
+        <div style="font-size:0.6rem;font-family:monospace;letter-spacing:0.15em;text-transform:uppercase;color:#D4622A;margin-bottom:0.4rem">אודות</div>
+        <div style="font-family:serif;font-size:1.1rem;font-weight:900;color:#1A1814">היי, אני שני.</div>
+        <div style="font-size:0.7rem;color:#6B6560;margin-top:0.3rem;line-height:1.5">מאז גיל צעיר התאהבתי בצילום...</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Orange Marquee Bridge</h3>
+      <p>An orange scrolling ticker strip (all 6 services) runs across full-width as the visual separator — matches the desktop hero marquee, creates visual continuity. Punctuates the transition with motion and brand color.</p>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,276 @@
+/* ============================================================================
+   Work — "The Work" 4-category showcase
+   Same design language as the hero/about: Archivo, white, rose #F2B1B1.
+   Desktop: staggered-height row, cards expand on hover, neighbours yield.
+   Mobile: edge-peek horizontal snap carousel.
+   Scoped under .shani-work.
+   ============================================================================ */
+
+.shani-work {
+  --rose: #F2B1B1;
+  --rose-bright: #F2B1B1;
+  --work-ink: #100c0d;
+  --work-muted: #6a605f;
+
+  position: relative;
+  background: #ffffff;
+  direction: ltr;
+  font-family: "Archivo", system-ui, sans-serif;
+  color: var(--work-ink);
+  padding: clamp(40px, 5vw, 70px) var(--base-padding-x) clamp(90px, 11vw, 150px);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+.shani-work * { box-sizing: border-box; }
+
+/* ── top row: label + lead (mirrors About) ── */
+.wg-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 40px;
+}
+.wg-labelwrap { display: flex; gap: 14px; align-items: flex-start; }
+.wg-cross { position: relative; width: 18px; height: 18px; opacity: 0.65; flex: none; margin-top: 2px; }
+.wg-cross::before, .wg-cross::after { content: ""; position: absolute; background: var(--rose); }
+.wg-cross::before { left: 50%; top: 0; width: 1.5px; height: 100%; transform: translateX(-50%); }
+.wg-cross::after { top: 50%; left: 0; height: 1.5px; width: 100%; transform: translateY(-50%); }
+.wg-label {
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+.wg-lead {
+  font-family: var(--font-he-display);
+  font-weight: 400;
+  font-size: clamp(0.92rem, 1.05vw, 1.02rem);
+  line-height: 1.8;
+  color: var(--work-muted);
+  max-width: 400px;
+  margin: 0;
+}
+.wg-lead b { font-weight: 600; color: var(--work-ink); }
+
+/* ── giant centered headline ── */
+.wg-giant {
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 0.88;
+  letter-spacing: -0.02em;
+  text-align: center;
+  color: var(--work-ink);
+  font-size: clamp(3rem, 9vw, 8.4rem);
+  margin: clamp(26px, 3.4vw, 50px) 0 0;
+}
+.wg-giant .ac { color: var(--rose); }
+.wg-word { display: inline-block; overflow: hidden; vertical-align: bottom; padding-bottom: 0.06em; margin-bottom: -0.06em; }
+.wg-word:not(:last-child) { margin-right: 0.24em; }
+.wg-word > span { display: inline-block; }
+
+/* ── card row ── */
+.wg-cards {
+  display: flex;
+  gap: clamp(14px, 1.6vw, 24px);
+  align-items: flex-end;
+  margin-top: clamp(44px, 5vw, 70px);
+}
+
+/* slot = flex child; hover redistributes widths */
+.wg-slot {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  transition: flex-grow 0.65s cubic-bezier(0.35, 0, 0, 1);
+}
+.wg-slot:nth-child(1) { height: clamp(330px, 28vw, 430px); align-self: center; }
+.wg-slot:nth-child(2) { height: clamp(380px, 32.5vw, 500px); }
+.wg-slot:nth-child(3) { height: clamp(380px, 32.5vw, 500px); }
+.wg-slot:nth-child(4) { height: clamp(330px, 28vw, 430px); align-self: center; }
+
+@media (hover: hover) and (min-width: 768px) {
+  .wg-slot:hover { flex-grow: 1.55; }
+  .wg-cards:hover .wg-slot:not(:hover) .wg-cat { filter: brightness(0.94) saturate(0.92); }
+}
+
+/* card */
+.wg-cat {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 24px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #f3eeec;
+  transition: filter 0.6s ease, box-shadow 0.6s ease, transform 0.6s cubic-bezier(0.35, 0, 0, 1);
+}
+.wg-cat:hover {
+  box-shadow: 0 30px 70px -26px rgba(16, 12, 13, 0.45);
+  transform: translateY(-6px);
+}
+
+.wg-cat-media { position: absolute; inset: 0; }
+.wg-cat-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.85s cubic-bezier(0.35, 0, 0, 1);
+}
+.wg-cat:hover .wg-cat-media img { transform: scale(1.06); }
+
+.wg-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(to top, rgba(8, 6, 6, 0.84) 0%, rgba(8, 6, 6, 0.32) 44%, transparent 72%);
+  transition: opacity 0.5s ease;
+}
+
+/* oversized outlined index — clipped by the card edge */
+.wg-idx {
+  position: absolute;
+  top: -0.18em;
+  left: 10px;
+  z-index: 2;
+  font-weight: 900;
+  font-size: clamp(56px, 5.6vw, 88px);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.85);
+  opacity: 0.85;
+  pointer-events: none;
+  transition: -webkit-text-stroke-color 0.4s ease, transform 0.6s cubic-bezier(0.35, 0, 0, 1);
+}
+.wg-cat:hover .wg-idx {
+  -webkit-text-stroke-color: var(--rose-bright);
+  transform: translateY(4px);
+}
+
+/* mono chip — top right */
+.wg-chip {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: rgba(8, 6, 6, 0.5);
+  color: #efe7e6;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+.wg-chip .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--rose-bright); }
+
+/* bottom meta — RTL so Hebrew sits naturally */
+.wg-meta {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 18px;
+  z-index: 2;
+  color: #fbf6f5;
+  direction: rtl;
+  text-align: right;
+}
+.wg-meta h4 {
+  font-weight: 800;
+  font-size: clamp(17px, 1.5vw, 22px);
+  line-height: 1.08;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  margin: 0;
+  direction: ltr;
+}
+.wg-meta p {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+  color: rgba(251, 246, 245, 0.82);
+  margin: 8px 0 0;
+}
+.wg-view {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 13px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--rose-bright);
+  direction: ltr;
+}
+.wg-view .arr {
+  display: inline-block;
+  transition: transform 0.4s cubic-bezier(0.35, 0, 0, 1);
+}
+.wg-cat:hover .wg-view .arr { transform: translateX(5px); }
+
+/* ── mobile position indicator (dots) — hidden on desktop ── */
+.wg-dots { display: none; }
+
+@media (max-width: 767px) {
+  .wg-dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 9px;
+    margin-top: 22px;
+  }
+  .wg-dot {
+    width: 7px;
+    height: 7px;
+    padding: 0;
+    border: none;
+    border-radius: 999px;
+    background: rgba(16, 12, 13, 0.16);
+    cursor: pointer;
+    transition: width 0.4s cubic-bezier(0.35, 0, 0, 1), background 0.4s ease;
+  }
+  .wg-dot.on {
+    width: 24px;
+    background: var(--rose);
+  }
+}
+
+/* ── mobile: edge-peek snap carousel ── */
+@media (max-width: 767px) {
+  .wg-top { flex-direction: column; gap: 22px; }
+  .wg-lead { max-width: 100%; }
+  .wg-giant { font-size: clamp(2.4rem, 12vw, 3.6rem); }
+
+  .wg-cards {
+    display: flex;
+    align-items: stretch;
+    gap: 14px;
+    margin-top: 36px;
+    margin-left: calc(-1 * var(--base-padding-x));
+    margin-right: calc(-1 * var(--base-padding-x));
+    padding: 0 var(--base-padding-x) 8px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .wg-cards::-webkit-scrollbar { display: none; }
+
+  .wg-slot,
+  .wg-slot:nth-child(n) {
+    flex: 0 0 78vw;
+    height: 440px;
+    scroll-snap-align: center;
+  }
+  .wg-idx { font-size: 64px; }
+}

@@ -1,0 +1,90 @@
+<h2>Editorial Scroll — Animation Plan</h2>
+<p class="subtitle">Which of these specific effects do you want? Select all that appeal to you.</p>
+
+<div class="options" data-multiselect>
+
+  <div class="option" data-choice="word-split" onclick="toggleSelect(this)">
+    <div class="letter">1</div>
+    <div class="content">
+      <h3>Word-split headline reveals</h3>
+      <p>Each word in section headlines slides up from below (overflow hidden) as the section enters view. Already used on desktop — bring it to mobile. Applies to Hero h1, About h2, section headings.</p>
+      <div style="margin-top:0.75rem;background:#F5F0E8;border-radius:8px;padding:1rem;font-family:serif;overflow:hidden">
+        <div style="font-size:1.1rem;font-weight:900;line-height:1.1;color:#1A1814">
+          <span style="display:inline-block;overflow:hidden;vertical-align:bottom;margin-left:4px"><span style="display:inline-block;transform:translateY(0);transition:transform 0.6s">יוצרת</span></span>
+          <span style="display:inline-block;overflow:hidden;vertical-align:bottom;margin-left:4px"><span style="display:inline-block;transform:translateY(110%);transition:transform 0.6s 0.1s;color:#D4622A">נוכחות.</span></span>
+        </div>
+        <p style="font-size:0.6rem;color:#6B6560;margin-top:0.5rem;font-family:monospace">↑ second word slides up 0.1s later</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="section-fade" onclick="toggleSelect(this)">
+    <div class="letter">2</div>
+    <div class="content">
+      <h3>Section entrance: fade + rise</h3>
+      <p>Every section (WorkGrid cards, ProcessTimeline steps, Testimonials cards, FAQ items) fades in from 20px below when scrolled into view. Staggered so items appear one after another — not all at once.</p>
+      <div style="margin-top:0.75rem;display:flex;flex-direction:column;gap:6px">
+        <div style="background:#EDE8DF;border-radius:6px;padding:8px 12px;font-size:0.75rem;color:#1A1814;transform:translateY(0);opacity:1;transition:all 0.5s">✦ Item 1 — visible</div>
+        <div style="background:#EDE8DF;border-radius:6px;padding:8px 12px;font-size:0.75rem;color:#6B6560;opacity:0.4;transform:translateY(12px)">✦ Item 2 — entering...</div>
+        <div style="background:#EDE8DF;border-radius:6px;padding:8px 12px;font-size:0.75rem;color:#6B6560;opacity:0.15;transform:translateY(20px)">✦ Item 3 — not yet</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="hero-photo" onclick="toggleSelect(this)">
+    <div class="letter">3</div>
+    <div class="content">
+      <h3>Hero photo: scale-in entrance</h3>
+      <p>On page load, the profile cutout scales from 0.92→1.0 and fades in over 0.8s. Feels like the page "opens up" around her. Subtle but makes the first impression much more alive.</p>
+      <div style="margin-top:0.75rem;background:#F5F0E8;border-radius:8px;padding:1rem;display:flex;align-items:flex-end;justify-content:center;min-height:80px">
+        <div style="width:36px;height:70px;background:linear-gradient(to top,#C8A882,#D4622A33);border-radius:4px 4px 0 0;box-shadow:0 8px 20px rgba(26,24,20,0.15)">
+        </div>
+        <p style="position:absolute;font-size:0.6rem;color:#6B6560;margin-top:0.5rem;font-family:monospace;bottom:8px">scale 0.92 → 1.0 on load</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="counter" onclick="toggleSelect(this)">
+    <div class="letter">4</div>
+    <div class="content">
+      <h3>Animated stat counters</h3>
+      <p>The "7M views" and "40%+ lift" chips in the hero count up from 0 when they enter view. Small detail but makes the numbers feel earned and real. Runs once, ~1.2s duration.</p>
+      <div style="margin-top:0.75rem;display:flex;gap:6px;flex-wrap:wrap">
+        <div style="background:rgba(26,24,20,0.06);border:1px solid rgba(26,24,20,0.12);border-radius:99px;padding:4px 12px;font-size:0.75rem;color:#1A1814">7+ מיליון צפיות</div>
+        <div style="background:rgba(26,24,20,0.06);border:1px solid rgba(26,24,20,0.12);border-radius:99px;padding:4px 12px;font-size:0.75rem;color:#1A1814">40%+ עליה</div>
+      </div>
+      <p style="font-size:0.65rem;color:#6B6560;margin-top:6px;font-family:monospace">0 → 7M, 0% → 40% on scroll into view</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="marquee" onclick="toggleSelect(this)">
+    <div class="letter">5</div>
+    <div class="content">
+      <h3>Services marquee strip (mobile hero)</h3>
+      <p>Add the same scrolling mono marquee from desktop hero to the mobile hero too — sits just above the WhatsApp button. Fills empty space and reinforces the services offering.</p>
+      <div style="margin-top:0.75rem;background:#1A1814;border-radius:6px;padding:6px 12px;overflow:hidden;white-space:nowrap">
+        <span style="font-family:monospace;font-size:0.6rem;color:#C8A882;letter-spacing:0.12em;text-transform:uppercase">ניהול סושיאל ✦ צילום רילס ✦ אירועים וחתונות ✦ Save The Date ✦</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="workgrid-clip" onclick="toggleSelect(this)">
+    <div class="letter">6</div>
+    <div class="content">
+      <h3>WorkGrid cards: clip-path wipe reveal</h3>
+      <p>Each work card wipes in from bottom using clipPath inset(100%→0%) instead of a plain fade. More dramatic and editorial — feels like pulling a curtain off each piece of work.</p>
+      <div style="margin-top:0.75rem;display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <div style="aspect-ratio:3/4;background:linear-gradient(135deg,#EDE8DF,#C8A882);border-radius:8px;clip-path:inset(0 0 0% 0);position:relative;overflow:hidden">
+          <div style="position:absolute;bottom:8px;left:8px;font-size:0.55rem;font-family:monospace;color:#1A1814;background:white;padding:2px 6px;border-radius:99px">חתונות</div>
+        </div>
+        <div style="aspect-ratio:3/4;background:linear-gradient(135deg,#EDE8DF,#D4622A33);border-radius:8px;clip-path:inset(0 0 60% 0);position:relative;overflow:hidden">
+          <div style="position:absolute;bottom:8px;left:8px;font-size:0.55rem;font-family:monospace;color:#1A1814;background:white;padding:2px 6px;border-radius:99px;opacity:0.3">סושיאל</div>
+        </div>
+      </div>
+      <p style="font-size:0.6rem;color:#6B6560;margin-top:6px;font-family:monospace">right card still wiping in ↑</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:1.5rem">Select all that you like — I'll implement everything selected.</p>

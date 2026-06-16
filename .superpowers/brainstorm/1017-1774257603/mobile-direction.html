@@ -1,0 +1,70 @@
+<h2>Mobile Animation Direction</h2>
+<p class="subtitle">Which overall feel should guide the mobile experience?</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="editorial" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#F5F0E8;padding:1.5rem;font-family:serif;min-height:200px;display:flex;flex-direction:column;gap:0.75rem;border-bottom:1px solid rgba(0,0,0,0.08)">
+      <!-- Simulated mobile phone frame -->
+      <div style="background:#fff;border-radius:16px;padding:1rem;box-shadow:0 4px 24px rgba(0,0,0,0.10);max-width:160px;margin:0 auto;width:100%">
+        <div style="height:6px;width:60%;background:#1A1814;border-radius:3px;margin-bottom:6px"></div>
+        <div style="height:4px;width:40%;background:#D4622A;border-radius:3px;margin-bottom:12px"></div>
+        <div style="height:80px;background:#EDE8DF;border-radius:8px;margin-bottom:8px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden">
+          <div style="width:40px;height:70px;background:linear-gradient(to top,#C8A882,#D4622A22);border-radius:4px 4px 0 0"></div>
+        </div>
+        <div style="height:4px;width:90%;background:#1A181420;border-radius:2px;margin-bottom:4px"></div>
+        <div style="height:4px;width:70%;background:#1A181415;border-radius:2px"></div>
+      </div>
+      <p style="font-size:0.65rem;text-align:center;color:#6B6560;font-family:monospace;letter-spacing:0.1em;text-transform:uppercase">Slide-up reveals on scroll</p>
+    </div>
+    <div class="card-body">
+      <h3>A — Editorial Scroll</h3>
+      <p>Each section fades + slides up as it enters view. Clean word-split reveals for headlines. Feels like a luxury magazine scrolling experience. Subtle, premium, no distractions.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="cinematic" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#1A1814;padding:1.5rem;min-height:200px;display:flex;flex-direction:column;gap:0.75rem;border-bottom:1px solid rgba(255,255,255,0.08)">
+      <div style="background:#2a2620;border-radius:16px;padding:1rem;box-shadow:0 4px 24px rgba(0,0,0,0.4);max-width:160px;margin:0 auto;width:100%">
+        <div style="height:6px;width:60%;background:#D4622A;border-radius:3px;margin-bottom:6px"></div>
+        <div style="height:4px;width:40%;background:#F5F0E888;border-radius:3px;margin-bottom:12px"></div>
+        <div style="height:80px;background:#111;border-radius:8px;margin-bottom:8px;position:relative;overflow:hidden">
+          <div style="position:absolute;inset:0;background:linear-gradient(135deg,#D4622A33,transparent);"></div>
+          <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:35px;height:65px;background:linear-gradient(to top,#C8A882,transparent);border-radius:4px 4px 0 0"></div>
+        </div>
+        <div style="height:4px;width:90%;background:#ffffff20;border-radius:2px;margin-bottom:4px"></div>
+        <div style="height:4px;width:70%;background:#ffffff15;border-radius:2px"></div>
+      </div>
+      <p style="font-size:0.65rem;text-align:center;color:#C8A882;font-family:monospace;letter-spacing:0.1em;text-transform:uppercase">Full-screen section transitions</p>
+    </div>
+    <div class="card-body">
+      <h3>B — Cinematic Swipe</h3>
+      <p>Full-screen sections with horizontal swipe transitions between Hero/About/Work. Dark dramatic feel between sections. Like a premium app onboarding. Bold, immersive, high-impact.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="playful" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#F5F0E8;padding:1.5rem;min-height:200px;display:flex;flex-direction:column;gap:0.75rem;border-bottom:1px solid rgba(0,0,0,0.08)">
+      <div style="background:#fff;border-radius:16px;padding:1rem;box-shadow:0 4px 24px rgba(0,0,0,0.10);max-width:160px;margin:0 auto;width:100%">
+        <div style="display:flex;gap:4px;margin-bottom:8px">
+          <div style="height:20px;width:20px;background:#D4622A;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;color:white">✦</div>
+          <div style="height:20px;flex:1;background:#EDE8DF;border-radius:4px"></div>
+        </div>
+        <div style="height:70px;background:linear-gradient(135deg,#F5F0E8,#EDE8DF);border-radius:8px;margin-bottom:8px;display:flex;align-items:center;justify-content:center">
+          <div style="width:30px;height:55px;background:linear-gradient(to top,#C8A882,#D4622A44);border-radius:4px 4px 0 0;transform:rotate(-5deg)"></div>
+        </div>
+        <div style="display:flex;gap:3px;flex-wrap:wrap">
+          <div style="height:14px;width:40px;background:#D4622A22;border-radius:99px;border:1px solid #D4622A44"></div>
+          <div style="height:14px;width:30px;background:#1A181408;border-radius:99px;border:1px solid #1A181420"></div>
+          <div style="height:14px;width:35px;background:#1A181408;border-radius:99px;border:1px solid #1A181420"></div>
+        </div>
+      </div>
+      <p style="font-size:0.65rem;text-align:center;color:#6B6560;font-family:monospace;letter-spacing:0.1em;text-transform:uppercase">Spring physics + bouncy micro-interactions</p>
+    </div>
+    <div class="card-body">
+      <h3>C — Springy & Tactile</h3>
+      <p>Spring physics on every interaction — cards bounce in, buttons have press feedback, the profile photo has a parallax float. Feels alive and fun. Great for engagement, slightly less "luxury".</p>
+    </div>
+  </div>
+
+</div>

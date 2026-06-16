@@ -1,0 +1,64 @@
+<h2>Intro Animation — Before the Page Loads</h2>
+<p class="subtitle">Plays once on first visit, then the site reveals. Which style?</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="flash" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#000;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;padding:1.5rem">
+      <!-- Flash animation preview -->
+      <div style="position:relative;width:80px;height:80px;display:flex;align-items:center;justify-content:center">
+        <div style="width:48px;height:48px;border-radius:50%;background:#fff;opacity:0.9;box-shadow:0 0 40px 20px rgba(255,255,255,0.6)"></div>
+        <div style="position:absolute;font-size:1.4rem">📸</div>
+      </div>
+      <div style="text-align:center">
+        <div style="color:#fff;font-family:monospace;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;opacity:0.6">0.0s — black screen</div>
+        <div style="color:#fff;font-family:monospace;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;margin-top:4px">0.3s — FLASH ⚡</div>
+        <div style="color:#C8A882;font-family:monospace;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;margin-top:4px">0.8s — site fades in</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Camera Flash</h3>
+      <p>Black screen → blinding white flash → site fades in. Exactly like a camera going off. Fast, punchy, ~1s total. The logo appears briefly on the black before the flash.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="shutter" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#1A1814;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.75rem;padding:1.5rem;position:relative;overflow:hidden">
+      <!-- Shutter blades preview -->
+      <div style="position:relative;width:90px;height:90px">
+        <!-- Simulated shutter blades -->
+        <div style="position:absolute;top:0;left:0;width:45px;height:45px;background:#111;clip-path:polygon(0 0,100% 0,100% 100%);border:1px solid #333"></div>
+        <div style="position:absolute;top:0;right:0;width:45px;height:45px;background:#111;clip-path:polygon(0 0,100% 0,0 100%);border:1px solid #333"></div>
+        <div style="position:absolute;bottom:0;left:0;width:45px;height:45px;background:#111;clip-path:polygon(0 0,100% 100%,0 100%);border:1px solid #333"></div>
+        <div style="position:absolute;bottom:0;right:0;width:45px;height:45px;background:#111;clip-path:polygon(100% 0,100% 100%,0 100%);border:1px solid #333"></div>
+        <div style="position:absolute;inset:18px;border-radius:50%;background:#D4622A;display:flex;align-items:center;justify-content:center">
+          <span style="color:white;font-size:0.5rem;font-family:monospace">SHANI</span>
+        </div>
+      </div>
+      <div style="color:#C8A882;font-family:monospace;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;text-align:center">4 panels slide in → close → open → reveal</div>
+    </div>
+    <div class="card-body">
+      <h3>B — Camera Shutter</h3>
+      <p>4 dark panels slide in from the edges like a camera shutter closing, meet in the center showing the logo — then iris-open to reveal the site. ~1.5s. More dramatic and memorable.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="typewriter" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#F5F0E8;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.5rem;padding:1.5rem">
+      <div style="font-family:monospace;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:#6B6560">צילום • ניהול סושיאל • אירועים</div>
+      <div style="font-family:serif;font-size:2rem;font-weight:900;color:#D4622A;letter-spacing:-0.02em;line-height:1">שני</div>
+      <div style="font-family:serif;font-size:1.1rem;font-weight:900;color:#1A1814;letter-spacing:-0.01em">בסא_<span style="animation:blink 0.8s infinite;opacity:0">|</span></div>
+      <div style="width:40px;height:2px;background:#D4622A;margin-top:0.5rem"></div>
+      <div style="font-family:monospace;font-size:0.55rem;color:#6B6560;letter-spacing:0.1em;text-transform:uppercase;margin-top:0.25rem">then site slides up ↑</div>
+    </div>
+    <div class="card-body">
+      <h3>C — Name Reveal + Slide</h3>
+      <p>Cream screen with the logo / name typing in, then the whole intro panel slides up revealing the hero underneath. Elegant and brand-forward. ~1.8s. Works beautifully on first load.</p>
+    </div>
+  </div>
+
+</div>
+
+<style>
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+</style>

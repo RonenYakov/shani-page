@@ -1,26 +1,10 @@
 import { useRef, useState, useEffect } from "react";
 import { Volume2, VolumeX } from "lucide-react";
-import { useI18n } from "@/i18n/simple";
 import { socials } from "@/content/socials";
+import "./ResultsReel.css";
 
-// ── Spine path: large clockwise teardrop loop, tail exits right ────────────
-// LTR: enters top, loops left side, exits right
-const SPINE_LTR =
-  "M 500 -60 " +
-  "C 820 20, 980 240, 800 460 " +
-  "C 640 680, 280 700, 110 510 " +
-  "C -70 320, 40 100, 240 55 " +
-  "C 410 10, 580 180, 740 450 " +
-  "C 900 700, 1150 580, 1480 370";
-
-// RTL: mirror
-const SPINE_RTL =
-  "M 900 -60 " +
-  "C 580 20, 420 240, 600 460 " +
-  "C 760 680, 1120 700, 1290 510 " +
-  "C 1470 320, 1360 100, 1160 55 " +
-  "C 990 10, 820 180, 660 450 " +
-  "C 500 700, 250 580, -80 370";
+// Thin elegant spine — single sweeping curve drawn by scroll
+const SPINE = "M -60 200 C 300 80, 560 520, 820 420 C 1080 320, 1240 560, 1480 480";
 
 function easeOutCubic(t: number) {
   return 1 - Math.pow(1 - t, 3);
@@ -31,11 +15,12 @@ function mapRange(val: number, inMin: number, inMax: number, outMin: number, out
   return outMin + ((clamped - inMin) / (inMax - inMin)) * (outMax - outMin);
 }
 
+const MARQUEE_ITEMS = 4;
+
 const ResultsReel = () => {
-  const { language } = useI18n();
-  const isRTL = language === "he";
   const hasCalendly = Boolean(socials.calendlyUrl);
   const [isMobile, setIsMobile] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -46,43 +31,36 @@ const ResultsReel = () => {
 
   const outerRef = useRef<HTMLDivElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
-  const videoContainerRef = useRef<HTMLDivElement>(null);
+  const frameRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isMuted, setIsMuted] = useState(true);
 
-  // ── Direct scroll driver — matches the JS pattern from the reference ──
+  // ── scroll driver: spine draws, then the video frame rises ──
   useEffect(() => {
     const outer = outerRef.current;
     const path = pathRef.current;
-    const videoContainer = videoContainerRef.current;
-    if (!outer || !path || !videoContainer) return;
+    const frame = frameRef.current;
+    if (!outer || !path || !frame) return;
 
-    const mobile = window.innerWidth < 768;
     const len = path.getTotalLength();
     path.style.strokeDasharray = String(len);
-    // Start with a tiny bit drawn so spine is immediately visible on enter
     path.style.strokeDashoffset = String(len * 0.97);
-    const initialY = mobile ? window.innerHeight * 0.5 : window.innerHeight * 1.05;
-    videoContainer.style.transform = `translateY(${initialY}px)`;
+    const mobileNow = window.innerWidth < 768;
+    frame.style.transform = `translateY(${mobileNow ? window.innerHeight * 0.5 : window.innerHeight * 1.05}px)`;
 
     const update = () => {
       const rect = outer.getBoundingClientRect();
       const totalRange = outer.offsetHeight - window.innerHeight;
-      const scrolled = -rect.top;
-      const progress = Math.max(0, Math.min(1, scrolled / totalRange));
+      const progress = Math.max(0, Math.min(1, -rect.top / totalRange));
 
-      // Spine: starts at 3% drawn, completes by 65%
-      const spinePct = mapRange(progress, 0, 0.65, 0.03, 1);
+      const spinePct = mapRange(progress, 0, 0.6, 0.03, 1);
       path.style.strokeDashoffset = String(len * (1 - spinePct));
 
-      // Video rises 0.42 → 0.88 (starts sooner on mobile)
       const mobile = window.innerWidth < 768;
-      const riseStart = mobile ? 0.2 : 0.42;
-      const riseEnd   = mobile ? 0.72 : 0.88;
-      const maxY      = mobile ? window.innerHeight * 0.5 : window.innerHeight * 1.05;
+      const riseStart = mobile ? 0.2 : 0.4;
+      const riseEnd = mobile ? 0.72 : 0.88;
+      const maxY = mobile ? window.innerHeight * 0.5 : window.innerHeight * 1.05;
       const vidPct = easeOutCubic(mapRange(progress, riseStart, riseEnd, 0, 1));
-      const translateY = (1 - vidPct) * maxY;
-      videoContainer.style.transform = `translateY(${translateY}px)`;
+      frame.style.transform = `translateY(${(1 - vidPct) * maxY}px)`;
     };
 
     window.addEventListener("scroll", update, { passive: true });
@@ -90,9 +68,9 @@ const ResultsReel = () => {
     return () => window.removeEventListener("scroll", update);
   }, []);
 
-  // ── Auto-mute when off screen ──────────────────────────────────────────
+  // ── auto-mute when off screen ──
   useEffect(() => {
-    const el = videoContainerRef.current;
+    const el = frameRef.current;
     if (!el) return;
     const ob = new IntersectionObserver(
       (entries) => {
@@ -114,94 +92,49 @@ const ResultsReel = () => {
     setIsMuted(next);
     v.muted = next;
     if (!next) {
-      try { v.volume = 1; void v.play(); } catch {}
+      try { v.volume = 1; void v.play(); } catch { /* autoplay restrictions */ }
     }
   };
 
   return (
-    // 280vh desktop / 180vh mobile
     <div
+      className="shani-results"
       ref={outerRef}
       id="results"
-      style={{ height: isMobile ? "180vh" : "280vh", position: "relative", background: "var(--color-cream-dark)" }}
+      style={{ height: isMobile ? "150vh" : "170vh" }}
     >
-      {/* ── Sticky container — top: 10vh as per reference ─────────────── */}
-      <div
-        style={{
-          position: "sticky",
-          top: 0,
-          height: "100vh",
-          overflow: "hidden",
-        }}
-      >
-        {/* ── Layer 1: Spine SVG fills the sticky viewport ────────────── */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: "var(--color-cream-dark)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <svg
-            viewBox="0 0 1400 800"
-            preserveAspectRatio="xMidYMid slice"
-            style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
-          >
+      <div className="rr-sticky">
+        {/* ── background: outlined marquee + rose spine ── */}
+        <div className="rr-bg">
+          <div className="rr-marquee" aria-hidden="true">
+            {[0, 1].map((half) => (
+              <div className="rr-marquee-inner" key={half}>
+                {Array.from({ length: MARQUEE_ITEMS }).map((_, i) => (
+                  <span key={i}>
+                    Real Results <i>✦</i>{" "}
+                  </span>
+                ))}
+              </div>
+            ))}
+          </div>
+          <svg className="rr-spine" viewBox="0 0 1400 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
             <path
               ref={pathRef}
-              d={isRTL ? SPINE_RTL : SPINE_LTR}
+              d={SPINE}
               fill="none"
-              stroke="var(--color-orange)"
-              strokeWidth="20"
+              stroke="#F2B1B1"
+              strokeWidth="3"
               strokeLinecap="round"
-              strokeLinejoin="round"
+              opacity="0.8"
             />
           </svg>
-          <p style={{
-            position: "relative",
-            zIndex: 1,
-            fontFamily: "var(--font-mono)",
-            fontSize: "0.54rem",
-            textTransform: "uppercase",
-            letterSpacing: "0.22em",
-            color: "rgba(26,24,20,0.15)",
-            userSelect: "none",
-          }}>
-            {isRTL ? "ממשיכים לתוצאות" : "continuing to results"}
-          </p>
         </div>
 
-        {/* ── Layer 2: Video frame — translates up from below via JS ────── */}
-        {/* width: 90%, centered, height: 75vh — Lusion-style large frame */}
-        <div
-          style={{
-            position: "absolute",
-            top: isMobile ? "2%" : "5%",
-            left: isMobile ? "4%" : "12%",
-            right: isMobile ? "4%" : "12%",
-            height: isMobile ? "96%" : "90%",
-          }}
-        >
-          <div
-            ref={videoContainerRef}
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              borderRadius: "clamp(14px, 2vw, 22px)",
-              overflow: "hidden",
-              boxShadow: "0 50px 120px rgba(26,24,20,0.22)",
-              willChange: "transform",
-            }}
-          >
+        {/* ── video frame — rises from below via JS ── */}
+        <div className="rr-frame-zone">
+          <div className="rr-frame" ref={frameRef}>
             <video
               ref={videoRef}
-              style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
               src="/recomendations.mp4"
               autoPlay
               muted={isMuted}
@@ -209,109 +142,31 @@ const ResultsReel = () => {
               playsInline
               preload="metadata"
             />
+            <div className="rr-grad" />
 
-            {/* Gradient overlay */}
-            <div style={{
-              position: "absolute",
-              inset: 0,
-              background:
-                "linear-gradient(to bottom, rgba(26,24,20,0.52) 0%, transparent 38%, transparent 62%, rgba(26,24,20,0.52) 100%)",
-              pointerEvents: "none",
-            }} />
-
-            {/* Label + title overlaid top corner */}
-            <div
-              dir={isRTL ? "rtl" : "ltr"}
-              style={{
-                position: "absolute",
-                top: "clamp(1.2rem, 2.5vw, 2.2rem)",
-                ...(isRTL
-                  ? { right: "clamp(1.2rem, 2.5vw, 2.2rem)" }
-                  : { left: "clamp(1.2rem, 2.5vw, 2.2rem)" }),
-                zIndex: 2,
-              }}
-            >
-              <p style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: "0.6rem",
-                textTransform: "uppercase",
-                letterSpacing: "0.18em",
-                color: "rgba(245,240,232,0.60)",
-                margin: "0 0 0.5rem",
-              }}>
-                — 03 / RESULTS
+            <div className="rr-head" dir="rtl" style={{ left: "auto", right: "clamp(1.2rem, 2.5vw, 2.2rem)" }}>
+              <p className="rr-kicker">
+                <span className="dot">◆</span> הוכחה, לא הבטחות
               </p>
-              <div style={{
-                fontFamily: isRTL ? "var(--font-display)" : "var(--font-display-en-hero)",
-                fontWeight: isRTL ? 900 : 400,
-                fontSize: isMobile ? "clamp(1.4rem, 5.5vw, 2rem)" : "clamp(1.6rem, 2.8vw, 3.2rem)",
-                lineHeight: 0.9,
-                letterSpacing: isRTL ? "-0.02em" : "-0.01em",
-                color: "var(--color-cream)",
-                borderBottom: "2.5px solid var(--color-orange)",
-                paddingBottom: "0.12em",
-                display: "inline-block",
-              }}>
-                {isRTL ? "ככה נראות תוצאות" : "What Results Look Like"}
+              <div className="rr-title" style={{ direction: "ltr" }}>
+                What Results Look Like
               </div>
             </div>
 
-            {/* Calendly CTA — bottom corner */}
             {hasCalendly && (
               <button
+                className="rr-cta"
                 onClick={() => socials.calendlyUrl && window.open(socials.calendlyUrl, "_blank")}
-                style={{
-                  position: "absolute",
-                  bottom: "clamp(1rem, 2vw, 1.8rem)",
-                  ...(isRTL
-                    ? { left: "clamp(1rem, 2vw, 1.8rem)" }
-                    : { right: "clamp(1rem, 2vw, 1.8rem)" }),
-                  zIndex: 10,
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                  background: "var(--color-orange)",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "9999px",
-                  padding: "0.75rem 1.8rem",
-                  fontFamily: "var(--font-body)",
-                  fontSize: "0.88rem",
-                  fontWeight: 500,
-                  cursor: "pointer",
-                }}
               >
-                {isRTL ? "קבעו שיחת היכרות קצרה" : "Book a quick call"}
+                קבעו שיחת היכרות
               </button>
             )}
 
-            {/* Mute toggle */}
             <button
               type="button"
+              className="rr-mute"
               onClick={toggleMute}
-              aria-label={isMuted ? (isRTL ? "הפעל קול" : "Unmute") : (isRTL ? "השתק" : "Mute")}
-              style={{
-                position: "absolute",
-                bottom: "clamp(1rem, 2vw, 1.8rem)",
-                ...(isRTL
-                  ? { right: "clamp(1rem, 2vw, 1.8rem)" }
-                  : { left: "clamp(1rem, 2vw, 1.8rem)" }),
-                zIndex: 10,
-                width: "2.75rem",
-                height: "2.75rem",
-                borderRadius: "50%",
-                background: "rgba(26,24,20,0.50)",
-                border: "1px solid rgba(245,240,232,0.2)",
-                backdropFilter: "blur(8px)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                color: "var(--color-cream)",
-                transition: "background 0.2s",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(26,24,20,0.75)")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(26,24,20,0.50)")}
+              aria-label={isMuted ? "הפעל קול" : "השתק"}
             >
               {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
             </button>

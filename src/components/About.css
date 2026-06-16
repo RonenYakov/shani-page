@@ -1,0 +1,258 @@
+/* ============================================================================
+   About — "Stories that stop the scroll"
+   Follows the new hero design language: Archivo, light/white, rose #F2B1B1,
+   hairline crosses, mono chips. Scoped under .shani-about.
+   ============================================================================ */
+
+.shani-about {
+  --rose: #F2B1B1;
+  --rose-soft: rgba(242, 177, 177, 0.14);
+  --about-ink: #100c0d;
+  --about-muted: #6a605f;
+
+  position: relative;
+  background: #ffffff;
+  direction: ltr;
+  font-family: "Archivo", system-ui, sans-serif;
+  color: var(--about-ink);
+  padding: clamp(70px, 9vw, 130px) var(--base-padding-x) clamp(80px, 9vw, 130px);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.shani-about * {
+  box-sizing: border-box;
+}
+
+/* ── top row: label + lead ── */
+.sa-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 40px;
+}
+
+.sa-labelwrap {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.sa-cross {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  opacity: 0.65;
+  flex: none;
+  margin-top: 2px;
+}
+
+.sa-cross::before,
+.sa-cross::after {
+  content: "";
+  position: absolute;
+  background: var(--rose);
+}
+
+.sa-cross::before {
+  left: 50%;
+  top: 0;
+  width: 1.5px;
+  height: 100%;
+  transform: translateX(-50%);
+}
+
+.sa-cross::after {
+  top: 50%;
+  left: 0;
+  height: 1.5px;
+  width: 100%;
+  transform: translateY(-50%);
+}
+
+.sa-label {
+  font-weight: 900;
+  font-size: 15px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+
+.sa-lead {
+  font-family: var(--font-he-display);
+  font-weight: 400;
+  font-size: clamp(0.98rem, 1.05vw, 1.1rem);
+  line-height: 1.7;
+  color: var(--about-muted);
+  max-width: 440px;
+  margin: 0;
+}
+
+.sa-lead b {
+  font-weight: 600;
+  color: var(--about-ink);
+}
+
+/* ── giant headline ── */
+.sa-giant {
+  font-weight: 700;
+  text-transform: uppercase;
+  line-height: 0.88;
+  letter-spacing: -0.02em;
+  color: var(--about-ink);
+  font-size: clamp(2.7rem, 7.6vw, 7.2rem);
+  margin: clamp(28px, 3.4vw, 48px) 0 0;
+}
+
+.sa-giant .ac {
+  color: var(--rose);
+}
+
+.sa-word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.06em;
+  margin-bottom: -0.06em;
+}
+
+.sa-word:not(:last-child) {
+  margin-right: 0.24em;
+}
+
+.sa-word>span {
+  display: inline-block;
+}
+
+/* ── photo tiles ── */
+.sa-imgs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(14px, 1.8vw, 26px);
+  margin-top: clamp(42px, 5vw, 66px);
+  align-items: start;
+}
+
+.sa-slot:nth-child(2) {
+  margin-top: clamp(20px, 3.2vw, 46px);
+}
+
+.sa-slot:nth-child(3) {
+  margin-top: clamp(-12px, -0.8vw, -6px);
+}
+
+.sa-slot:nth-child(4) {
+  margin-top: clamp(26px, 4vw, 58px);
+}
+
+.sa-tile {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #f3eeec;
+}
+
+.sa-slot:nth-child(1) .sa-tile {
+  height: clamp(230px, 23vw, 330px);
+}
+
+.sa-slot:nth-child(2) .sa-tile {
+  height: clamp(260px, 26vw, 374px);
+}
+
+.sa-slot:nth-child(3) .sa-tile {
+  height: clamp(270px, 27vw, 390px);
+}
+
+.sa-slot:nth-child(4) .sa-tile {
+  height: clamp(230px, 23vw, 330px);
+}
+
+.sa-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.8s cubic-bezier(0.35, 0, 0, 1);
+}
+
+.sa-tile:hover img {
+  transform: scale(1.05);
+}
+
+/* mono chip */
+.sa-chip {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  color: #3a302f;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+.sa-chip .dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--rose);
+}
+
+/* ── responsive ── */
+@media (max-width: 767px) {
+  .shani-about {
+    padding-top: 96px;
+  }
+
+  /* clear the floating SHANI home pill */
+  .sa-top {
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .sa-lead {
+    max-width: 100%;
+  }
+
+  .sa-giant {
+    font-size: clamp(2.1rem, 10.2vw, 3.2rem);
+    line-height: 0.92;
+  }
+
+  .sa-imgs {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  .sa-slot:nth-child(1) .sa-tile,
+  .sa-slot:nth-child(4) .sa-tile {
+    height: 200px;
+  }
+
+  .sa-slot:nth-child(2) .sa-tile,
+  .sa-slot:nth-child(3) .sa-tile {
+    height: 232px;
+  }
+
+  .sa-slot:nth-child(2) {
+    margin-top: 28px;
+  }
+
+  .sa-slot:nth-child(3) {
+    margin-top: -14px;
+  }
+
+  .sa-slot:nth-child(4) {
+    margin-top: 14px;
+  }
+}

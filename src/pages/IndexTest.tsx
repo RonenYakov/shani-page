@@ -1,9 +1,9 @@
-import HeroAbout from "@/components/HeroAbout";
+import Hero from "@/components/Hero";
+import HomeButton from "@/components/HomeButton";
+import About from "@/components/About";
 import WorkGrid from "@/components/work/WorkGrid";
-import ProcessTimeline from "@/components/ProcessTimeline";
 import ResultsReel from "@/components/ResultsReel";
 import Testimonials from "@/components/Testimonials";
-import FAQ from "@/components/FAQ";
 import ContactBlock from "@/components/ContactBlock";
 import StickyWhatsApp from "@/components/StickyWhatsApp";
 import Analytics from "@/components/Analytics";
@@ -11,13 +11,14 @@ import Footer from "@/components/Footer";
 const IndexTest = () => {
   return (
     <div className="min-h-screen">
+      <div className="grain-overlay" aria-hidden="true" />
       <Analytics />
-      <HeroAbout />
+      <HomeButton />
+      <Hero />
+      <About />
       <WorkGrid />
-      <ProcessTimeline />
       <ResultsReel />
       <Testimonials />
-      <FAQ />
       <ContactBlock />
       <StickyWhatsApp />
       <Footer />

@@ -1,0 +1,168 @@
+/* ============================================================================
+   Results — video rises over a giant outlined marquee + thin rose spine.
+   New design language: Archivo, white, rose. Scoped under .shani-results.
+   ============================================================================ */
+
+.shani-results {
+  --rose: #F2B1B1;
+  --rose-bright: #F2B1B1;
+  --res-ink: #100c0d;
+
+  position: relative;
+  background: #ffffff;
+  direction: ltr;
+  font-family: "Archivo", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.shani-results * { box-sizing: border-box; }
+
+.rr-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+/* ── background layer: marquee + spine ── */
+.rr-bg {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.rr-spine { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+.rr-marquee {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  white-space: nowrap;
+  overflow: hidden;
+  user-select: none;
+  pointer-events: none;
+}
+.rr-marquee-inner {
+  display: flex;
+  flex-shrink: 0;
+  animation: rrMarquee 26s linear infinite;
+}
+.rr-marquee span {
+  font-weight: 900;
+  font-size: clamp(5rem, 13vw, 12rem);
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(16, 12, 13, 0.14);
+  padding-right: 0.45em;
+}
+.rr-marquee span i {
+  font-style: normal;
+  -webkit-text-stroke: 1.5px rgba(242, 177, 177, 0.55);
+}
+@keyframes rrMarquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ── video frame ── */
+.rr-frame-zone { position: absolute; top: 5%; left: 12%; right: 12%; height: 90%; }
+.rr-frame {
+  position: absolute;
+  inset: 0;
+  border-radius: clamp(14px, 2vw, 22px);
+  overflow: hidden;
+  box-shadow: 0 50px 120px rgba(16, 12, 13, 0.28);
+  will-change: transform;
+  background: #100c0d;
+}
+.rr-frame video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.rr-grad {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(16, 12, 13, 0.55) 0%, transparent 38%, transparent 62%, rgba(16, 12, 13, 0.55) 100%);
+  pointer-events: none;
+}
+
+.rr-head { position: absolute; top: clamp(1.2rem, 2.5vw, 2.2rem); left: clamp(1.2rem, 2.5vw, 2.2rem); z-index: 2; }
+.rr-kicker {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: rgba(255, 255, 255, 0.65);
+  margin: 0 0 0.6rem;
+}
+.rr-kicker .dot { color: var(--rose-bright); }
+.rr-title {
+  font-weight: 800;
+  font-size: clamp(1.5rem, 2.6vw, 2.8rem);
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  color: #fff;
+  display: inline-block;
+  border-bottom: 2.5px solid var(--rose-bright);
+  padding-bottom: 0.14em;
+}
+
+.rr-cta {
+  position: absolute;
+  bottom: clamp(1rem, 2vw, 1.8rem);
+  right: clamp(1rem, 2vw, 1.8rem);
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--rose-bright);
+  color: #241b1b;
+  border: none;
+  border-radius: 999px;
+  padding: 0.8rem 1.9rem;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s, background 0.3s;
+}
+.rr-cta:hover {
+  background: #d8b3b3;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 34px -10px rgba(201, 160, 160, 0.55);
+}
+
+.rr-mute {
+  position: absolute;
+  bottom: clamp(1rem, 2vw, 1.8rem);
+  left: clamp(1rem, 2vw, 1.8rem);
+  z-index: 10;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: rgba(16, 12, 13, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #fff;
+  transition: background 0.2s;
+}
+.rr-mute:hover { background: rgba(16, 12, 13, 0.75); }
+
+@media (max-width: 767px) {
+  .rr-frame-zone { top: 2%; left: 4%; right: 4%; height: 96%; }
+  .rr-marquee span { font-size: clamp(3.2rem, 17vw, 5rem); }
+  .rr-head { left: 1.1rem; right: 1.1rem !important; }
+  .rr-title { font-size: 1.25rem; line-height: 1.15; border-bottom-width: 2px; }
+  .rr-cta { padding: 0.75rem 1.5rem; font-size: 11px; }
+}
