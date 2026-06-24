@@ -6,6 +6,8 @@ const EASE: [number, number, number, number] = [0.35, 0, 0, 1];
 
 interface TileDef {
   src: string;
+  /** optional muted autoplay video — when set, replaces the still image */
+  video?: string;
   label: string;
   pos: string;
   /** parallax travel in px — sign sets direction */
@@ -13,10 +15,22 @@ interface TileDef {
 }
 
 const TILES: TileDef[] = [
-  { src: "/profile1-styled.png", label: "shani", pos: "center top", speed: 18 },
-  { src: "/posters/theme/social-shoots.png", label: "on set", pos: "center", speed: -30 },
-  { src: "/posters/weddings/proposel.webp", label: "reel still", pos: "center", speed: 12 },
-  { src: "/posters/hotels/hotel drone shot.webp", label: "drone view", pos: "center", speed: -40 },
+  { src: "/posters/IMG_2062.PNG", label: "shani", pos: "center", speed: 18 },
+  {
+    src: "/posters/weddings/proposel.webp",
+    video: "/posters/1bf41d0fe19c4931882b16de52719aad.mp4",
+    label: "on set",
+    pos: "center",
+    speed: -30,
+  },
+  { src: "/posters/wedding%20cover.jpg", label: "weddings", pos: "center", speed: 12 },
+  {
+    src: "/posters/theme/social-shoots.png",
+    video: "/posters/4a6e045d63e542bf8534c6818cadc6ec.mp4",
+    label: "the reel",
+    pos: "center",
+    speed: -40,
+  },
 ];
 
 /** Single photo tile — clip reveal on scroll-in + gentle parallax drift */
@@ -43,7 +57,22 @@ const Tile = ({
         viewport={{ once: true, margin: "-40px" }}
         transition={{ duration: 0.9, delay: index * 0.12, ease: EASE }}
       >
-        <img src={tile.src} alt={tile.label} loading="lazy" style={{ objectPosition: tile.pos }} />
+        {tile.video ? (
+          <video
+            src={tile.video}
+            poster={tile.src}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            tabIndex={-1}
+            aria-label={tile.label}
+            style={{ objectPosition: tile.pos, pointerEvents: "none" }}
+          />
+        ) : (
+          <img src={tile.src} alt={tile.label} loading="lazy" style={{ objectPosition: tile.pos }} />
+        )}
         <motion.span
           className="sa-chip"
           initial={{ opacity: 0, y: 8 }}

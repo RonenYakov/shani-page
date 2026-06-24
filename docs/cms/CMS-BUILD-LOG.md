@@ -136,12 +136,13 @@ We learn *why* each piece exists because we'll have hit the wall without it.
 
 Work top-to-bottom. Check items off as we complete them.
 
-- [ ] **Set up the server folder** — create `server/`, `npm init`, install `express`
-- [ ] **Hello-world Express server** — `app.listen(3001)`, one test route, run it
-- [ ] **`GET /api/media/:category`** — `fs.readdir` the category folders, return JSON
-- [ ] **Wire the live site** — rewrite `src/content/workMedia.ts` to `fetch` the API
-- [ ] **`POST /api/media/:category`** — install + use `multer` to save uploads
-- [ ] **`DELETE /api/media/:category/:filename`** — `fs.unlink`
+- [x] **Set up the server folder** — create `server/`, `npm init`, install `express`
+- [x] **Hello-world Express server** — `app.listen(3001)`, one test route, run it
+- [x] **`GET /api/media/:category`** — `fs.readdir` the category folders, return JSON (+ allowlist guard against path traversal)
+- [x] **`POST /api/media/:category`** — install + use `multer` to save uploads (mimetype routes video→videos/, else photos/; returns `{ok, file}`; verified end-to-end)
+  - [x] **Hardened upload** — `fileFilter` MIME allowlist (`ALLOWED_TYPES`) + `limits.fileSize` (5 MB; bump for real video). Blocks Stored XSS via `.html`/`.svg` uploads. Verified: `.html` rejected (400), valid `.jpg` accepted. (Auth = Password-gate step; CSP/serving headers = Phase 2.)
+- [x] **`DELETE /api/media/:category/:filename`** — `fs.unlink` (filename guard blocks `/`,`\`,`..` path traversal; subfolder chosen by extension; try/catch → "No such file"; verified: real delete OK, missing handled, attack URL blocked & faq.json safe)
+- [x] **Wire the live site** — `WorkGrid` `DetailView` now `fetch`es `http://localhost:3001/api/media/:category` via `useState`+`useEffect` (replaced dead `VIDEO_MANIFEST`/build-time globs). Also: trimmed WorkGrid to the 4 real categories + purged all i18n/dead code; added `http://localhost:3001` to the `connect-src` CSP in `index.html` (dev-only — remove in Phase 2 when API is same-origin). Verified end-to-end in browser: upload → appears in panel, delete → removed.
 - [ ] **Password gate** — a shared password in an env var + a check middleware
 - [ ] **React `/admin` page** — login form, category picker, upload, grid, delete
 - [ ] **Polish for Shani** — progress bar, errors, confirm-before-delete
@@ -176,14 +177,121 @@ Work top-to-bottom. Check items off as we complete them.
   deploy; runtime = while the site is actually running for a visitor.
 - **Environment variable (`.env`)** — a secret/config value (like a password) kept
   out of the code so it isn't committed to git.
+- **`app.get(path, handler)`** — defines a route: "when a GET request comes to
+  `path`, run `handler(req, res)`." `req` = the incoming request, `res` = our reply
+  (`res.send(...)` sends text back to the browser). Siblings: `app.post`,
+  `app.delete` for other HTTP methods.
+- **HTTP methods** — the "verb" of a request. GET = read/give me data,
+  POST = send/save data (uploads), DELETE = remove. Same `app.<verb>` pattern.
+- **`app.listen(port, cb)`** — actually starts the server and makes it wait for
+  requests on `port` forever (that's why the terminal "hangs"). `cb` runs once on
+  startup. Defining routes alone does nothing until `listen` runs.
+- **Port** — a numbered "door" on the machine so requests find the right server.
+  Frontend = 8080, backend = 3001.
+- **`console.log(...)`** — prints to the developer's terminal (only you see it),
+  vs `res.send(...)` which sends to the visitor's browser. Used to see what's
+  happening inside the server / debug.
+- **Route parameter (`:category`)** — the `:` makes a URL segment a variable. One
+  route serves all categories; the value lands in `req.params.category`.
+- **`async` / `await`** — disk/network work takes time. `await` pauses until it
+  finishes, then continues with the result. Only usable inside an `async` function.
+- **`fs.readdir(dir)`** — returns an array of the filenames inside a folder.
+- **`.map(fn)`** — transforms every item in an array (e.g. filename → public URL).
+- **`res.json(obj)`** — sends structured JSON data back (vs `res.send` = plain text).
+- **Untrusted input** — any value the outside world controls (URL params, body).
+  Never use it directly in file paths / queries; validate it first.
+- **Path traversal** — an attack using `..` in input to escape the intended folder
+  and reach other files. Prevented here by an allowlist.
+- **Allowlist** — only explicitly permitted values pass; everything else is rejected
+  (`CATEGORIES.includes(category)`). Safer than trying to block bad values.
+- **HTTP status codes** — how the server says how it went: 200 OK, 400 Bad Request,
+  404 Not Found, 500 Server Error. Set with `res.status(code)`.
+- **`return` in a handler** — stops the function immediately so later (e.g. unsafe)
+  code doesn't run after an error response.
 
 ---
+
+## 8.5 Tech debt (note now, fix later — NOT blocking the CMS)
+
+- **`src/components/work/WorkGrid.tsx` is large (~821 lines).** It holds 4 components
+  (`WorkGrid`, `WorkCard`, `VideoLightbox`, `DetailView`) + data arrays (`PALETTES`,
+  `WORK_ITEMS`, `FEATURED`) in one file. `DetailView` alone is ~400 lines.
+- It also mixes **inline `style={{}}` (39 of them) with a 276-line `WorkGrid.css`** —
+  inconsistent. NOTE: many inline styles are *dynamic* (e.g. `background: p.bg` from the
+  per-category `PALETTES`) and legitimately can't move to static CSS; only the static ones
+  should migrate.
+- **Suggested cleanup (own task, later):** split `DetailView` into its own file, move data
+  arrays to a `workData.ts`, and make inline-vs-CSS consistent. Do this carefully — file has
+  Hebrew text, the critical WhatsApp link, and animations that must be preserved.
 
 ## 9. Where we left off
 
 **Session 2026-06-16:** Brainstormed and approved the design (this document).
-No code written yet. **Next step:** create the implementation plan, then start
-the Phase 1 checklist at "Set up the server folder."
+
+**Session 2026-06-21:** Built the backend foundation:
+- Created `server/` with its own `package.json` (`"type": "module"`), installed Express.
+- Wrote `server/index.js`: hello-world route + `GET /api/media/:category` that
+  `fs.readdir`s the category's `videos/`+`photos/` folders and returns `{videos, photos}`
+  as `/work/...` URLs (same shape as `workMedia.ts`).
+- Added an allowlist guard (`CATEGORIES`) → fixes a path-traversal vuln flagged by
+  security review + handles bad categories with a 400.
+- Verified: valid category works, bad/malicious categories rejected.
+
+**Session 2026-06-22:** Built and verified the **upload route** `POST /api/media/:category`:
+- Chain: `validateCategory` → `upload.single('file')` (multer) → handler returns `{ok:true, file}`.
+- multer `storage` routes by mimetype: `video/*` → `videos/`, everything else → `photos/`.
+- Verified end-to-end with curl: video landed in `videos/`, photo in `photos/`, and the
+  GET route then listed both with `/work/...` URLs. Test files cleaned up afterward.
+- Gotcha learned: Windows `curl.exe` can't read git-bash `/tmp/` paths (curl error 26).
+  Not a server bug — only affects CLI testing; the React dashboard sends files directly.
+
+**Session 2026-06-22 (cont.):** Built and verified the **DELETE route** + hardened upload:
+- `DELETE /api/media/:category/:filename`: filename guard (rejects `/`,`\`,`..` → 400),
+  subfolder picked by extension (`.mp4`/`.webm`→videos, else photos), `try`/`catch` around
+  `fs.unlink` ("No such file" if missing). Verified: real delete OK, missing handled,
+  path-traversal attack URL blocked and `src/content/faq.json` confirmed untouched.
+- Upload hardened with `fileFilter` (MIME allowlist) + `limits.fileSize` (5 MB — bump for video).
+- **Backend API is now feature-complete for v1: GET (list) + POST (upload) + DELETE (remove).**
+- Recurring gotcha: stale `node` servers from old sessions answer on :3001 and cause confusing
+  404s/empty responses. Always kill what's on the port before restarting (Claude manages the
+  test server). Also: Windows `curl.exe` can't read git-bash `/tmp/` paths (curl error 26).
+
+**Session 2026-06-23:** **Wired the live site** — the Work `DetailView` now fetches media at
+runtime from the backend instead of build-time globs:
+- `WorkGrid.tsx` `DetailView`: `const [media,setMedia]=useState<WorkMedia>({videos:[],photos:[]})`
+  + a `useEffect(...,[item.id])` that `fetch`es `http://localhost:3001/api/media/:category`,
+  parses JSON into state (`.catch` → empty). `videos`/`hasVideos`/`galleryItems` now read from
+  `media`. Replaced the dead `VIDEO_MANIFEST`/`item.videos`/`item.gallery` leftovers.
+- Trimmed WorkGrid to the 4 real categories (photoshoot/weddings/management/ugc) and purged all
+  i18n + dead-niche code.
+- **CSP fix:** the fetch was silently blocked by the `connect-src` directive in `index.html`
+  (only `'self'`+analytics were allowed). Added `http://localhost:3001`. **Dev-only — remove in
+  Phase 2** when the API becomes same-origin (`/api` on Vercel, covered by `'self'`).
+- Debug lesson: a blocked `fetch` shows **no Network row** — the CSP violation only surfaces in
+  the **Console**. Check Console first when a request seems to "not fire".
+- Verified end-to-end in the real browser UI: uploaded a test PNG → appeared in the panel with no
+  code change/redeploy; deleted it via the DELETE route → gone. `tsc --noEmit` clean.
+
+**Session 2026-06-24:** **`.mov` → `.mp4` conversion** (Shani uploaded most videos as `.mov`):
+- Root cause: `.mov` files were **HEVC/H.265** (confirmed via `ffprobe`) — Safari plays them,
+  but Chrome/Firefox do **not**. Fix = transcode to H.264 `.mp4` (universal playback).
+- Batch-converted all **22 `.mov`** with `ffmpeg` (`-c:v libx264 -pix_fmt yuv420p -crf 23
+  -preset medium -c:a aac -movflags +faststart`), verified H.264 + full size, then deleted the
+  `.mov` originals. Now 32 `.mp4` total (22 converted + 10 already-mp4). ugc was already all mp4.
+- **ffmpeg-in-a-loop gotcha:** ffmpeg reads **stdin**, so in a `while read` loop it eats the next
+  filenames (garbled names, "Enter command" prompts). Fix: `ffmpeg -nostdin ... </dev/null` and
+  iterate with `find -print0 | while read -d ''` for Hebrew names/spaces. Also kill stray ffmpeg
+  before deleting outputs (a lingering process locks the file → "Device or resource busy").
+- **Decision:** future dashboard will **auto-convert `.mov`→`.mp4` on upload** (server-side ffmpeg).
+  Works on the local Express server; **revisit for Phase 2** (Vercel serverless can't run ffmpeg
+  easily — may need a transcode service or client-side conversion).
+- **GET route now filters to real media** — videos `.mp4`/`.webm`, photos `.jpg/.jpeg/.png/.webp`;
+  stray files (leftover `.mov`, `README.txt`, `.DS_Store`) are skipped, never served as broken media.
+
+**Next step:** **Password gate** — a shared admin token/password in an env var + a check
+middleware on POST/DELETE, and lock CORS down from `*` to the admin origin (closes the
+outstanding HIGH security finding). Then the React `/admin` dashboard. **Tie in here:** auto-convert
+`.mov`→`.mp4` on upload + the queued filename sanitization/extension+magic-byte validation.
 
 ---
 

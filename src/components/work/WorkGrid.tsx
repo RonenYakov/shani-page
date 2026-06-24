@@ -1,8 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence, useInView } from 'framer-motion'
-import { WORK_MEDIA } from '@/content/workMedia'
-import { socials } from '@/content/socials'
 import './WorkGrid.css'
+import { WorkMedia } from '@/content/workMedia'
 
 const EASE: [number, number, number, number] = [0.35, 0, 0, 1]
 
@@ -19,17 +18,17 @@ interface NichePalette {
   scrollbar: string
 }
 
-const PALETTES = {
+const PALETTES: Record<string, NichePalette> = {
   photoshoot: {
-    bg: '#080C14',
-    cardBg: '#0F1422',
-    accent: '#1a2ffb',
+    bg: '#FAF6F1',
+    cardBg: '#F1E9DF',
+    accent: '#B08D6A',
     accentText: '#fff',
-    heading: '#F0F4FF',
-    body: '#B0B8D0',
-    muted: '#506080',
-    divider: 'rgba(240,244,255,0.08)',
-    scrollbar: 'rgba(26,47,251,0.5)',
+    heading: '#2E2218',
+    body: '#5A4A39',
+    muted: '#9A8A78',
+    divider: 'rgba(46,34,24,0.1)',
+    scrollbar: 'rgba(176,141,106,0.4)',
   },
   weddings: {
     bg: '#FBF4F0',
@@ -43,20 +42,20 @@ const PALETTES = {
     scrollbar: 'rgba(196,137,154,0.4)',
   },
   management: {
-    bg: '#1C0F08',
-    cardBg: '#2A1810',
-    accent: '#C4622A',
+    bg: '#080C14',
+    cardBg: '#0F1422',
+    accent: '#1a2ffb',
     accentText: '#fff',
-    heading: '#F5E8D8',
-    body: '#D4C0AA',
-    muted: '#8A6A50',
-    divider: 'rgba(245,232,216,0.1)',
-    scrollbar: 'rgba(196,98,42,0.4)',
+    heading: '#F0F4FF',
+    body: '#B0B8D0',
+    muted: '#506080',
+    divider: 'rgba(240,244,255,0.08)',
+    scrollbar: 'rgba(26,47,251,0.5)',
   },
   ugc: {
     bg: '#F8F2F5',
     cardBg: '#F1E7EC',
-    accent: '#F2B1B1',
+    accent: '#9A6F86',
     accentText: '#fff',
     heading: '#2E1B26',
     body: '#5A4150',
@@ -64,11 +63,12 @@ const PALETTES = {
     divider: 'rgba(46,27,38,0.1)',
     scrollbar: 'rgba(154,111,134,0.4)',
   },
-} satisfies Record<string, NichePalette>
+}
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 interface WorkItem {
-  id: keyof typeof PALETTES
+  id: string
+  paletteKey: keyof typeof PALETTES
   tags: string
   title: string
   coverAsset: string
@@ -80,49 +80,53 @@ interface WorkItem {
 
 const WORK_ITEMS: WorkItem[] = [
   {
+    id: 'weddings',
+    paletteKey: 'weddings',
+    tags: 'חתונות • וידאו • רגעים',
+    title: 'סושיאל חתונות',
+    coverAsset: '/category/wed.jpg',
+    description:
+      "ניהול וצילום תוכן קולנועי (רילס, טיקטוק) ישירות מתוך אירוע החתונה שלכם. אנחנו לא רק מתעדים, אלא יוצרים Buzz סביב הרגעים המרגשים ביותר. בעזרת ציוד מקצועי ורחפן, אנחנו לוכדים זוויות ייחודיות שהאורחים שלכם ירצו לשתף. אני באה להפוך את היום המיוחד שלכם להכי קסום שיש בעזרת ליווי מההתארגנות ועד הריקודים, לתפוס כל רגע קטן שלא תשכחו לעד.",
+    services: ['וידאו חתונות', 'רילס ותוכן', 'אינסטגרם סטוריז', 'עריכה'],
+  },
+  {
+    id: 'management',
+    paletteKey: 'management',
+    tags: 'קידום עסקים • סושיאל • יצירת לידים',
+    title: 'ניהול סושיאל',
+    coverAsset: '/category/manegment-cover.PNG',
+    coverPosition: 'center',
+    coverOverlay: 'rgba(155,143,168,0.18)',
+    description:
+      "אנחנו בונים לעסק מנוע צמיחה דיגיטלי המבוסס על תוכן אורגני ויראלי, ניתוח אלגוריתמים ומערך הבאת לידים חכם. השירות כולל ניהול שוטף וימי צילום ברמה הכי גבוה בשוק, אופטימיזציה לביצועים ואופציה לקידום ממומן ממוקד, קיריאייטיב מדויק והכי חשוב ניצור סיבבת עבודה שרק תצמח — הכל כדי להפוך צפיות לתוצאות עסקיות בשטח.",
+    services: ['הפקת וידאו תדמית', 'צילום מוצר', 'סטוריז ורילס', 'קידום ממומן'],
+  },
+  {
     id: 'photoshoot',
+    paletteKey: 'photoshoot',
     tags: 'סושיאל • ימי צילום • תוכן',
     title: 'צילומי סושיאל',
-    coverAsset: '/posters/theme/social-shoots.png',
+    coverAsset: '/category/יום צילום.jpg',
     coverPosition: 'center',
     coverOverlay: 'rgba(180,120,60,0.22)',
     description: 'יום צילום מרוכז ומדויק לעסקים שרוצים להרים את הרמה של הנראות שלהם בלי התחייבות לניהול חודשי. ביום אחד אנחנו מייצרים לכם "בנק תוכן" של סרטונים ותמונות בסטנדרט גבוה, מותאמים לטרנדים הכי חמים, כך שיהיה לכם תוכן איכותי להעלות בעצמכם לאורך חודש שלם. זה הפתרון האידיאלי למי שצריך תוצאה מקצועית ומהירה במינימום זמן ומקסימום אימפקט ויזואלי.',
     services: ['תוכן UGC', 'רילס וטיקטוק', 'ניהול קמפיינים', 'אסטרטגיה'],
   },
   {
-    id: 'weddings',
-    tags: 'חתונות • וידאו • רגעים',
-    title: 'סושיאל חתונות',
-    coverAsset: '/posters/theme/weddings-social.png',
-    description:
-      "ניהול וצילום תוכן קולנועי (רילס, טיקטוק) ישירות מתוך אירוע החתונה שלכם. אנחנו לא רק מתעדים, אלא יוצרים תהודה סביב הרגעים המרגשים ביותר. בעזרת ציוד מקצועי ורחפן, אנחנו לוכדים זוויות ייחודיות שהאורחים שלכם ירצו לשתף. אני באה להפוך את היום המיוחד שלכם להכי קסום שיש בעזרת ליווי מההתארגנות ועד הריקודים, לתפוס כל רגע קטן שלא תשכחו לעד.",
-    services: ['וידאו חתונות', 'רילס ותוכן', 'אינסטגרם סטוריז', 'עריכה'],
-  },
-  {
-    id: 'management',
-    tags: 'קידום עסקים • סושיאל • יצירת לידים',
-    title: 'ניהול סושיאל',
-    coverAsset: '/posters/theme/social-managment.jpg',
-    coverPosition: 'top',
-    coverOverlay: 'rgba(155,143,168,0.18)',
-    description:
-      "אנחנו בונים לעסק מנוע צמיחה דיגיטלי המבוסס על תוכן אורגני ויראלי, ניתוח אלגוריתמים ומערך הבאת לידים חכם. השירות כולל ניהול שוטף וימי צילום ברמה הכי גבוה בשוק, אופטימיזציה לביצועים ואופציה לקידום ממומן ממוקד, קיריאייטיב מדויק והכי חשוב ניצור סיבבת עבודה שרק תצמח - הכל כדי להפוך צפיות לתוצאות עסקיות בשטח.",
-    services: ['הפקת וידאו תדמית', 'צילום מוצר', 'סטוריז ורילס', 'קידום ממומן'],
-  },
-  {
     id: 'ugc',
+    paletteKey: 'ugc',
     tags: 'המלצות • UGC • תוכן גולשים',
     title: 'המלצות ו-UGC',
-    coverAsset: '/posters/brands/ugc-B.webp',
+    coverAsset: '/category/reco-cover.PNG',
     description:
-      'הכוח של המלצה אמיתית: תוכן גולשים (UGC) והמלצות מצולמות של לקוחות מרוצים הם הכלי החזק ביותר לבניית אמון. אנחנו מפיקים סרטוני המלצות אותנטיים וקליפים בסגנון UGC שמרגישים אמיתיים, מדברים בגובה העיניים - וגורמים ללקוחות הבאים להגיד כן.',
+      'הכוח של המלצה אמיתית: תוכן גולשים (UGC) והמלצות מצולמות של לקוחות מרוצים הם הכלי החזק ביותר לבניית אמון. אנחנו מפיקים סרטוני המלצות אותנטיים וקליפים בסגנון UGC שמרגישים אמיתיים, מדברים בגובה העיניים — וגורמים ללקוחות הבאים להגיד כן.',
     services: ['סרטוני המלצות', 'תוכן UGC', 'עדויות לקוחות', 'קריאייטיב'],
   },
 ]
 
 // ─── Featured cards — the 4 categories shown on the page ─────────────────────
 interface FeaturedCard {
-  itemId: WorkItem['id']
+  itemId: string
   n: string
   /** English header — design language of the new hero */
   title: string
@@ -132,32 +136,32 @@ interface FeaturedCard {
 
 const FEATURED: FeaturedCard[] = [
   {
-    itemId: 'photoshoot',
-    n: '01',
-    title: 'Photoshoot Days',
-    desc: 'יום צילום אחד - בנק תוכן שלם של סרטונים ותמונות.',
-    chip: 'shoot day',
-  },
-  {
     itemId: 'weddings',
-    n: '02',
-    title: 'Social for Weddings',
-    desc: 'סטוריז חיים, רילס וסרטוני תקציר - ישר מתוך היום הגדול.',
+    n: '01',
+    title: 'Weddings and events',
+    desc: 'סטוריז חיים, רילס וסרטוני תקציר  ישר מתוך היום הגדול.',
     chip: 'live stories',
   },
   {
-    itemId: 'management',
-    n: '03',
-    title: 'Social Management',
-    desc: 'אסטרטגיה, לוח תוכן וצמיחה - מנוע דיגיטלי לעסק שלכם.',
-    chip: 'the feed',
+    itemId: 'photoshoot',
+    n: '02',
+    title: 'Photoshoot Days',
+    desc: 'יום צילום אחד בנק תוכן שלם של סרטונים ותמונות.',
+    chip: 'shoot day',
   },
   {
     itemId: 'ugc',
-    n: '04',
-    title: 'Recommendations & UGC',
+    n: '03',
+    title: 'Recommendations videos',
     desc: 'המלצות אמיתיות ותוכן גולשים שבונים אמון וממירים.',
     chip: 'real talk',
+  },
+  {
+    itemId: 'management',
+    n: '04',
+    title: 'Social Management',
+    desc: 'אסטרטגיה, לוח תוכן וצמיחה  מנוע דיגיטלי לעסק שלכם.',
+    chip: 'the feed',
   },
 ]
 
@@ -167,37 +171,8 @@ const WorkGrid = () => {
   const headRef = useRef<HTMLHeadingElement>(null)
   const headInView = useInView(headRef, { once: true, margin: '-60px' })
 
-  // Mobile carousel: track which card is centred so the dots reflect position
-  const cardsRef = useRef<HTMLDivElement>(null)
-  const [active, setActive] = useState(0)
-  useEffect(() => {
-    const el = cardsRef.current
-    if (!el) return
-    const onScroll = () => {
-      const slots = Array.from(el.querySelectorAll<HTMLElement>('.wg-slot'))
-      if (!slots.length) return
-      const center = el.getBoundingClientRect().left + el.clientWidth / 2
-      let best = 0
-      let bestDist = Infinity
-      slots.forEach((s, i) => {
-        const r = s.getBoundingClientRect()
-        const dist = Math.abs(r.left + r.width / 2 - center)
-        if (dist < bestDist) { bestDist = dist; best = i }
-      })
-      setActive(best)
-    }
-    onScroll()
-    el.addEventListener('scroll', onScroll, { passive: true })
-    return () => el.removeEventListener('scroll', onScroll)
-  }, [])
-
-  const scrollToCard = (i: number) => {
-    const slot = cardsRef.current?.querySelectorAll<HTMLElement>('.wg-slot')[i]
-    slot?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
-  }
-
   const handleWhatsApp = () => {
-    window.open(socials.whatsappUrl, '_blank')
+    window.open('https://wa.me/message/D4AOECDSG35YE1', '_blank')
   }
 
   return (
@@ -228,7 +203,7 @@ const WorkGrid = () => {
             viewport={{ once: true, margin: '-60px' }}
             transition={{ duration: 0.7, delay: 0.12, ease: EASE }}
           >
-            מבחר עבודות מארבעת התחומים שבהם אני עוזרת ללקוחות לצמוח.{' '}
+            מבחר עבודות מארבעת התחומים האהובים עלי, שבהם אני עוזרת ללקוחות לצמוח.{' '}
             <b>לחצו על קטגוריה</b> לצפייה בפרויקטים המלאים.
           </motion.p>
         </div>
@@ -250,7 +225,7 @@ const WorkGrid = () => {
         </h2>
 
         {/* ── 4 staggered cards ── */}
-        <div className="wg-cards" ref={cardsRef}>
+        <div className="wg-cards">
           {FEATURED.map((card, i) => {
             const item = WORK_ITEMS.find(w => w.id === card.itemId)
             if (!item) return null
@@ -264,20 +239,6 @@ const WorkGrid = () => {
               />
             )
           })}
-        </div>
-
-        {/* ── mobile position indicator ── */}
-        <div className="wg-dots" role="tablist" aria-label="Work categories">
-          {FEATURED.map((card, i) => (
-            <button
-              key={card.itemId}
-              className={`wg-dot${i === active ? ' on' : ''}`}
-              aria-label={card.title}
-              aria-selected={i === active}
-              role="tab"
-              onClick={() => scrollToCard(i)}
-            />
-          ))}
         </div>
       </section>
 
@@ -407,6 +368,25 @@ const VideoLightbox = ({ src, onClose }: { src: string; onClose: () => void }) =
   )
 }
 
+// ─── Lazy video — plays only while on-screen (keeps scroll smooth) ──────────────
+const LazyVideo = ({ src, style }: { src: string; style: React.CSSProperties }) => {
+  const ref = useRef<HTMLVideoElement>(null)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) { el.play().catch(() => { }) }
+        else { el.pause() }
+      },
+      { threshold: 0.25 },
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
+  return <video ref={ref} src={src} muted loop playsInline preload="none" style={style} />
+}
+
 // ─── Detail view ──────────────────────────────────────────────────────────────
 interface DetailViewProps {
   item: WorkItem
@@ -415,9 +395,10 @@ interface DetailViewProps {
 }
 
 const DetailView = ({ item, onClose, onWhatsApp }: DetailViewProps) => {
-  const p = PALETTES[item.id]
+  const p = PALETTES[item.paletteKey]
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null)
   const [isMobile, setIsMobile] = useState(false)
+  const [media, setMedia] = useState<WorkMedia>({ videos: [], photos: [] })
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768)
     check()
@@ -431,7 +412,12 @@ const DetailView = ({ item, onClose, onWhatsApp }: DetailViewProps) => {
     return () => { document.body.style.overflow = '' }
   }, [])
 
-  const media = WORK_MEDIA[item.id] ?? { videos: [], photos: [] }
+  useEffect(() => {
+    fetch(`http://localhost:3001/api/media/${item.id}`)
+      .then(res => res.json())
+      .then(data => setMedia(data))
+      .catch(() => setMedia({ videos: [], photos: [] }))
+  }, [item.id])
   const videos = media.videos
   const hasVideos = videos.length > 0
   const galleryItems = media.photos
@@ -622,7 +608,6 @@ const DetailView = ({ item, onClose, onWhatsApp }: DetailViewProps) => {
             transition={{ duration: 0.7, ease: EASE }}
             style={{
               fontFamily: 'var(--font-body)',
-              fontWeight: 300,
               fontSize: 'clamp(1rem, 1.2vw, 1.18rem)',
               lineHeight: 1.85,
               color: p.body,
@@ -651,7 +636,6 @@ const DetailView = ({ item, onClose, onWhatsApp }: DetailViewProps) => {
                 transition={{ duration: 0.4, delay: i * 0.07, ease: EASE }}
                 style={{
                   fontFamily: 'var(--font-body)',
-                  fontWeight: 300,
                   fontSize: '1.05rem',
                   color: p.heading,
                   margin: '0.5rem 0',
@@ -744,12 +728,8 @@ const DetailView = ({ item, onClose, onWhatsApp }: DetailViewProps) => {
                     cursor: 'pointer',
                   }}
                 >
-                  <video
+                  <LazyVideo
                     src={src}
-                    muted
-                    loop
-                    playsInline
-                    autoPlay
                     style={{ width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none' }}
                   />
                   {/* Play button overlay */}
