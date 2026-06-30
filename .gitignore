@@ -27,3 +27,4 @@ src/assets/**/*.webm
 *.njsproj
 *.sln
 *.sw?
+.env

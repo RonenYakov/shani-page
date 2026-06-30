@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence, useInView } from 'framer-motion'
 import './WorkGrid.css'
-import { WorkMedia } from '@/content/workMedia'
+import { WorkMedia, WORK_MEDIA } from '@/content/workMedia'
 
 const EASE: [number, number, number, number] = [0.35, 0, 0, 1]
 
@@ -240,6 +240,12 @@ const WorkGrid = () => {
             )
           })}
         </div>
+
+        {/* mobile-only hint: the cards scroll sideways to reveal more categories */}
+        <div className="wg-swipe" aria-hidden="true">
+          <span className="wg-swipe-label">Swipe for more</span>
+          <span className="wg-swipe-arrow">→</span>
+        </div>
       </section>
 
       {/* ── Detail overlay ── */}
@@ -398,7 +404,9 @@ const DetailView = ({ item, onClose, onWhatsApp }: DetailViewProps) => {
   const p = PALETTES[item.paletteKey]
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null)
   const [isMobile, setIsMobile] = useState(false)
-  const [media, setMedia] = useState<WorkMedia>({ videos: [], photos: [] })
+  const [media, setMedia] = useState<WorkMedia>(
+    () => WORK_MEDIA[item.id] ?? { videos: [], photos: [] }
+  )
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768)
     check()
@@ -413,10 +421,14 @@ const DetailView = ({ item, onClose, onWhatsApp }: DetailViewProps) => {
   }, [])
 
   useEffect(() => {
+    const fallback = WORK_MEDIA[item.id] ?? { videos: [], photos: [] }
+    // Production: use the build-time list of committed files (no server to call).
+    if (!import.meta.env.DEV) { setMedia(fallback); return }
+    // Local dev: pull the live list from the Express CMS so dashboard edits show.
     fetch(`http://localhost:3001/api/media/${item.id}`)
       .then(res => res.json())
       .then(data => setMedia(data))
-      .catch(() => setMedia({ videos: [], photos: [] }))
+      .catch(() => setMedia(fallback))
   }, [item.id])
   const videos = media.videos
   const hasVideos = videos.length > 0

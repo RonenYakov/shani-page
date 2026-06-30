@@ -52,6 +52,12 @@ This file provides guidance to Claude Code when working with code in this reposi
 
 ## Rules for Every Task
 
+> **⭐ CMS / learning work (the `server/` backend + `/admin` dashboard):** the owner is learning
+> full-stack development and **writes ALL the code themselves — logic, markup, AND CSS.** Do NOT
+> author code for them (no "mechanical"/CSS exception). Guide, explain the *why*, give small
+> writable specs, review — but they type every line. The real goal is **understanding the whole
+> system end-to-end**, not a finished feature. Full teaching contract: `docs/cms/CMS-BUILD-LOG.md` §1.
+
 1. **Never commit or push without explicit user approval**
 2. **Plan before coding** — for multi-step tasks, write the plan and confirm before touching files
 3. **Screenshot = law** — when a reference screenshot is provided, study it carefully before writing any code
@@ -64,7 +70,8 @@ This file provides guidance to Claude Code when working with code in this reposi
 ## Design System
 
 > **2026-06 redesign COMPLETE** — ALL sections now use the NEW design language
-> (see "New Design Language" below). Design skills stack: `my-design-style` (lead) + inspo files in
+> (see "New Design Language" below). Design skills stack: `my-design-style` (lead) + `impeccable`
+> (review/execution pass — used for the About rework and the CMS `/admin` dashboard) + inspo files in
 > `C:\Users\97254\Desktop\shani-portfolio\project\` (Shani.html = hero, sections.jsx = about/work).
 > `/contact-ribbon.webp` is an AI-generated backdrop (Higgsfield nano_banana) for the Contact finale.
 >

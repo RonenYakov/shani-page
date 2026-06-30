@@ -274,3 +274,35 @@
   }
   .wg-idx { font-size: 64px; }
 }
+
+/* ── mobile carousel "swipe for more" hint ── */
+.wg-swipe { display: none; }
+
+@media (max-width: 767px) {
+  .wg-swipe {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+    font-family: var(--font-mono, 'IBM Plex Mono', monospace);
+    font-size: 0.64rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted, #6E6C72);
+  }
+  .wg-swipe-arrow {
+    color: var(--rose, #F2B1B1);
+    font-size: 0.95rem;
+    animation: wg-swipe-nudge 1.5s ease-in-out infinite;
+  }
+}
+
+@keyframes wg-swipe-nudge {
+  0%, 100% { transform: translateX(0); opacity: 0.55; }
+  50%      { transform: translateX(6px); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wg-swipe-arrow { animation: none; opacity: 1; }
+}

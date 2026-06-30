@@ -1,0 +1,168 @@
+/* ============================================================================
+   Admin / CMS dashboard — utilitarian, on-brand (cream + rose + ink).
+   A TOOL, not a showcase: flat, calm, fast. No grain / parallax / scroll FX.
+   Scoped under .admin.
+   ============================================================================ */
+
+.admin {
+  --rose: #F2B1B1;
+  --rose-deep: #E08F8F;
+  --admin-surface: var(--color-cream, #F5F1ED);
+  --admin-card: var(--color-off-white, #FAF8F5);
+  --admin-line: var(--color-line, rgba(20, 20, 20, 0.1));
+
+  min-height: 100vh;
+  background: var(--admin-surface);
+  color: var(--color-ink, #141414);
+  font-family: var(--font-body, "DM Sans", sans-serif);
+  -webkit-font-smoothing: antialiased;
+}
+
+.admin * { box-sizing: border-box; }
+
+/* ── shared mono eyebrow label ── */
+.admin-eyebrow {
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted, #6E6C72);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-eyebrow .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--rose);
+}
+
+/* ============================================================================
+   LOGIN GATE
+   ============================================================================ */
+.admin-login {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.admin-login-card {
+  width: 100%;
+  max-width: 380px;
+  background: var(--admin-card);
+  border: 1px solid var(--admin-line);
+  border-radius: 18px;
+  padding: clamp(28px, 5vw, 44px);
+  box-shadow: 0 30px 70px rgba(20, 20, 20, 0.08);
+  animation: admin-rise 0.5s cubic-bezier(0.35, 0, 0, 1) both;
+}
+
+@keyframes admin-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.admin-login-title {
+  font-family: var(--font-display-en, "Cormorant Garamond", serif);
+  font-size: clamp(1.9rem, 5vw, 2.4rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 14px 0 6px;
+}
+
+.admin-login-sub {
+  font-size: 0.92rem;
+  color: var(--color-ink-muted, #6E6C72);
+  margin: 0 0 26px;
+}
+
+.admin-field { display: block; margin-bottom: 14px; }
+
+.admin-input {
+  width: 100%;
+  padding: 13px 15px;
+  border: 1px solid var(--admin-line);
+  border-radius: 11px;
+  background: #fff;
+  font-family: var(--font-body, "DM Sans", sans-serif);
+  font-size: 1rem;
+  color: var(--color-ink, #141414);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-input::placeholder { color: #b5b1ad; }
+
+.admin-input:focus {
+  outline: none;
+  border-color: var(--rose-deep);
+  box-shadow: 0 0 0 3px rgba(242, 177, 177, 0.35);
+}
+
+/* primary action — INK filled (rose fails contrast with white text) */
+.admin-btn {
+  width: 100%;
+  padding: 13px 16px;
+  border: none;
+  border-radius: 11px;
+  background: var(--color-ink, #141414);
+  color: #fff;
+  font-family: var(--font-body, "DM Sans", sans-serif);
+  font-size: 0.98rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: transform 0.12s ease, opacity 0.2s ease;
+}
+
+.admin-btn:hover { opacity: 0.9; }
+.admin-btn:active { transform: scale(0.985); }
+.admin-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* error message */
+.admin-error {
+  margin: 0 0 14px;
+  padding: 10px 13px;
+  border-radius: 10px;
+  background: rgba(224, 143, 143, 0.14);
+  border: 1px solid rgba(224, 143, 143, 0.4);
+  color: #8a3b3b;
+  font-size: 0.88rem;
+}
+
+/* ============================================================================
+   LOGGED-IN SHELL (placeholder for now — real dashboard comes next steps)
+   ============================================================================ */
+.admin-shell { padding: clamp(20px, 4vw, 40px); }
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--admin-line);
+}
+
+.admin-logout {
+  background: none;
+  border: 1px solid var(--admin-line);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-ink, #141414);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.admin-logout:hover { background: rgba(20, 20, 20, 0.04); }
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-login-card { animation: none; }
+  .admin-btn:active { transform: none; }
+}

@@ -28,8 +28,17 @@ WorkGrid section — without editing code or redeploying.
 
 This is **how Claude must teach the owner.** Follow it every session:
 
-1. **The owner writes code too.** Do NOT just dump finished files. Give small,
-   writable pieces and let the owner type them. Guide, don't replace.
+> **⭐ TOP PRIORITY — the real goal is UNDERSTANDING THE WHOLE SYSTEM, not a finished app.**
+> The owner is learning to build and reason about the entire stack on their own. Every step
+> must deepen their mental model of how the pieces connect (browser ↔ fetch ↔ Express ↔ fs ↔
+> disk, build-time vs runtime, auth flow, etc.). A working feature the owner doesn't understand
+> is a FAILURE. Slow and understood beats fast and opaque.
+
+1. **The owner writes ALL the code themselves — logic, markup, AND CSS.** Claude does NOT author
+   code files (this includes "mechanical"/boilerplate/CSS — the earlier exception is RETIRED).
+   Claude's job is to guide, explain, give small writable specs, and review — never to type the
+   code for them. The only things Claude may edit directly are the docs/`.md` files and, when the
+   owner explicitly asks, a specific fix they've okayed.
 2. **Explain in simple terms** *why* we run a command or use a library — what
    problem it solves — before/while using it. No unexplained magic.
 3. **Small steps.** One concept at a time. Confirm understanding before moving on.
@@ -37,9 +46,13 @@ This is **how Claude must teach the owner.** Follow it every session:
 5. **Connect to what they already know** — e.g. relate the new runtime API to the
    existing `import.meta.glob` they already understand.
 6. **Pace:** depth over speed. It's fine to be slow if it means real understanding.
+7. **Always tie a piece back to the whole.** When teaching one part, show where it sits in the
+   end-to-end flow so the owner builds a system-level picture, not isolated snippets.
 
-> If you (future Claude) are reading this: the owner is a **beginner backend
-> developer**. Treat every new tool/command as something to explain, not assume.
+> If you (future Claude) are reading this: the owner is a **beginner full-stack
+> developer** whose explicit goal is to understand the entire system end-to-end and write every
+> line themselves. Treat every new tool/command as something to explain, not assume — and never
+> hand them finished code (CSS included).
 
 ---
 
@@ -143,9 +156,10 @@ Work top-to-bottom. Check items off as we complete them.
   - [x] **Hardened upload** — `fileFilter` MIME allowlist (`ALLOWED_TYPES`) + `limits.fileSize` (5 MB; bump for real video). Blocks Stored XSS via `.html`/`.svg` uploads. Verified: `.html` rejected (400), valid `.jpg` accepted. (Auth = Password-gate step; CSP/serving headers = Phase 2.)
 - [x] **`DELETE /api/media/:category/:filename`** — `fs.unlink` (filename guard blocks `/`,`\`,`..` path traversal; subfolder chosen by extension; try/catch → "No such file"; verified: real delete OK, missing handled, attack URL blocked & faq.json safe)
 - [x] **Wire the live site** — `WorkGrid` `DetailView` now `fetch`es `http://localhost:3001/api/media/:category` via `useState`+`useEffect` (replaced dead `VIDEO_MANIFEST`/build-time globs). Also: trimmed WorkGrid to the 4 real categories + purged all i18n/dead code; added `http://localhost:3001` to the `connect-src` CSP in `index.html` (dev-only — remove in Phase 2 when API is same-origin). Verified end-to-end in browser: upload → appears in panel, delete → removed.
-- [ ] **Password gate** — a shared password in an env var + a check middleware
-- [ ] **React `/admin` page** — login form, category picker, upload, grid, delete
+- [x] **Password gate (server side)** — shared `ADMIN_TOKEN` in `.env` (loaded via `dotenv`, fail-fast if missing, `.env` gitignored) + `requireAuth` middleware on POST/DELETE (reads `Authorization: Bearer <token>`, 401 if mismatch, `next()` if valid). GET left public. Verified with curl: no token → 401, valid token → reaches handler. **Still open:** CORS lockdown (`*` → admin origin) + constant-time compare (`crypto.timingSafeEqual`) — deferred to Phase-2 hardening.
+- [~] **React `/admin` page** — login form, category picker, upload, grid, delete. **DONE so far:** `/admin` route in `App.tsx`; `Admin.tsx` login gate — token in `localStorage` (lazy init so refresh stays logged in), `handleLogin`/`handleLogout`. Real **server verification** wired: `handleLogin` `fetch`es `GET /api/auth/check` (new probe route, `requireAuth` only, returns `{ok:true}`) with `Authorization: Bearer <token>`; `res.ok` → save+login, 401 → "invalid password", network fail → catch. CORS middleware expanded (Allow-Headers `Authorization`, Allow-Methods, `OPTIONS`→204) to clear the preflight wall. **TODO:** API helper, category picker, media grid, upload, delete. **NOTE:** owner wrote all of it (login logic + CORS fix); `Admin.css` was pre-written by Claude before the "owner writes all code incl. CSS" rule — kept as a study reference; owner writes CSS from the dashboard onward.
 - [ ] **Polish for Shani** — progress bar, errors, confirm-before-delete
+- [ ] **Ongoing thread:** DevTools/QA literacy — teach Console + Network tabs in-context as we build (owner asked to learn this).
 
 ---
 
@@ -288,10 +302,46 @@ runtime from the backend instead of build-time globs:
 - **GET route now filters to real media** — videos `.mp4`/`.webm`, photos `.jpg/.jpeg/.png/.webp`;
   stray files (leftover `.mov`, `README.txt`, `.DS_Store`) are skipped, never served as broken media.
 
-**Next step:** **Password gate** — a shared admin token/password in an env var + a check
-middleware on POST/DELETE, and lock CORS down from `*` to the admin origin (closes the
-outstanding HIGH security finding). Then the React `/admin` dashboard. **Tie in here:** auto-convert
-`.mov`→`.mp4` on upload + the queued filename sanitization/extension+magic-byte validation.
+**Session 2026-06-25:** **Password gate (server side)** — built shared-token auth:
+- `npm install dotenv`; created `.env` (project root, gitignored line 30) with `ADMIN_TOKEN=...`.
+  Loaded via `import 'dotenv/config'` at the very top; pulled into `const ADMIN_TOKEN` with a
+  **fail-fast** `throw` if missing (caught a real "empty .env" bug — crashed loud instead of running
+  a broken gate). Gotcha learned: `dotenv/config` reads `.env` from the **cwd you launch node from**,
+  not the file's folder — start the server from the project root (or use `config({path})`).
+- `requireAuth(req,res,next)`: strips `Bearer ` off `req.headers.authorization`, compares to
+  `ADMIN_TOKEN`, `401` on mismatch, `next()` on match. Wired into POST **before** `upload.single`
+  (so an unauthorized file never hits disk) and into DELETE after `validateCategory`. GET stays public.
+- Verified with curl on a non-existent file: no token → `401 Invalid token`; valid token →
+  `400 No such file` (proves it passed the gate into the real handler). Teaching note reinforced:
+  middleware must either send a response or call `next()` — falling off the end hangs the request.
+
+**Session 2026-06-28/29:** **`/admin` login gate — built + verified end-to-end** (owner wrote all code):
+- Setup: moved `dotenv` into `server/` (was wrongly in root), moved `.env` → `server/.env` (so cwd
+  matches when launched from `server/`), added **nodemon** as a devDep + `"server": "nodemon index.js"`
+  script (auto-restart on save; named `server` not `dev` to avoid clashing with the front-end `bun run dev`).
+- `App.tsx`: added `<Route path="/admin" element={<Admin />} />`. Entry point = **bookmark only**, no
+  public link (keeps the marketing site clean; the gate is the real protection).
+- `Admin.tsx` (owner-written): `token` state via **lazy init** `useState(() => localStorage.getItem(KEY)||"")`
+  so a refresh stays logged in; `handleLogin`/`handleLogout` write/remove the token. Login is a single
+  password field; `token===""` ⇒ logged out (conditional render swaps login ↔ shell).
+- **Real verification (step 2):** added `GET /api/auth/check` (server) — `requireAuth` + `res.json({ok:true})`,
+  a read-only, side-effect-free probe. `handleLogin` is now `async`, `fetch`es it with `Authorization:
+  Bearer <input>`; `res.ok` → save+login, else "invalid password", `catch` → "can't reach server".
+  Taught: `fetch` only throws on network failure, NOT on 401 — use `res.ok` for HTTP errors.
+- **CORS preflight wall (hit intentionally, then fixed):** cross-origin `:8080`→`:3001` + custom
+  `Authorization` header triggers an `OPTIONS` preflight; old middleware only sent `Allow-Origin`, so the
+  browser blocked it (surfaced as the `catch`/"can't reach server" branch). Fix: added
+  `Access-Control-Allow-Headers: Authorization, Content-Type`, `Allow-Methods`, and `OPTIONS`→`204`.
+- Concepts cemented this session: stateless auth (server re-checks every request; client login = UX only,
+  never security — attackers skip the UI and curl the endpoint directly); routes = the only doorway the
+  browser can reach server code through; startup-registers-routes vs per-request-runs-matched-handler.
+
+**Next step:** continue the dashboard — **API helper** (one wrapper that attaches the `Bearer` token to
+every call) → **category picker + media grid** (reuse `GET /api/media/:category`) → **upload** (`POST`) →
+**delete** (`DELETE`, with confirm step) → **polish**. Owner writes all TSX **and CSS** from here (a CSS
+mini-lesson on the existing `Admin.css` is also queued). **Tie in along the way:** CORS lockdown (`*` →
+admin origin) + constant-time token compare; server-side `.mov`→`.mp4` auto-convert on upload; queued
+filename sanitization + extension/magic-byte validation.
 
 ---
 
