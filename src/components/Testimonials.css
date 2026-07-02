@@ -18,7 +18,7 @@
   direction: ltr;
   font-family: var(--font-display-archivo);
   color: var(--t-ink);
-  padding: clamp(80px, 10vw, 140px) 0 clamp(80px, 10vw, 130px);
+  padding: var(--section-pad-y) 0; /* horizontal 0 is intentional — full-bleed chat */
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
 }

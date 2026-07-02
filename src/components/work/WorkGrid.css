@@ -17,7 +17,8 @@
   direction: ltr;
   font-family: var(--font-display-archivo);
   color: var(--work-ink);
-  padding: clamp(40px, 5vw, 70px) var(--base-padding-x) clamp(90px, 11vw, 150px);
+  /* tight top — WorkGrid visually chains off About; full-scale bottom */
+  padding: var(--section-pad-y-tight) var(--base-padding-x) var(--section-pad-y);
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
 }

@@ -1,0 +1,102 @@
+/* ============================================================================
+   SubPageNav — glass top bar for /process and /faq.
+   Hover states live here (inline styles can't do :hover).
+   ============================================================================ */
+
+.shani-subnav {
+  direction: ltr; /* matches the LTR design language of all section chrome */
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem var(--base-padding-x);
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(16, 12, 13, 0.08);
+  font-family: var(--font-display-archivo);
+  animation: subnavIn 0.7s var(--ease-brand) both;
+}
+
+@keyframes subnavIn {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.shani-subnav .sn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: #100c0d;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.shani-subnav .sn-back svg {
+  color: var(--rose);
+  transition: transform 0.35s var(--ease-brand), color 0.3s var(--ease-brand);
+}
+.shani-subnav .sn-back:hover svg {
+  transform: translateX(-3px);
+  color: var(--rose-deep);
+}
+.shani-subnav .sn-back span {
+  position: relative;
+  padding-bottom: 2px;
+}
+.shani-subnav .sn-back span::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--rose);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s var(--ease-brand);
+}
+.shani-subnav .sn-back:hover span::after {
+  transform: scaleX(1);
+}
+
+.shani-subnav .sn-label {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: #6a605f;
+}
+
+.shani-subnav .sn-brand {
+  position: relative;
+  font-weight: 900;
+  font-size: 1.1rem;
+  letter-spacing: 0.18em;
+  color: #100c0d;
+  text-decoration: none;
+  padding-bottom: 2px;
+}
+.shani-subnav .sn-brand::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--rose);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.35s var(--ease-brand);
+}
+.shani-subnav .sn-brand:hover::after {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shani-subnav { animation: none; }
+}

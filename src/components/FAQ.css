@@ -14,7 +14,7 @@
   direction: ltr;
   font-family: var(--font-display-archivo);
   color: var(--faq-ink);
-  padding: clamp(80px, 10vw, 140px) var(--base-padding-x);
+  padding: var(--section-pad-y) var(--base-padding-x);
   -webkit-font-smoothing: antialiased;
 }
 .shani-faq * { box-sizing: border-box; }

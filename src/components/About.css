@@ -14,7 +14,7 @@
   direction: ltr;
   font-family: var(--font-display-archivo);
   color: var(--about-ink);
-  padding: clamp(70px, 9vw, 130px) var(--base-padding-x) clamp(80px, 9vw, 130px);
+  padding: var(--section-pad-y) var(--base-padding-x);
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
 }

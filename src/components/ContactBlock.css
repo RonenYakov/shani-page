@@ -16,7 +16,7 @@
   direction: ltr;
   font-family: var(--font-display-archivo);
   color: var(--c-ink);
-  padding: clamp(90px, 12vw, 160px) var(--base-padding-x) clamp(70px, 9vw, 120px);
+  padding: var(--section-pad-y) var(--base-padding-x) clamp(70px, 9vw, 120px);
   text-align: center;
   overflow: hidden;
   isolation: isolate;

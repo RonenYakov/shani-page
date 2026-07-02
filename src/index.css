@@ -98,6 +98,10 @@
   --global-border-radius: 16px;
   --base-padding-x:      max(5vw, 40px);
   --base-padding-y:      clamp(60px, 8vw, 120px);
+  /* section vertical rhythm — full for standalone sections, tight for sections
+     that visually chain off the previous one (e.g. WorkGrid after About) */
+  --section-pad-y:       clamp(80px, 12vw, 160px);
+  --section-pad-y-tight: clamp(48px, 7vw, 96px);
 
   /* ── Typography ─────────────────────────────────────────────────────────── */
   --font-body:           'DM Sans', sans-serif;
@@ -199,6 +203,16 @@ html::-webkit-scrollbar-corner  { background: transparent; }
 }
 .cta-pulse {
   animation: ctaPulse 2.8s ease-in-out infinite;
+}
+
+/* ── Focus visibility — rose ring, keyboard only ─────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--rose-deep);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+:focus:not(:focus-visible) {
+  outline: none;
 }
 
 /* ── Reduced motion — kill CSS-driven decoration (marquees, spins, grain jitter,
