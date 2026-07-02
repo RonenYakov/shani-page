@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence, useInView } from 'framer-motion'
+import { useTilt } from '@/hooks/useTilt'
 import './WorkGrid.css'
 import { WorkMedia, WORK_MEDIA } from '@/content/workMedia'
 
@@ -270,7 +271,9 @@ interface WorkCardProps {
   onClick: () => void
 }
 
-const WorkCard = ({ card, item, index, onClick }: WorkCardProps) => (
+const WorkCard = ({ card, item, index, onClick }: WorkCardProps) => {
+  const tilt = useTilt(4, -6)
+  return (
   <motion.div
     className="wg-slot"
     initial={{ opacity: 0, y: 48 }}
@@ -278,7 +281,17 @@ const WorkCard = ({ card, item, index, onClick }: WorkCardProps) => (
     viewport={{ once: true, margin: '-40px' }}
     transition={{ duration: 0.9, delay: index * 0.12, ease: EASE }}
   >
-    <div className="wg-cat" onClick={onClick}>
+    <motion.div
+      className="wg-cat"
+      style={{ rotateX: tilt.rotateX, rotateY: tilt.rotateY, y: tilt.y }}
+      onMouseMove={tilt.onMouseMove}
+      onMouseEnter={tilt.onMouseEnter}
+      onMouseLeave={tilt.onMouseLeave}
+      onClick={() => {
+        tilt.reset() // flatten before the shared-element transition measures the card
+        onClick()
+      }}
+    >
       <motion.div className="wg-cat-media" layoutId={`card-img-${item.id}`}>
         <img
           src={item.coverAsset}
@@ -303,9 +316,10 @@ const WorkCard = ({ card, item, index, onClick }: WorkCardProps) => (
           View Work <span className="arr">→</span>
         </span>
       </div>
-    </div>
+    </motion.div>
   </motion.div>
-)
+  )
+}
 
 // ─── Video lightbox ───────────────────────────────────────────────────────────
 const VideoLightbox = ({ src, onClose }: { src: string; onClose: () => void }) => {

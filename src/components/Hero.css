@@ -531,6 +531,18 @@
   }
 }
 
+/* ===== 3D depth (desktop, fine pointer) =====
+   The JS parallax owns .headline / .figure transforms, so real Z lives on
+   their untouched children — perspective makes the mouse parallax read as
+   genuine depth instead of flat 2D drift. */
+@media (hover: hover) and (pointer: fine) and (min-width: 768px) {
+  .shani-hero { perspective: 1200px; }
+  .shani-hero .headline,
+  .shani-hero .figure { transform-style: preserve-3d; }
+  .shani-hero .figure-wrap { transform: translateZ(18px); }
+  .shani-hero .headline .giant-wrap { transform: translateZ(-30px); }
+}
+
 /* top + bottom cinematic falloff */
 .shani-hero .vignette {
   position: absolute;

@@ -96,6 +96,9 @@
 }
 
 /* card */
+/* perspective lives on the slot so the card's tilt reads as true depth */
+.wg-slot { perspective: 1100px; }
+
 .wg-cat {
   position: relative;
   width: 100%;
@@ -104,11 +107,12 @@
   overflow: hidden;
   cursor: pointer;
   background: #f3eeec;
-  transition: filter 0.6s ease, box-shadow 0.6s ease, transform 0.6s cubic-bezier(0.35, 0, 0, 1);
+  /* transform (lift + 3D tilt) is owned by Framer springs in WorkCard —
+     keep CSS to filter/shadow only to avoid transform fights */
+  transition: filter 0.6s ease, box-shadow 0.6s ease;
 }
 .wg-cat:hover {
   box-shadow: 0 30px 70px -26px rgba(16, 12, 13, 0.45);
-  transform: translateY(-6px);
 }
 
 .wg-cat-media { position: absolute; inset: 0; }
