@@ -5,8 +5,8 @@
    ============================================================================ */
 
 .shani-testimonials {
-  --rose: #F2B1B1;
-  --rose-bright: #F2B1B1;
+  /* --rose comes from :root (index.css) */
+  --rose-bright: var(--rose);
   --t-bg: #FFFFFF;            /* white */
   --t-elevated: #F4EFE9;      /* warm-light bubble — reads against the white bg */
   --t-ink: #100c0d;
@@ -16,7 +16,7 @@
   position: relative;
   background: var(--t-bg);
   direction: ltr;
-  font-family: "Archivo", system-ui, sans-serif;
+  font-family: var(--font-display-archivo);
   color: var(--t-ink);
   padding: clamp(80px, 10vw, 140px) 0 clamp(80px, 10vw, 130px);
   overflow: hidden;
@@ -93,7 +93,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(145deg, var(--rose), #6e4a5e);
+  background: linear-gradient(145deg, var(--rose), var(--rose-deep));
   display: flex;
   align-items: center;
   justify-content: center;

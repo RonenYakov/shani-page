@@ -6,8 +6,8 @@
    ============================================================================ */
 
 .shani-process {
-  --rose: #F2B1B1;
-  --rose-bright: #F2B1B1;
+  /* --rose comes from :root (index.css) */
+  --rose-bright: var(--rose);
   --proc-ink: #100c0d;
   --proc-muted: #6a605f;
   --proc-line: rgba(16, 12, 13, 0.1);
@@ -15,7 +15,7 @@
   position: relative;
   background: #ffffff;
   direction: ltr;
-  font-family: "Archivo", system-ui, sans-serif;
+  font-family: var(--font-display-archivo);
   color: var(--proc-ink);
   -webkit-font-smoothing: antialiased;
 }

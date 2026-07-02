@@ -26,7 +26,7 @@ const StickyWhatsApp = () => {
         left: 0,
         right: 0,
         zIndex: 50,
-        background: 'linear-gradient(to right, #F2B1B1, #E89E9E)',
+        background: 'linear-gradient(to right, var(--rose), var(--rose-deep))',
         boxShadow: '0 -6px 28px rgba(242, 177, 177, 0.45)',
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
         transform: shown ? 'translateY(0)' : 'translateY(110%)',

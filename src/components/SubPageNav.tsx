@@ -32,7 +32,7 @@ const SubPageNav = ({ label }: { label: string }) => (
         textTransform: "uppercase",
       }}
     >
-      <span style={{ fontSize: "1.1rem", lineHeight: 1, color: "#F2B1B1" }}>←</span>
+      <span style={{ fontSize: "1.1rem", lineHeight: 1, color: "var(--rose)" }}>←</span>
       Back
     </Link>
 

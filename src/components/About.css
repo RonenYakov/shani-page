@@ -5,15 +5,14 @@
    ============================================================================ */
 
 .shani-about {
-  --rose: #F2B1B1;
-  --rose-soft: rgba(242, 177, 177, 0.14);
+  /* --rose / --rose-soft come from :root (index.css) */
   --about-ink: #100c0d;
   --about-muted: #6a605f;
 
   position: relative;
   background: #ffffff;
   direction: ltr;
-  font-family: "Archivo", system-ui, sans-serif;
+  font-family: var(--font-display-archivo);
   color: var(--about-ink);
   padding: clamp(70px, 9vw, 130px) var(--base-padding-x) clamp(80px, 9vw, 130px);
   overflow: hidden;
@@ -95,7 +94,7 @@
 
 /* ── giant headline ── */
 .sa-giant {
-  font-weight: 700;
+  font-weight: 900;
   text-transform: uppercase;
   line-height: 0.88;
   letter-spacing: -0.02em;

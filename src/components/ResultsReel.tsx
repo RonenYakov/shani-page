@@ -122,7 +122,7 @@ const ResultsReel = () => {
               ref={pathRef}
               d={SPINE}
               fill="none"
-              stroke="#F2B1B1"
+              stroke="var(--rose)"
               strokeWidth="3"
               strokeLinecap="round"
               opacity="0.8"

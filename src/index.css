@@ -57,6 +57,11 @@
   /* Utility */
   --color-line:         rgba(20, 20, 20, 0.06);
 
+  /* ── 2026-06 rose design language (canonical accent tokens) ──────────────── */
+  --rose:               #F2B1B1;   /* THE accent everywhere */
+  --rose-deep:          #E08F8F;   /* hover / active / small-text contrast on white */
+  --rose-soft:          rgba(242, 177, 177, 0.14);   /* tints, rings, washes */
+
   /* ── Tailwind / shadcn HSL system (kept for UI components) ───────────────── */
   --background:              40 28% 94%;
   --foreground:              0 0% 8%;
@@ -102,6 +107,7 @@
   --font-display-en-hero: 'Abril Fatface', serif;
   --font-mono:           'Moderniz', 'IBM Plex Mono', monospace;
   --font-label:          'Moderniz', 'IBM Plex Mono', monospace;
+  --font-display-archivo: 'Archivo', system-ui, sans-serif;   /* EN section display */
 
   /* ── Easing ─────────────────────────────────────────────────────────────── */
   --ease-brand:          cubic-bezier(0.35, 0, 0, 1);
@@ -192,12 +198,6 @@ html::-webkit-scrollbar-corner  { background: transparent; }
 }
 .cta-pulse {
   animation: ctaPulse 2.8s ease-in-out infinite;
-}
-
-/* ── Word-up reveal ─────────────────────────────────────────────────────────── */
-@keyframes wordUp {
-  from { transform: translateY(110%); }
-  to   { transform: translateY(0); }
 }
 
 /* ── Scrollbar hide ─────────────────────────────────────────────────────────── */

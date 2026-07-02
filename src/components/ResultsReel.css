@@ -4,14 +4,14 @@
    ============================================================================ */
 
 .shani-results {
-  --rose: #F2B1B1;
-  --rose-bright: #F2B1B1;
+  /* --rose comes from :root (index.css) */
+  --rose-bright: var(--rose);
   --res-ink: #100c0d;
 
   position: relative;
   background: #ffffff;
   direction: ltr;
-  font-family: "Archivo", system-ui, sans-serif;
+  font-family: var(--font-display-archivo);
   -webkit-font-smoothing: antialiased;
 }
 .shani-results * { box-sizing: border-box; }
@@ -134,7 +134,7 @@
   transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s, background 0.3s;
 }
 .rr-cta:hover {
-  background: #d8b3b3;
+  background: var(--rose-deep);
   transform: translateY(-2px);
   box-shadow: 0 12px 34px -10px rgba(201, 160, 160, 0.55);
 }

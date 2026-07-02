@@ -4,7 +4,7 @@
    ============================================================================ */
 
 .shani-faq {
-  --rose: #F2B1B1;
+  /* --rose comes from :root (index.css) */
   --faq-ink: #100c0d;
   --faq-muted: #6a605f;
   --faq-line: rgba(16, 12, 13, 0.1);
@@ -12,7 +12,7 @@
   position: relative;
   background: #ffffff;
   direction: ltr;
-  font-family: "Archivo", system-ui, sans-serif;
+  font-family: var(--font-display-archivo);
   color: var(--faq-ink);
   padding: clamp(80px, 10vw, 140px) var(--base-padding-x);
   -webkit-font-smoothing: antialiased;
@@ -88,7 +88,7 @@
   line-height: 1.35;
   transition: color 0.3s ease, transform 0.45s cubic-bezier(0.35, 0, 0, 1);
 }
-.fq-row.open .fq-qtext { color: #E08F8F; } /* deeper rose — open question must stay readable on white */
+.fq-row.open .fq-qtext { color: var(--rose-deep); } /* deeper rose — open question must stay readable on white */
 .fq-q:hover .fq-qtext { transform: translateX(var(--fq-shift, 6px)); }
 
 .fq-toggle {

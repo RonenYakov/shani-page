@@ -5,8 +5,8 @@
    ============================================================================ */
 
 .shani-contact {
-  --rose: #F2B1B1;
-  --rose-bright: #F2B1B1;
+  /* --rose comes from :root (index.css) */
+  --rose-bright: var(--rose);
   --c-ink: #fbf6f5;
   --c-muted: #a89e9d;
   --c-line: rgba(251, 246, 245, 0.12);
@@ -14,7 +14,7 @@
   position: relative;
   background: #0D0A0B;
   direction: ltr;
-  font-family: "Archivo", system-ui, sans-serif;
+  font-family: var(--font-display-archivo);
   color: var(--c-ink);
   padding: clamp(90px, 12vw, 160px) var(--base-padding-x) clamp(70px, 9vw, 120px);
   text-align: center;
@@ -142,7 +142,7 @@
   will-change: transform;
 }
 .ct-primary:hover {
-  background: #ffc4c4;
+  background: var(--rose-deep);
   box-shadow: 0 16px 44px -12px rgba(242, 177, 177, 0.55);
 }
 .ct-ghost {
@@ -225,7 +225,7 @@
 .ct-badge .ring { animation: ctSpin 26s linear infinite; transform-origin: 50% 50%; }
 .ct-badge text {
   fill: var(--rose-bright);
-  font-family: "Archivo", sans-serif;
+  font-family: var(--font-display-archivo);
   font-size: 8.4px;
   font-weight: 600;
   letter-spacing: 0.085em;

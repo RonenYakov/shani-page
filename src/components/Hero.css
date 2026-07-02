@@ -8,8 +8,7 @@
 
 .shani-hero {
   /* themeable tokens — resolved to the saved light + cinematic state */
-  --rose: #F2B1B1;
-  --rose-deep: #E08F8F;
+  /* --rose / --rose-deep come from :root (index.css) */
   --rose-dim: rgba(242, 177, 177, 0.72);
   --paper: #141011;
   --muted: #4a403e;
@@ -26,7 +25,7 @@
 
   /* the design is built LTR — keep it LTR even though the site is RTL */
   direction: ltr;
-  font-family: "Archivo", system-ui, sans-serif;
+  font-family: var(--font-display-archivo);
   color: var(--paper);
   -webkit-font-smoothing: antialiased;
 
@@ -79,7 +78,7 @@
   left: 0.2em;
   bottom: 100%;
   margin-bottom: 0.08em;
-  font-family: "Archivo", system-ui, sans-serif;
+  font-family: var(--font-display-archivo);
   font-weight: 700;
   font-style: normal;
   font-size: clamp(1.5rem, 3.6vw, 3.6rem);
@@ -135,7 +134,7 @@
 }
 
 .shani-hero .headline .giant {
-  font-family: "Archivo", system-ui, sans-serif;
+  font-family: var(--font-display-archivo);
   font-weight: 700;
   font-size: clamp(4rem, 14.5vw, 14.5rem);
   line-height: 0.88;
@@ -281,7 +280,7 @@
 
 .shani-hero .cta {
   font-family: inherit;
-  background: #F2B1B1;
+  background: var(--rose);
   color: #000;
   border: none;
   border-radius: 999px;
@@ -300,7 +299,7 @@
 }
 
 .shani-hero .cta:hover {
-  background: #E89E9E;
+  background: var(--rose-deep);
   transform: translateY(-2px);
   box-shadow: 0 12px 34px -10px rgba(242, 177, 177, 0.65);
 }
@@ -325,7 +324,7 @@
 }
 
 .shani-hero .caption .lead em {
-  font-family: "Archivo", system-ui, sans-serif;
+  font-family: var(--font-display-archivo);
   font-style: italic;
   font-weight: 800;
   font-size: 1.18em;
@@ -419,7 +418,7 @@
 
 .shani-hero .badge text {
   fill: var(--rose-deep);
-  font-family: "Archivo", sans-serif;
+  font-family: var(--font-display-archivo);
   font-size: 8.4px;
   font-weight: 600;
   letter-spacing: 0.085em;
@@ -679,7 +678,7 @@
 }
 
 .shani-hero .mm-links a {
-  font-family: "Archivo", system-ui, sans-serif;
+  font-family: var(--font-display-archivo);
   font-weight: 600;
   font-style: italic;
   font-size: clamp(2rem, 8vw, 2.8rem);
@@ -717,8 +716,8 @@
 }
 
 .shani-hero .mm-cta {
-  font-family: "Archivo", system-ui, sans-serif;
-  background: #F2B1B1;
+  font-family: var(--font-display-archivo);
+  background: var(--rose);
   color: #141011;
   border: none;
   border-radius: 999px;
@@ -758,7 +757,7 @@
 }
 
 .shani-hero .scroll-hint .sh-txt {
-  font-family: "Archivo", system-ui, sans-serif;
+  font-family: var(--font-display-archivo);
   font-style: italic;
   font-weight: 600;
   font-size: 0.85rem;

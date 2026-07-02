@@ -24,7 +24,7 @@ const HomeButton = () => {
       aria-label="Back to top"
     >
       <svg className="flower" viewBox="0 0 24 24" aria-hidden="true">
-        <g fill="#F2B1B1">
+        <g fill="var(--rose)">
           <ellipse cx="12" cy="5.4" rx="2.5" ry="3.6" />
           <ellipse cx="12" cy="18.6" rx="2.5" ry="3.6" />
           <ellipse cx="5.4" cy="12" rx="3.6" ry="2.5" />
