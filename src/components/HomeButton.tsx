@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
+import { useLenis } from "lenis/react";
 import "./HomeButton.css";
 
 /** Floating "SHANI" home button — appears once the user scrolls past the hero,
  *  click smooth-scrolls back to the top. Rendered on the main page only. */
 const HomeButton = () => {
   const [show, setShow] = useState(false);
+  const lenis = useLenis();
 
   useEffect(() => {
     const onScroll = () => setShow(window.scrollY > window.innerHeight * 0.75);
@@ -13,7 +15,10 @@ const HomeButton = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const goHome = () => window.scrollTo({ top: 0, behavior: "smooth" });
+  const goHome = () => {
+    if (lenis) lenis.scrollTo(0);
+    else window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <button

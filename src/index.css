@@ -142,7 +142,8 @@ body {
 }
 
 html {
-  scroll-behavior: smooth;
+  /* scroll-behavior: smooth removed — Lenis owns wheel smoothing now
+     (CSS smooth + Lenis = double-smoothing) */
   /* Invisible scrollbar */
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;

@@ -11,7 +11,6 @@ import Footer from "@/components/Footer";
 const IndexTest = () => {
   return (
     <div className="min-h-screen">
-      <div className="grain-overlay" aria-hidden="true" />
       <Analytics />
       <HomeButton />
       <Hero />
