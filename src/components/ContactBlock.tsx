@@ -128,9 +128,9 @@ const ContactBlock = () => {
           <span className="ct-word" key={word}>
             <motion.span
               className={i === 1 ? "ac" : undefined}
-              initial={{ y: "110%" }}
-              animate={headInView ? { y: 0 } : {}}
-              transition={{ duration: 0.95, delay: i * 0.14, ease: EASE }}
+              initial={{ y: "110%", letterSpacing: "0.06em" }}
+              animate={headInView ? { y: 0, letterSpacing: "-0.02em" } : {}}
+              transition={{ duration: 1.1, delay: i * 0.14, ease: EASE }}
             >
               {word}
             </motion.span>

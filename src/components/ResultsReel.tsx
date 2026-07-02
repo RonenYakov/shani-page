@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { Volume2, VolumeX } from "lucide-react";
 import { socials } from "@/content/socials";
 import "./ResultsReel.css";
@@ -21,6 +22,10 @@ const ResultsReel = () => {
   const hasCalendly = Boolean(socials.calendlyUrl);
   const [isMobile, setIsMobile] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
+  const reduceMotion = useReducedMotion();
+  // the page's single blur-in — desktop only (blur filters are expensive on
+  // mobile GPUs) and manually gated (MotionConfig doesn't cover `filter`)
+  const blurIn = !isMobile && !reduceMotion;
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -162,14 +167,22 @@ const ResultsReel = () => {
             />
             <div className="rr-grad" />
 
-            <div className="rr-head" dir="rtl" style={{ left: "auto", right: "clamp(1.2rem, 2.5vw, 2.2rem)" }}>
+            <motion.div
+              className="rr-head"
+              dir="rtl"
+              style={{ left: "auto", right: "clamp(1.2rem, 2.5vw, 2.2rem)" }}
+              initial={blurIn ? { opacity: 0, filter: "blur(6px)" } : false}
+              whileInView={blurIn ? { opacity: 1, filter: "blur(0px)" } : undefined}
+              viewport={{ once: true, amount: 0.6 }}
+              transition={{ duration: 0.9, ease: [0.35, 0, 0, 1] }}
+            >
               <p className="rr-kicker">
                 <span className="dot">◆</span> הוכחה, לא הבטחות
               </p>
               <div className="rr-title" style={{ direction: "ltr" }}>
                 What Results Look Like
               </div>
-            </div>
+            </motion.div>
 
             {hasCalendly && (
               <button

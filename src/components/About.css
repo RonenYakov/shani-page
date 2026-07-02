@@ -149,6 +149,14 @@
   border-radius: 20px;
   overflow: hidden;
   background: #f3eeec;
+  /* quiet rose elevation — subordinate to WorkGrid's deeper card shadows */
+  box-shadow: 0 18px 45px -20px rgba(242, 177, 177, 0.35);
+  transition: transform 0.5s var(--ease-brand), box-shadow 0.5s var(--ease-brand);
+}
+
+.sa-tile:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 26px 56px -22px rgba(224, 143, 143, 0.45);
 }
 
 .sa-slot:nth-child(1) .sa-tile {
