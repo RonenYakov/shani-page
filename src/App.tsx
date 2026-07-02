@@ -2,6 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { MotionConfig } from "framer-motion";
 import IndexTest from "./pages/IndexTest";
 import Process from "./pages/Process";
 import Faq from "./pages/Faq";
@@ -9,7 +10,8 @@ import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 const App = () => (
-  <TooltipProvider>
+  <MotionConfig reducedMotion="user">
+    <TooltipProvider>
     <Toaster />
     <Sonner />
     <BrowserRouter>
@@ -22,7 +24,8 @@ const App = () => (
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
-  </TooltipProvider>
+    </TooltipProvider>
+  </MotionConfig>
 );
 
 export default App;

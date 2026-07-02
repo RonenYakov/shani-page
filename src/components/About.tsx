@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { motion, useInView, useScroll, useTransform, MotionValue } from "framer-motion";
+import { motion, useInView, useScroll, useTransform, useReducedMotion, MotionValue } from "framer-motion";
 import "./About.css";
 
 const EASE: [number, number, number, number] = [0.35, 0, 0, 1];
@@ -46,13 +46,16 @@ const Tile = ({
   /** parallax intensity — 1 on desktop, softened on mobile */
   factor: number;
 }) => {
+  const reduceMotion = useReducedMotion();
   const y = useTransform(progress, [0, 1], [tile.speed * factor, -tile.speed * factor]);
 
   return (
-    <motion.div className="sa-slot" style={{ y }}>
+    <motion.div className="sa-slot" style={reduceMotion ? undefined : { y }}>
       <motion.div
         className="sa-tile"
-        initial={{ clipPath: "inset(100% 0 0 0)" }}
+        /* clipPath isn't covered by MotionConfig reducedMotion — guard manually
+           so tiles are never stuck clipped */
+        initial={reduceMotion ? false : { clipPath: "inset(100% 0 0 0)" }}
         whileInView={{ clipPath: "inset(0% 0 0 0)" }}
         viewport={{ once: true, margin: "-40px" }}
         transition={{ duration: 0.9, delay: index * 0.12, ease: EASE }}
@@ -75,7 +78,7 @@ const Tile = ({
         )}
         <motion.span
           className="sa-chip"
-          initial={{ opacity: 0, y: 8 }}
+          initial={reduceMotion ? false : { opacity: 0, y: 8 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.45 + index * 0.12, ease: EASE }}
@@ -97,21 +100,24 @@ const RevealLine = ({
   children: (string | JSX.Element)[];
   inView: boolean;
   baseDelay: number;
-}) => (
-  <span style={{ display: "block" }}>
-    {children.map((word, i) => (
-      <span className="sa-word" key={i}>
-        <motion.span
-          initial={{ y: "110%" }}
-          animate={inView ? { y: 0 } : {}}
-          transition={{ duration: 0.9, delay: baseDelay + i * 0.09, ease: EASE }}
-        >
-          {word}
-        </motion.span>
-      </span>
-    ))}
-  </span>
-);
+}) => {
+  const reduceMotion = useReducedMotion();
+  return (
+    <span style={{ display: "block" }}>
+      {children.map((word, i) => (
+        <span className="sa-word" key={i}>
+          <motion.span
+            initial={reduceMotion ? false : { y: "110%" }}
+            animate={inView ? { y: 0 } : {}}
+            transition={{ duration: 0.9, delay: baseDelay + i * 0.09, ease: EASE }}
+          >
+            {word}
+          </motion.span>
+        </span>
+      ))}
+    </span>
+  );
+};
 
 const About = () => {
   const sectionRef = useRef<HTMLElement>(null);

@@ -42,6 +42,15 @@ const ResultsReel = () => {
     if (!outer || !path || !frame) return;
 
     const len = path.getTotalLength();
+
+    // reduced motion: skip the scroll choreography — spine fully drawn, frame at rest
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      path.style.strokeDasharray = "none";
+      path.style.strokeDashoffset = "0";
+      frame.style.transform = "translateY(0)";
+      return;
+    }
+
     path.style.strokeDasharray = String(len);
     path.style.strokeDashoffset = String(len * 0.97);
     const mobileNow = window.innerWidth < 768;
@@ -61,11 +70,20 @@ const ResultsReel = () => {
       const maxY = mobile ? window.innerHeight * 0.5 : window.innerHeight * 1.05;
       const vidPct = easeOutCubic(mapRange(progress, riseStart, riseEnd, 0, 1));
       frame.style.transform = `translateY(${(1 - vidPct) * maxY}px)`;
+      ticking = false;
     };
 
-    window.addEventListener("scroll", update, { passive: true });
+    // rAF-throttled scroll handler (same pattern as Hero)
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
     update();
-    return () => window.removeEventListener("scroll", update);
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   // ── auto-mute when off screen ──

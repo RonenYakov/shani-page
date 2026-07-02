@@ -200,6 +200,18 @@ html::-webkit-scrollbar-corner  { background: transparent; }
   animation: ctaPulse 2.8s ease-in-out infinite;
 }
 
+/* ── Reduced motion — kill CSS-driven decoration (marquees, spins, grain jitter,
+      pulses). Framer Motion is handled separately via <MotionConfig reducedMotion>
+      + per-component guards. ─────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* ── Scrollbar hide ─────────────────────────────────────────────────────────── */
 .scrollbar-hide {
   -ms-overflow-style: none;
