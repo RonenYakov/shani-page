@@ -87,7 +87,7 @@ const WORK_ITEMS: WorkItem[] = [
     paletteKey: 'weddings',
     tags: 'חתונות • וידאו • רגעים',
     title: 'סושיאל חתונות',
-    coverAsset: '/category/wed.jpg',
+    coverAsset: '/category/wed.webp',
     description:
       "ניהול וצילום תוכן קולנועי (רילס, טיקטוק) ישירות מתוך אירוע החתונה שלכם. אנחנו לא רק מתעדים, אלא יוצרים Buzz סביב הרגעים המרגשים ביותר. בעזרת ציוד מקצועי ורחפן, אנחנו לוכדים זוויות ייחודיות שהאורחים שלכם ירצו לשתף. אני באה להפוך את היום המיוחד שלכם להכי קסום שיש בעזרת ליווי מההתארגנות ועד הריקודים, לתפוס כל רגע קטן שלא תשכחו לעד.",
     services: ['וידאו חתונות', 'רילס ותוכן', 'אינסטגרם סטוריז', 'עריכה'],
@@ -97,7 +97,7 @@ const WORK_ITEMS: WorkItem[] = [
     paletteKey: 'management',
     tags: 'קידום עסקים • סושיאל • יצירת לידים',
     title: 'ניהול סושיאל',
-    coverAsset: '/category/manegment-cover.PNG',
+    coverAsset: '/category/manegment-cover.webp',
     coverPosition: 'center',
     coverOverlay: 'rgba(155,143,168,0.18)',
     description:
@@ -109,7 +109,7 @@ const WORK_ITEMS: WorkItem[] = [
     paletteKey: 'photoshoot',
     tags: 'סושיאל • ימי צילום • תוכן',
     title: 'צילומי סושיאל',
-    coverAsset: '/category/יום צילום.jpg',
+    coverAsset: '/category/photoshoot-cover.webp',
     coverPosition: 'center',
     coverOverlay: 'rgba(180,120,60,0.22)',
     description: 'יום צילום מרוכז ומדויק לעסקים שרוצים להרים את הרמה של הנראות שלהם בלי התחייבות לניהול חודשי. ביום אחד אנחנו מייצרים לכם "בנק תוכן" של סרטונים ותמונות בסטנדרט גבוה, מותאמים לטרנדים הכי חמים, כך שיהיה לכם תוכן איכותי להעלות בעצמכם לאורך חודש שלם. זה הפתרון האידיאלי למי שצריך תוצאה מקצועית ומהירה במינימום זמן ומקסימום אימפקט ויזואלי.',
@@ -120,7 +120,7 @@ const WORK_ITEMS: WorkItem[] = [
     paletteKey: 'ugc',
     tags: 'המלצות • UGC • תוכן גולשים',
     title: 'המלצות ו-UGC',
-    coverAsset: '/category/reco-cover.PNG',
+    coverAsset: '/category/reco-cover.webp',
     description:
       'הכוח של המלצה אמיתית: תוכן גולשים (UGC) והמלצות מצולמות של לקוחות מרוצים הם הכלי החזק ביותר לבניית אמון. אנחנו מפיקים סרטוני המלצות אותנטיים וקליפים בסגנון UGC שמרגישים אמיתיים, מדברים בגובה העיניים — וגורמים ללקוחות הבאים להגיד כן.',
     services: ['סרטוני המלצות', 'תוכן UGC', 'עדויות לקוחות', 'קריאייטיב'],
@@ -423,6 +423,10 @@ const DetailView = ({ item, onClose, onWhatsApp }: DetailViewProps) => {
   const [media, setMedia] = useState<WorkMedia>(
     () => WORK_MEDIA[item.id] ?? { videos: [], photos: [] }
   )
+  // horizontal reel + its "scroll sideways" hint
+  const reelRef = useRef<HTMLDivElement>(null)
+  const [canScrollReel, setCanScrollReel] = useState(false)
+  const [reelScrolled, setReelScrolled] = useState(false)
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768)
     check()
@@ -447,6 +451,17 @@ const DetailView = ({ item, onClose, onWhatsApp }: DetailViewProps) => {
       .then(data => setMedia(data))
       .catch(() => setMedia(fallback))
   }, [item.id])
+
+  // Only show the "scroll sideways" hint when the reel actually overflows its box.
+  useEffect(() => {
+    const el = reelRef.current
+    if (!el) return
+    const check = () => setCanScrollReel(el.scrollWidth - el.clientWidth > 8)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [media, isMobile])
+
   const videos = media.videos
   const hasVideos = videos.length > 0
   const galleryItems = media.photos
@@ -729,14 +744,56 @@ const DetailView = ({ item, onClose, onWhatsApp }: DetailViewProps) => {
               <div style={{ height: 1, flex: 1, background: p.divider }} />
             </div>
 
-            <div style={{
-              display: 'flex',
-              gap: '1.5rem',
-              overflowX: 'auto',
-              paddingBottom: '1.2rem',
-              scrollbarWidth: 'thin',
-              scrollbarColor: `${p.scrollbar} transparent`,
-            }}>
+            {/* Scroll-sideways hint — only while the reel overflows and hasn't been scrolled yet */}
+            <AnimatePresence>
+              {canScrollReel && !reelScrolled && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4 }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'flex-end',
+                    gap: '0.5rem',
+                    marginBottom: '1rem',
+                    pointerEvents: 'none',
+                  }}
+                >
+                  <span style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '0.56rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.2em',
+                    color: p.muted,
+                  }}>
+                    גללו לצד
+                  </span>
+                  <motion.span
+                    animate={{ x: [0, -6, 0] }}
+                    transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
+                    style={{ color: p.accent, display: 'inline-flex' }}
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg>
+                  </motion.span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <div
+              ref={reelRef}
+              onScroll={() => { if (!reelScrolled) setReelScrolled(true) }}
+              style={{
+                display: 'flex',
+                gap: '1.5rem',
+                overflowX: 'auto',
+                paddingBottom: '1.2rem',
+                scrollbarWidth: 'thin',
+                scrollbarColor: `${p.scrollbar} transparent`,
+              }}>
               {/* Videos — tall 9:16 ratio, click to open lightbox */}
               {videos.map((src, i) => (
                 <motion.div
