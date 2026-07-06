@@ -107,8 +107,9 @@ const Hero = () => {
       <div className="layer figure" ref={figureRef}>
         <div className="figure-wrap">
           <img
-            src="/shani-cut3.png"
+            src="/shani-cut3.webp"
             alt="Shani, social media manager, holding a Canon camera"
+            fetchPriority="high"
           />
         </div>
       </div>

@@ -15,7 +15,7 @@ interface TileDef {
 }
 
 const TILES: TileDef[] = [
-  { src: "/posters/IMG_2062.PNG", label: "shani", pos: "center", speed: 18 },
+  { src: "/posters/IMG_2062.webp", label: "shani", pos: "center", speed: 18 },
   {
     src: "/posters/weddings/proposel.webp",
     video: "/posters/1bf41d0fe19c4931882b16de52719aad.mp4",
@@ -23,7 +23,7 @@ const TILES: TileDef[] = [
     pos: "center",
     speed: -30,
   },
-  { src: "/posters/wedding%20cover.jpg", label: "weddings", pos: "center", speed: 12 },
+  { src: "/posters/wedding-cover.webp", label: "weddings", pos: "center", speed: 12 },
   {
     src: "/posters/theme/social-shoots.png",
     video: "/posters/4a6e045d63e542bf8534c6818cadc6ec.mp4",

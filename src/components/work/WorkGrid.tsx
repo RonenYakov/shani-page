@@ -68,6 +68,21 @@ const PALETTES: Record<string, NichePalette> = {
   },
 }
 
+// Minimal round arrow button for the DetailView reel — outline, fills with accent on hover.
+const reelArrowStyle = (p: NichePalette): React.CSSProperties => ({
+  width: 38,
+  height: 38,
+  borderRadius: '50%',
+  border: `1px solid ${p.divider}`,
+  background: 'transparent',
+  color: p.muted,
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  cursor: 'pointer',
+  transition: 'background 0.2s ease, color 0.2s ease',
+})
+
 // ─── Data ─────────────────────────────────────────────────────────────────────
 interface WorkItem {
   id: string
@@ -423,10 +438,19 @@ const DetailView = ({ item, onClose, onWhatsApp }: DetailViewProps) => {
   const [media, setMedia] = useState<WorkMedia>(
     () => WORK_MEDIA[item.id] ?? { videos: [], photos: [] }
   )
-  // horizontal reel + its "scroll sideways" hint
+  // horizontal reel + its prev/next arrow controls
   const reelRef = useRef<HTMLDivElement>(null)
   const [canScrollReel, setCanScrollReel] = useState(false)
-  const [reelScrolled, setReelScrolled] = useState(false)
+
+  // Jump the reel one "card" over. dir = 1 → next (forward), -1 → previous.
+  // The reel is RTL, so "forward" means scrolling toward negative scrollLeft.
+  const scrollReel = (dir: 1 | -1) => {
+    const el = reelRef.current
+    if (!el) return
+    const first = el.firstElementChild as HTMLElement | null
+    const step = first ? first.getBoundingClientRect().width + 24 : el.clientWidth * 0.8
+    el.scrollBy({ left: -dir * step, behavior: 'smooth' })
+  }
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768)
     check()
@@ -452,7 +476,7 @@ const DetailView = ({ item, onClose, onWhatsApp }: DetailViewProps) => {
       .catch(() => setMedia(fallback))
   }, [item.id])
 
-  // Only show the "scroll sideways" hint when the reel actually overflows its box.
+  // Only show the arrow controls when the reel actually overflows its box.
   useEffect(() => {
     const el = reelRef.current
     if (!el) return
@@ -744,9 +768,9 @@ const DetailView = ({ item, onClose, onWhatsApp }: DetailViewProps) => {
               <div style={{ height: 1, flex: 1, background: p.divider }} />
             </div>
 
-            {/* Scroll-sideways hint — only while the reel overflows and hasn't been scrolled yet */}
+            {/* Prev / next arrows — jump the reel one card at a time. Shown only when it overflows. */}
             <AnimatePresence>
-              {canScrollReel && !reelScrolled && (
+              {canScrollReel && (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -756,36 +780,39 @@ const DetailView = ({ item, onClose, onWhatsApp }: DetailViewProps) => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'flex-end',
-                    gap: '0.5rem',
+                    gap: '0.6rem',
                     marginBottom: '1rem',
-                    pointerEvents: 'none',
                   }}
                 >
-                  <span style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '0.56rem',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.2em',
-                    color: p.muted,
-                  }}>
-                    גללו לצד
-                  </span>
-                  <motion.span
-                    animate={{ x: [0, -6, 0] }}
-                    transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
-                    style={{ color: p.accent, display: 'inline-flex' }}
+                  {/* forward = advance to the next video (reel is RTL, so next sits to the left) */}
+                  <button
+                    onClick={() => scrollReel(1)}
+                    aria-label="הבא"
+                    style={reelArrowStyle(p)}
+                    onMouseEnter={e => (e.currentTarget.style.background = p.accent, e.currentTarget.style.color = p.accentText)}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent', e.currentTarget.style.color = p.muted)}
                   >
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M19 12H5M12 19l-7-7 7-7" />
                     </svg>
-                  </motion.span>
+                  </button>
+                  <button
+                    onClick={() => scrollReel(-1)}
+                    aria-label="הקודם"
+                    style={reelArrowStyle(p)}
+                    onMouseEnter={e => (e.currentTarget.style.background = p.accent, e.currentTarget.style.color = p.accentText)}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent', e.currentTarget.style.color = p.muted)}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </button>
                 </motion.div>
               )}
             </AnimatePresence>
 
             <div
               ref={reelRef}
-              onScroll={() => { if (!reelScrolled) setReelScrolled(true) }}
               style={{
                 display: 'flex',
                 gap: '1.5rem',
