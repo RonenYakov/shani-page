@@ -4,6 +4,8 @@ import fs from 'node:fs/promises' //file heandling system we use promises syntax
 import path from 'node:path' // tool for buliding paths
 import { fileURLToPath } from 'node:url'
 import multer from 'multer'
+import { randomUUID } from 'node:crypto' // for generating random strings/ids
+import { createClient } from "@supabase/supabase-js";// this allows us to reach to supabase 
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))// we need this for the server to know where the files are
 
@@ -11,25 +13,44 @@ const WORK_DIR = path.join(__dirname, '..', 'public', 'work') // tell the server
 
 const CATEGORIES = ['photoshoot', 'weddings', 'management', 'ugc']
 
-const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'video/mp4', 'video/webm']
-
+const ALLOWED = {
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".png": "image/png",
+    ".webp": "image/webp",
+    ".mp4": "video/mp4",
+    ".webm": "video/webm",
+}//creating a map for all allowed tyeps for the upload , this way we filter the files that come in
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN // PROSSES env is a safe way to store secert information about our app in this case it stores the password so it will not be visible to the public
 if (!ADMIN_TOKEN) {
     throw new Error('ADMIN_TOKEN is missing — create a .env file with ADMIN_TOKEN=...')
 }
+const SUPABASE_URL = process.env.SUPABASE_URL
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY
+if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
+    throw new Error('Supabase env vars missing — check server/.env')
+}
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+
 const app = express() //we make the server appliaction and store it as app
-
-app.use((req, res, next) => { // the fron and back sits on different ports so the back gives the front perrmission to access it. this is part of a security policy called CORS
-
-    res.header('Access-Control-Allow-Origin', '*')
+const ALLOWED_ORIGINS = [
+    'http://localhost:8080',            // your dev frontend
+    'https://shani-page.vercel.app',    // your live site
+]
+app.use((req, res, next) => {
+    const origin = req.headers.origin
+    if (ALLOWED_ORIGINS.includes(origin)) {
+        res.header('Access-Control-Allow-Origin', origin)   // echo back only if allowed
+    }
+    res.header('X-Content-Type-Options', 'nosniff')
     res.header('Access-Control-Allow-Headers', 'Authorization, Content-Type')
     res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS')
-    if (req.method === 'OPTIONS') {
-        return res.sendStatus(204) // preflight: answer "yes, allowed" with No Content
-    }
+    if (req.method === 'OPTIONS') { return res.sendStatus(204) }
     next()
 })
+app.use(express.json());// middleware that happens everytime the server gets a response from the client, we use it to transfer files.
 const PORT = 3001
+
 
 function validateCategory(req, res, next) {
     if (!CATEGORIES.includes(req.params.category)) {
@@ -47,23 +68,16 @@ function requireAuth(req, res, next) { // the auth token by defult comes with an
 }
 
 function fileFilter(req, file, cb) {
-    if (ALLOWED_TYPES.includes(file.mimetype)) {
+    const ext = path.extname(file.originalname).toLowerCase() // extname extracts the file type .jpg .mp4 and such, tolower makes it lowercase so it match the mpa
+    // extension must be known AND its expected MIME must match what the client claims
+    if (ALLOWED[ext] && ALLOWED[ext] === file.mimetype) {
         cb(null, true)
     } else {
-        cb(null, false)
+        cb(null, false)   // multer silently drops it → req.file is undefined → your route returns 400
     }
 }
 
-const storage = multer.diskStorage({ // meaning we want to save new uploades on the hard disk
-    destination: (req, file, cb) => { // req = the request (has the category in the URL).file = info about the file being uploaded (its type, original name…).cb = "call back" — how we report our answer to multer
-        const category = req.params.category
-        const sub = file.mimetype.startsWith('video/') ? 'videos' : 'photos'
-        cb(null, path.join(WORK_DIR, category, sub))
-    },
-    filename: (req, file, cb) => {
-        cb(null, file.originalname)
-    },
-})
+const storage = multer.memoryStorage() // we use memory storage becuse we are uploading to the supbase not the hard disk
 
 
 const upload = multer({ storage, fileFilter, limits: { fileSize: 50 * 1024 * 1024 } }) // this are the upload rules we will use on post req
@@ -76,31 +90,70 @@ app.get('/', (req, res) => { // is the reception if client walks in it reads the
     res.send('Hello from the Shani CMS backend! 👋')
 })
 app.get('/api/media/:category', validateCategory, async (req, res) => {
-    const category = req.params.category//1
+    const category = req.params.category // reading the ctegory that is req 
 
-    const videosDir = path.join(WORK_DIR, category, 'videos')//2 it build the path string meaning if we choose the wedding category we will get "...\public\work\weddings\videos\"
-    const photosDir = path.join(WORK_DIR, category, 'photos')
-    const videoFiles = await fs.readdir(videosDir)//3
-    const photoFiles = await fs.readdir(photosDir)
-    // only serve real media — ignore stray files (.mov, README.txt, .DS_Store, etc.)
-    const isVideoFile = name => /\.(mp4|webm)$/i.test(name)
-    const isPhotoFile = name => /\.(jpe?g|png|webp)$/i.test(name)
-    const videos = videoFiles.filter(isVideoFile).map(name => `/work/${category}/videos/${name}`)//4
-    const photos = photoFiles.filter(isPhotoFile).map(name => `/work/${category}/photos/${name}`)
+    const { data, error } = await supabase // we wait for a response from supbase it sends the data or an error so no need to throw an error
+        .from('media')
+        .select('*')
+        .eq('category', category)
+        .order('sort_order')
+
+    if (error) {
+        return res.status(500).json({ error: error.message })
+    }
+    // this part only talks to the table. the table only hold info about the storage and not the actual files
+    const urlFor = (row) =>
+        supabase.storage.from('work-media').getPublicUrl(`${category}/${row.filename}`).data.publicUrl
+    // here we turn the facts we  got from the table to the data urls
+    const videos = data.filter((row) => row.type === 'video').map(urlFor)
+    const photos = data.filter((row) => row.type === 'photo').map(urlFor)
 
     res.json({ videos, photos })
 })
 //" 1-Read which category they asked for >2 build the folder paths >3 list the files in those folders 
 // >4 turn the filenames into web URLs > send the list back."
 
-app.post('/api/media/:category', validateCategory, requireAuth, upload.single('file'), (req, res) => {
+app.post('/api/media/:category', validateCategory, requireAuth, upload.single('file'), async (req, res) => {
     if (!req.file) {
         return res.status(400).json({ error: 'No file uploaded' })
     }
-    res.json({ ok: true, file: req.file.originalname })
 
+    const category = req.params.category
+    const ext = path.extname(req.file.originalname).toLowerCase()
+    const filename = `${randomUUID()}${ext}`
+    const type = req.file.mimetype.startsWith('video/') ? 'video' : 'photo'
 
+    // 1) put the BYTES in Storage
+    const { error: uploadError } = await supabase.storage
+        .from('work-media')
+        .upload(`${category}/${filename}`, req.file.buffer, { contentType: req.file.mimetype })
+
+    if (uploadError) {
+        return res.status(500).json({ error: uploadError.message })
+    }
+    const { data: last } = await supabase
+        .from('media')
+        .select('sort_order')
+        .eq('category', category)
+        .order('sort_order', { ascending: false })
+        .limit(1)
+
+    const nextOrder = last && last.length ? last[0].sort_order + 1 : 0
+    // 2) record the FACTS in the table
+    const { error: dbError } = await supabase
+        .from('media')
+        .insert({ category, filename, type, sort_order: nextOrder })
+
+    if (dbError) {
+        return res.status(500).json({ error: dbError.message })
+    }
+
+    res.json({ ok: true, file: filename })
 })
+
+
+
+
 app.delete('/api/media/:category/:filename', validateCategory, requireAuth, async (req, res) => {
     const category = req.params.category
     const filename = req.params.filename
@@ -110,18 +163,51 @@ app.delete('/api/media/:category/:filename', validateCategory, requireAuth, asyn
     const isVideo = filename.endsWith('.mp4') || filename.endsWith('.webm')
     const sub = isVideo ? 'videos' : 'photos'
     const fullPath = path.join(WORK_DIR, category, sub, filename)
-    try {
-        await fs.unlink(fullPath) // we use await to make sure the file ius actualy gone before moving forward
-        res.json({ ok: true, deleted: filename })
-    }
-    catch (err) {
-        res.status(400).json({ error: "No such file exists" })
 
+    // 1) delete the ROW first (so we never leave a row pointing at a missing file)
+    const { error: dbError } = await supabase
+        .from('media')
+        .delete()
+        .eq('category', category)
+        .eq('filename', filename)
+    if (dbError) {
+        return res.status(500).json({ error: dbError.message })
     }
 
+    // 2) remove the FILE from Storage
+    const { error: storageError } = await supabase.storage
+        .from('work-media')
+        .remove([`${category}/${filename}`])
+    if (storageError) {
+        return res.status(500).json({ error: storageError.message })
+    }
+
+    res.json({ ok: true, deleted: filename })
+    console.log('delete sucssefull')
 })
 
+app.post('/api/media/:category/reorder', validateCategory, requireAuth, async (req, res) => {
+    const category = req.params.category
+    const { filenames } = req.body   // ordered array of filenames, first = top
 
+    if (!Array.isArray(filenames)) {
+        return res.status(400).json({ error: 'filenames must be an array' })
+    }
+
+    // set each row's sort_order to its position in the list
+    for (let i = 0; i < filenames.length; i++) {
+        const { error } = await supabase
+            .from('media')
+            .update({ sort_order: i })
+            .eq('category', category)
+            .eq('filename', filenames[i])
+        if (error) {
+            return res.status(500).json({ error: error.message })
+        }
+    }
+
+    res.json({ ok: true })
+})
 
 app.listen(PORT, () => { // what actualy starts the server is starts waiting for requests on port 3001
     console.log(`Server running at http://localhost:${PORT}`) // prints text to the terminal this is for the developer, we leave notes confirm somthing works ect

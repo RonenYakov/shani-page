@@ -1,5 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./Admin.css";
+import { SortableTile } from "./SortableTile"
+import { DndContext, closestCenter, PointerSensor, TouchSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
+import { SortableContext, arrayMove, rectSortingStrategy } from "@dnd-kit/sortable";
+import { API_URL } from "../lib/api";
 
 // the name we store the token under in the browser. one constant so login,
 // logout, and the API calls (later) all agree on the same key.
@@ -12,12 +16,76 @@ const CATEGORIES = [{ id: "photoshoot", label: "photoshoot" },
 
 export default function Admin() {
   const [category, setCategory] = useState("photoshoot")// we set it at a random state at first so it woulden be blank
-
+  const [media, setMedia] = useState<{ videos: string[]; photos: string[] }>({ videos: [], photos: [] });
   const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY) || ""); // we store the token in the browser storage so we dont need to typew it every timr the page refreshes
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 5 } })
+  );
+  function loadMedia() {
+    fetch(`${API_URL}/api/media/${category}`, { cache: "no-store" })//the cache it syes to the browser not to trust its cache but to reach for the data on the server each time
+      //we approach the get on server he rturns a json file with the data we change the setdata and page rernders
+      .then((res) => res.json())
+      .then((data) => setMedia(data));
+  }
+
+  useEffect(() => {
+    loadMedia();
+  }, [category])
+
 
   // password box + error message — ordinary form state, done for you.
   const [input, setInput] = useState("");
   const [error, setError] = useState("");
+  const [file, setFile] = useState<File | null>(null); //we tell state what type it should hold file or null only
+  async function handleDragEnd(event: DragEndEvent, type: "videos" | "photos") {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return; // dropped nowhere / same spot → do nothing
+
+    const list = media[type];
+    const oldIndex = list.indexOf(active.id as string);
+    const newIndex = list.indexOf(over.id as string);
+    const newList = arrayMove(list, oldIndex, newIndex);
+
+    setMedia({ ...media, [type]: newList });                 // optimistic: update UI instantly
+
+    const filenames = newList.map((u) => u.split("/").pop()); // urls → filenames (like delete)
+    try {
+      await fetch(`${API_URL}/api/media/${category}/reorder`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ filenames }),
+      });
+    } catch {
+      setError("reorder failed");
+    }
+  }
+  async function handleDelete(url: string) {
+    const filename = url.split("/").pop();
+    if (!filename) return;
+
+    if (!window.confirm(`Delete ${filename}? This can't be undone.`)) return;// pop a box asking the user if he is sure
+
+    try {
+      const res = await fetch(
+        `${API_URL}/api/media/${category}/${filename}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (res.ok) {
+        loadMedia();          // re-read so the tile disappears
+      } else {
+        setError("delete failed");
+      }
+    } catch {
+      setError("cant reach the server");
+    }
+  }
+
+
+
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault(); // stop the browser's default "reload the page on submit"
@@ -26,7 +94,7 @@ export default function Admin() {
       return;
     }
     try {
-      const res = await fetch("http://localhost:3001/api/auth/check", {
+      const res = await fetch(`${API_URL}/api/auth/check`, {
         headers: { Authorization: `Bearer ${input}` }
         //we take the input password and make sure we have the barrer like the server ecpects
       });
@@ -47,6 +115,26 @@ export default function Admin() {
   async function handleLogout() {
     localStorage.removeItem(TOKEN_KEY) // we remove the token from the browser
     setToken("") // we update the state to empty string
+  }
+  async function handleUpload() {
+    if (!file) return
+    const body = new FormData()// this is how we transfer files not in json
+    body.append("file", file)
+    try {
+      const res = await fetch(`${API_URL}/api/media/${category}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body,
+      });
+      if (res.ok) {
+        setFile(null);
+        loadMedia()
+      } else {
+        setError("upload failed");
+      }
+    } catch {
+      setError("cant reach the server");
+    }
   }
 
   // ── not logged in → show the gate ──
@@ -98,9 +186,54 @@ export default function Admin() {
           Log out
         </button>
       </header>
-      <p style={{ marginTop: 40, color: "var(--color-ink-muted)" }}>
-        ✓ Logged in. The dashboard (categories, upload, grid, delete) gets built here next.
-      </p>
+      <nav className="admin-tabs">
+        {CATEGORIES.map((c) => (
+          <button
+            key={c.id} // makeing a uniqe key for each tab
+            className={category === c.id ? "admin-tab admin-tab-active" : "admin-tab"} //if the catgeory equals the tab id the 
+            onClick={() => setCategory(c.id)} //clicking a tab callse the use state changes it and the page rerenders
+          >
+            {c.label}
+          </button>
+        ))
+
+        }
+      </nav>
+      <input type="file" accept="image/*,video/*" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+      <button className="admin-btn" onClick={handleUpload} disabled={!file}>
+        Upload
+      </button>
+
+      <section className="admin-group">
+        <h2 className="admin-group-title">Photos </h2>
+        {media.photos.length === 0 ? (<p className="admin-empty"> no photos yet</p>
+        ) : (
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={(e) => handleDragEnd(e, "photos")}>
+            <SortableContext items={media.photos} strategy={rectSortingStrategy}>
+              <div className="admin-grid">
+                {media.photos.map((url) => (
+                  <SortableTile key={url} url={url} type="photo" onDelete={handleDelete} />
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
+        )}
+      </section>
+      <section className="admin-group">
+        <h2 className="admin-group-title">Videos ({media.videos.length})</h2>
+        {media.videos.length === 0 ? (<p className="admin-empty"> no videos yet</p>
+        ) : (
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={(e) => handleDragEnd(e, "videos")}>
+            <SortableContext items={media.videos} strategy={rectSortingStrategy}>
+              <div className="admin-grid">
+                {media.videos.map((url) => (
+                  <SortableTile key={url} url={url} type="video" onDelete={handleDelete} />
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
+        )}
+      </section>
     </div>
   );
 }

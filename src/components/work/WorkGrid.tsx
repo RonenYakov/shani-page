@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence, useInView } from 'framer-motion'
+import { createPortal } from 'react-dom'
 import { useTilt } from '@/hooks/useTilt'
 import './WorkGrid.css'
 import { WorkMedia, WORK_MEDIA } from '@/content/workMedia'
-
+import { getMedia } from "../../lib/supabase";
 const EASE: [number, number, number, number] = [0.35, 0, 0, 1]
 
 // ─── Per-niche palette ────────────────────────────────────────────────────────
@@ -274,50 +275,50 @@ interface WorkCardProps {
 const WorkCard = ({ card, item, index, onClick }: WorkCardProps) => {
   const tilt = useTilt(4, -6)
   return (
-  <motion.div
-    className="wg-slot"
-    initial={{ opacity: 0, y: 48 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: '-40px' }}
-    transition={{ duration: 0.9, delay: index * 0.12, ease: EASE }}
-  >
     <motion.div
-      className="wg-cat"
-      style={{ rotateX: tilt.rotateX, rotateY: tilt.rotateY, y: tilt.y }}
-      onMouseMove={tilt.onMouseMove}
-      onMouseEnter={tilt.onMouseEnter}
-      onMouseLeave={tilt.onMouseLeave}
-      onClick={() => {
-        tilt.reset() // flatten before the shared-element transition measures the card
-        onClick()
-      }}
+      className="wg-slot"
+      initial={{ opacity: 0, y: 48 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-40px' }}
+      transition={{ duration: 0.9, delay: index * 0.12, ease: EASE }}
     >
-      <motion.div className="wg-cat-media" layoutId={`card-img-${item.id}`}>
-        <img
-          src={item.coverAsset}
-          alt={item.title}
-          loading="lazy"
-          style={{ objectPosition: item.coverPosition ?? 'center' }}
-        />
-        {item.coverOverlay && (
-          <div style={{ position: 'absolute', inset: 0, background: item.coverOverlay, mixBlendMode: 'multiply' }} />
-        )}
-      </motion.div>
-      <div className="wg-scrim" />
-      <span className="wg-idx">{card.n}</span>
-      <span className="wg-chip">
-        <span className="dot" />
-        {card.chip}
-      </span>
-      <div className="wg-meta" dir="rtl">
-        <h4>{card.title}</h4>
-        <p>{card.desc}</p>
-        <span className="wg-view">
-          View Work <span className="arr">→</span>
+      <motion.div
+        className="wg-cat"
+        style={{ rotateX: tilt.rotateX, rotateY: tilt.rotateY, y: tilt.y }}
+        onMouseMove={tilt.onMouseMove}
+        onMouseEnter={tilt.onMouseEnter}
+        onMouseLeave={tilt.onMouseLeave}
+        onClick={() => {
+          tilt.reset() // flatten before the shared-element transition measures the card
+          onClick()
+        }}
+      >
+        <motion.div className="wg-cat-media" layoutId={`card-img-${item.id}`}>
+          <img
+            src={item.coverAsset}
+            alt={item.title}
+            loading="lazy"
+            style={{ objectPosition: item.coverPosition ?? 'center' }}
+          />
+          {item.coverOverlay && (
+            <div style={{ position: 'absolute', inset: 0, background: item.coverOverlay, mixBlendMode: 'multiply' }} />
+          )}
+        </motion.div>
+        <div className="wg-scrim" />
+        <span className="wg-idx">{card.n}</span>
+        <span className="wg-chip">
+          <span className="dot" />
+          {card.chip}
         </span>
-      </div>
+        <div className="wg-meta" dir="rtl">
+          <h4>{card.title}</h4>
+          <p>{card.desc}</p>
+          <span className="wg-view">
+            View Work <span className="arr">→</span>
+          </span>
+        </div>
+      </motion.div>
     </motion.div>
-  </motion.div>
   )
 }
 
@@ -428,19 +429,29 @@ const DetailView = ({ item, onClose, onWhatsApp }: DetailViewProps) => {
     return () => window.removeEventListener('resize', check)
   }, [])
 
-  // Lock body scroll while open
+  // Lock the page scroll while open — pin the body at its current offset so scroll
+  // can't leak to the page behind the overlay, then restore the exact position on close.
   useEffect(() => {
-    document.body.style.overflow = 'hidden'
-    return () => { document.body.style.overflow = '' }
+    const scrollY = window.scrollY
+    document.body.style.position = 'fixed'
+    document.body.style.top = `-${scrollY}px`
+    document.body.style.left = '0'
+    document.body.style.right = '0'
+    return () => {
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.left = ''
+      document.body.style.right = ''
+      window.scrollTo(0, scrollY)
+    }
   }, [])
 
   useEffect(() => {
     const fallback = WORK_MEDIA[item.id] ?? { videos: [], photos: [] }
-    // Production: use the build-time list of committed files (no server to call).
-    if (!import.meta.env.DEV) { setMedia(fallback); return }
-    // Local dev: pull the live list from the Express CMS so dashboard edits show.
-    fetch(`http://localhost:3001/api/media/${item.id}`)
-      .then(res => res.json())
+    // Public read: query Supabase DIRECTLY (always-on), so visitors always see the
+    // current media even when the Express/Render server is asleep. Falls back to the
+    // build-time committed list only if Supabase itself is unreachable.
+    getMedia(item.id)
       .then(data => setMedia(data))
       .catch(() => setMedia(fallback))
   }, [item.id])
@@ -448,7 +459,7 @@ const DetailView = ({ item, onClose, onWhatsApp }: DetailViewProps) => {
   const hasVideos = videos.length > 0
   const galleryItems = media.photos
 
-  return (
+  return createPortal(
     <motion.div
       initial={{ y: '100%' }}
       animate={{ y: 0 }}
@@ -820,7 +831,8 @@ const DetailView = ({ item, onClose, onWhatsApp }: DetailViewProps) => {
           <VideoLightbox src={lightboxSrc} onClose={() => setLightboxSrc(null)} />
         )}
       </AnimatePresence>
-    </motion.div>
+    </motion.div>,
+    document.body
   )
 }
 

@@ -26,5 +26,5 @@ src/assets/**/*.webm
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?
-.env
+*.sw?   
+server/.env

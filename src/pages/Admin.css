@@ -18,7 +18,9 @@
   -webkit-font-smoothing: antialiased;
 }
 
-.admin * { box-sizing: border-box; }
+.admin * {
+  box-sizing: border-box;
+}
 
 /* ── shared mono eyebrow label ── */
 .admin-eyebrow {
@@ -61,8 +63,15 @@
 }
 
 @keyframes admin-rise {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .admin-login-title {
@@ -79,7 +88,10 @@
   margin: 0 0 26px;
 }
 
-.admin-field { display: block; margin-bottom: 14px; }
+.admin-field {
+  display: block;
+  margin-bottom: 14px;
+}
 
 .admin-input {
   width: 100%;
@@ -93,7 +105,9 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.admin-input::placeholder { color: #b5b1ad; }
+.admin-input::placeholder {
+  color: #b5b1ad;
+}
 
 .admin-input:focus {
   outline: none;
@@ -117,9 +131,18 @@
   transition: transform 0.12s ease, opacity 0.2s ease;
 }
 
-.admin-btn:hover { opacity: 0.9; }
-.admin-btn:active { transform: scale(0.985); }
-.admin-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.admin-btn:hover {
+  opacity: 0.9;
+}
+
+.admin-btn:active {
+  transform: scale(0.985);
+}
+
+.admin-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
 /* error message */
 .admin-error {
@@ -135,7 +158,9 @@
 /* ============================================================================
    LOGGED-IN SHELL (placeholder for now — real dashboard comes next steps)
    ============================================================================ */
-.admin-shell { padding: clamp(20px, 4vw, 40px); }
+.admin-shell {
+  padding: clamp(20px, 4vw, 40px);
+}
 
 .admin-header {
   display: flex;
@@ -160,9 +185,107 @@
   transition: background 0.2s ease;
 }
 
-.admin-logout:hover { background: rgba(20, 20, 20, 0.04); }
+.admin-logout:hover {
+  background: rgba(20, 20, 20, 0.04);
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .admin-login-card { animation: none; }
-  .admin-btn:active { transform: none; }
+  .admin-login-card {
+    animation: none;
+  }
+
+  .admin-btn:active {
+    transform: none;
+  }
 }
+
+.admin-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 24px 0;
+
+}
+
+.admin-tab {
+  padding: 8px 16px;
+
+  border: 1px solid var(--admin-line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-ink-muted, #6E6C72);
+  /* muted = "not selected" */
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.admin-tab:hover {
+  color: var(--color-ink, #141414);
+  /* darken on hover = "this is clickable" */
+}
+
+/* spacing between the Photos block and the Videos block */
+.admin-group {
+  margin-top: 32px;
+}
+
+.admin-group-title {
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted, #6E6C72);
+  margin: 0 0 14px;
+}
+
+.admin-tab-active {
+  background-color: var(--rose);
+  color: var(--color-ink, #141414);
+  border-color: var(--rose);
+}
+
+/* the gallery — the grid PARENT */
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+  /* gap works in grid too — rows AND columns */
+}
+
+/* each tile */
+.admin-thumb {
+  width: 100%;
+  /* fill its grid cell */
+  aspect-ratio: 1 / 1;
+  /* force a square, whatever the file's real shape */
+  object-fit: cover;
+  /* crop to fill the square, no stretching */
+  border-radius: 12px;
+  background: var(--admin-card);
+  /* placeholder tone while it loads */
+  border: 1px solid var(--admin-line);
+  display: block;
+}
+
+.admin-empty {
+  color: var(--color-ink-muted, #6E6C72);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+/* drag handle for reordering tiles */
+.admin-drag {
+  touch-action: none;          /* the fix: let dnd-kit handle touch instead of the browser scrolling */
+  cursor: grab;
+  border: none;
+  background: transparent;
+  color: var(--color-ink-muted, #6E6C72);
+  font-size: 1rem;
+  line-height: 1;
+  padding: 4px 6px;
+}
+.admin-drag:active { cursor: grabbing; }
