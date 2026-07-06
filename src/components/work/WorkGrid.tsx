@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence, useInView } from 'framer-motion'
 import { createPortal } from 'react-dom'
+import { useLenis } from 'lenis/react'
 import { useTilt } from '@/hooks/useTilt'
 import './WorkGrid.css'
 import { WorkMedia, WORK_MEDIA } from '@/content/workMedia'
@@ -429,22 +430,13 @@ const DetailView = ({ item, onClose, onWhatsApp }: DetailViewProps) => {
     return () => window.removeEventListener('resize', check)
   }, [])
 
-  // Lock the page scroll while open — pin the body at its current offset so scroll
-  // can't leak to the page behind the overlay, then restore the exact position on close.
+  // Freeze Lenis smooth-scroll while the overlay is open (so the page behind can't
+  // move); `data-lenis-prevent` on the overlay lets it scroll natively. Resume on close.
+  const lenis = useLenis()
   useEffect(() => {
-    const scrollY = window.scrollY
-    document.body.style.position = 'fixed'
-    document.body.style.top = `-${scrollY}px`
-    document.body.style.left = '0'
-    document.body.style.right = '0'
-    return () => {
-      document.body.style.position = ''
-      document.body.style.top = ''
-      document.body.style.left = ''
-      document.body.style.right = ''
-      window.scrollTo(0, scrollY)
-    }
-  }, [])
+    lenis?.stop()
+    return () => { lenis?.start() }
+  }, [lenis])
 
   useEffect(() => {
     const fallback = WORK_MEDIA[item.id] ?? { videos: [], photos: [] }
@@ -466,6 +458,7 @@ const DetailView = ({ item, onClose, onWhatsApp }: DetailViewProps) => {
       exit={{ y: '100%' }}
       transition={{ duration: 0.72, ease: EASE }}
       dir="rtl"
+      data-lenis-prevent
       style={{
         position: 'fixed',
         inset: 0,
