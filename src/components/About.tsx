@@ -17,16 +17,16 @@ interface TileDef {
 const TILES: TileDef[] = [
   { src: "/posters/IMG_2062.webp", label: "shani", pos: "center", speed: 18 },
   {
-    src: "/posters/weddings/proposel.webp",
-    video: "/posters/1bf41d0fe19c4931882b16de52719aad.mp4",
+    src: "/posters/about-onset.webp",
+    video: "/posters/about-onset.mp4",
     label: "on set",
     pos: "center",
     speed: -30,
   },
   { src: "/posters/wedding-cover.webp", label: "weddings", pos: "center", speed: 12 },
   {
-    src: "/posters/theme/social-shoots.png",
-    video: "/posters/4a6e045d63e542bf8534c6818cadc6ec.mp4",
+    src: "/posters/about-reel.webp",
+    video: "/posters/about-reel.mp4",
     label: "the reel",
     pos: "center",
     speed: -40,
@@ -164,7 +164,7 @@ const About = () => {
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.7, delay: 0.12, ease: EASE }}
         >
-          היי אני שני, מגיל 10 התאהבתי ביצירת תוכן ומאז לא הפסקתי והיום בזכות האמון של הלקוחות שלי הפכתי את האהבה והחלום הזה למציאות שלי. המטרה שלי היא לגרום לכלות להיות מאושרות ולעסקים להגדיל את ההכנסה שלהם וכל זה נעשה בעזרת שנים של נסיון והציוד הכי מקצועי ממצלמה ועד לרחפן. אז הצטרפו אלי ותראו שיצרית תוכן זה הרבה מעבר לריל באינסטגרם.
+          היי אני שני, מגיל 10 התאהבתי ביצירת תוכן ומאז לא הפסקתי והיום בזכות האמון של הלקוחות שלי הפכתי את האהבה והחלום הזה למציאות שלי. המטרה שלי היא לגרום לכלות להיות מאושרות ולעסקים להגדיל את ההכנסה שלהם וכל זה נעשה בעזרת שנים של נסיון והציוד הכי מקצועי ממצלמה ועד לרחפן. אז הצטרפו אלי ותראו שיצירת תוכן זה הרבה מעבר לריל באינסטגרם.
         </motion.p>
       </div>
 

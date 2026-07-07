@@ -196,7 +196,7 @@ const ProcessTimeline = () => {
             <div className="sp-bar-fill" ref={fillRef} />
           </div>
           <p className="sp-note">
-            <span className="dot">◆</span>{" "}
+            <span className="dot" aria-hidden="true" />{" "}
             מוכנים להתחיל? השלב הראשון תמיד חינם
           </p>
         </div>

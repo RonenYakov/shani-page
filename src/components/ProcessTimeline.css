@@ -184,7 +184,14 @@
   white-space: nowrap;
   margin: 0;
 }
-.sp-note .dot { color: var(--rose); }
+.sp-note .dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--rose);
+  vertical-align: 1px;
+}
 
 /* ── mobile vertical list ── */
 .sp-mobile { padding: clamp(60px, 14vw, 90px) var(--base-padding-x); }

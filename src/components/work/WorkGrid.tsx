@@ -45,26 +45,27 @@ const PALETTES: Record<string, NichePalette> = {
     scrollbar: 'rgba(196,137,154,0.4)',
   },
   management: {
-    bg: '#080C14',
-    cardBg: '#0F1422',
-    accent: '#1a2ffb',
-    accentText: '#fff',
-    heading: '#F0F4FF',
-    body: '#B0B8D0',
-    muted: '#506080',
-    divider: 'rgba(240,244,255,0.08)',
-    scrollbar: 'rgba(26,47,251,0.5)',
+    // dark finale palette — same warm near-black + rose family as ContactBlock
+    bg: '#0D0A0B',
+    cardBg: '#171113',
+    accent: '#F2B1B1',
+    accentText: '#241b1b',
+    heading: '#FBF6F5',
+    body: '#C9BFC1',
+    muted: '#8A7D80',
+    divider: 'rgba(251,246,245,0.1)',
+    scrollbar: 'rgba(242,177,177,0.5)',
   },
   ugc: {
     bg: '#F8F2F5',
     cardBg: '#F1E7EC',
-    accent: '#9A6F86',
+    accent: '#E08F8F',
     accentText: '#fff',
     heading: '#2E1B26',
     body: '#5A4150',
     muted: '#9A7A8B',
     divider: 'rgba(46,27,38,0.1)',
-    scrollbar: 'rgba(154,111,134,0.4)',
+    scrollbar: 'rgba(224,143,143,0.4)',
   },
 }
 
@@ -114,9 +115,9 @@ const WORK_ITEMS: WorkItem[] = [
     title: 'ניהול סושיאל',
     coverAsset: '/category/manegment-cover.webp',
     coverPosition: 'center',
-    coverOverlay: 'rgba(155,143,168,0.18)',
+    coverOverlay: 'rgba(242,177,177,0.18)',
     description:
-      "אנחנו בונים לעסק מנוע צמיחה דיגיטלי המבוסס על תוכן אורגני ויראלי, ניתוח אלגוריתמים ומערך הבאת לידים חכם. השירות כולל ניהול שוטף וימי צילום ברמה הכי גבוה בשוק, אופטימיזציה לביצועים ואופציה לקידום ממומן ממוקד, קיריאייטיב מדויק והכי חשוב ניצור סיבבת עבודה שרק תצמח — הכל כדי להפוך צפיות לתוצאות עסקיות בשטח.",
+      "אנחנו בונים לעסק מנוע צמיחה דיגיטלי המבוסס על תוכן אורגני ויראלי, ניתוח אלגוריתמים ומערך הבאת לידים חכם. השירות כולל ניהול שוטף וימי צילום ברמה הכי גבוהה בשוק, אופטימיזציה לביצועים ואופציה לקידום ממומן ממוקד, קריאייטיב מדויק והכי חשוב ניצור סביבת עבודה שרק תצמח — הכל כדי להפוך צפיות לתוצאות עסקיות בשטח.",
     services: ['הפקת וידאו תדמית', 'צילום מוצר', 'סטוריז ורילס', 'קידום ממומן'],
   },
   {
@@ -157,14 +158,14 @@ const FEATURED: FeaturedCard[] = [
     itemId: 'weddings',
     n: '01',
     title: 'Weddings and events',
-    desc: 'סטוריז חיים, רילס וסרטוני תקציר  ישר מתוך היום הגדול.',
+    desc: 'סטוריז חיים, רילס וסרטוני תקציר — ישר מתוך היום הגדול.',
     chip: 'live stories',
   },
   {
     itemId: 'photoshoot',
     n: '02',
     title: 'Photoshoot Days',
-    desc: 'יום צילום אחד בנק תוכן שלם של סרטונים ותמונות.',
+    desc: 'יום צילום אחד — בנק תוכן שלם של סרטונים ותמונות.',
     chip: 'shoot day',
   },
   {
@@ -178,7 +179,7 @@ const FEATURED: FeaturedCard[] = [
     itemId: 'management',
     n: '04',
     title: 'Social Management',
-    desc: 'אסטרטגיה, לוח תוכן וצמיחה  מנוע דיגיטלי לעסק שלכם.',
+    desc: 'אסטרטגיה, לוח תוכן וצמיחה — מנוע דיגיטלי לעסק שלכם.',
     chip: 'the feed',
   },
 ]
@@ -597,8 +598,8 @@ const DetailView = ({ item, onClose, onWhatsApp }: DetailViewProps) => {
         </span>
       </nav>
 
-      {/* ── Full-bleed 100vh hero ── */}
-      <div style={{ position: 'relative', height: '100vh', overflow: 'hidden' }}>
+      {/* ── Full-bleed full-viewport hero (dvh: stable under mobile URL-bar resize) ── */}
+      <div style={{ position: 'relative', height: '100dvh', overflow: 'hidden' }}>
         <motion.div
           layoutId={`card-img-${item.id}`}
           style={{ position: 'absolute', inset: 0 }}
@@ -748,7 +749,7 @@ const DetailView = ({ item, onClose, onWhatsApp }: DetailViewProps) => {
                   gap: '0.6rem',
                 }}
               >
-                <span style={{ color: p.accent, fontSize: '0.45rem' }}>◆</span>
+                <span style={{ width: 5, height: 5, borderRadius: '50%', background: p.accent, flexShrink: 0 }} aria-hidden="true" />
                 {s}
               </motion.p>
             ))}

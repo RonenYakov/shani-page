@@ -99,7 +99,14 @@
   color: rgba(255, 255, 255, 0.65);
   margin: 0 0 0.6rem;
 }
-.rr-kicker .dot { color: var(--rose-bright); }
+.rr-kicker .dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--rose-bright);
+  vertical-align: 1px;
+}
 .rr-title {
   font-weight: 800;
   font-size: clamp(1.5rem, 2.6vw, 2.8rem);

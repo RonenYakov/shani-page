@@ -13,16 +13,16 @@
   -webkit-font-smoothing: antialiased;
 }
 
-/* small rose mark sitting on the hairline */
+/* small rose mark tucked just under the hairline — fully inside the footer,
+   so it never bleeds into the (possibly dark) section above */
 .shani-footer .ft-mark {
   position: absolute;
-  top: 0;
+  top: 16px;
   left: 50%;
-  transform: translate(-50%, -50%);
-  background: #ffffff;
-  padding: 0 14px;
-  color: var(--rose);
-  font-size: 0.7rem;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   line-height: 1;
 }
 

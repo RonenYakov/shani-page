@@ -1,8 +1,24 @@
 import { useRef, useState, useEffect } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { Volume2, VolumeX } from "lucide-react";
 import { socials } from "@/content/socials";
 import "./ResultsReel.css";
+
+/* inline speaker icons — same hairline stroke style as the site's other SVGs */
+const SpeakerBody = () => (
+  <path d="M11 4.6 6.6 8.4H3.4v7.2h3.2L11 19.4V4.6z" />
+);
+const SoundOnIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <SpeakerBody />
+    <path d="M15.2 9.2a4 4 0 0 1 0 5.6M18 6.6a8 8 0 0 1 0 10.8" />
+  </svg>
+);
+const SoundOffIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <SpeakerBody />
+    <path d="m15.5 9.5 5 5M20.5 9.5l-5 5" />
+  </svg>
+);
 
 // Thin elegant spine — single sweeping curve drawn by scroll
 const SPINE = "M -60 200 C 300 80, 560 520, 820 420 C 1080 320, 1240 560, 1480 480";
@@ -134,7 +150,7 @@ const ResultsReel = () => {
               <div className="rr-marquee-inner" key={half}>
                 {Array.from({ length: MARQUEE_ITEMS }).map((_, i) => (
                   <span key={i}>
-                    Real Results <i>✦</i>{" "}
+                    Real Results <i>+</i>{" "}
                   </span>
                 ))}
               </div>
@@ -177,7 +193,7 @@ const ResultsReel = () => {
               transition={{ duration: 0.9, ease: [0.35, 0, 0, 1] }}
             >
               <p className="rr-kicker">
-                <span className="dot">◆</span> הוכחה, לא הבטחות
+                <span className="dot" aria-hidden="true" /> הוכחה, לא הבטחות
               </p>
               <div className="rr-title" style={{ direction: "ltr" }}>
                 What Results Look Like
@@ -199,7 +215,7 @@ const ResultsReel = () => {
               onClick={toggleMute}
               aria-label={isMuted ? "הפעל קול" : "השתק"}
             >
-              {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+              {isMuted ? <SoundOffIcon /> : <SoundOnIcon />}
             </button>
           </div>
         </div>

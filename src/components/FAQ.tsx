@@ -140,7 +140,7 @@ const FAQ = () => {
       </div>
 
       <p className="fq-note">
-        <span className="dot">◆</span>{" "}
+        <span className="dot" aria-hidden="true" />{" "}
         יש לכם שאלה נוספת? שלחו לי הודעה
       </p>
     </section>

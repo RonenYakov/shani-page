@@ -1,0 +1,86 @@
+/* ============================================================================
+   404 — same design language as every section: white, Archivo, rose accent,
+   hairline cross, mono label, giant headline. Scoped under .shani-404.
+   ============================================================================ */
+
+.shani-404 {
+  min-height: 100dvh;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: clamp(60px, 10vw, 120px) var(--base-padding-x);
+  font-family: var(--font-display-archivo);
+  color: #100c0d;
+  -webkit-font-smoothing: antialiased;
+}
+
+.nf-labelwrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: clamp(20px, 3vw, 32px);
+}
+
+.nf-cross {
+  position: relative;
+  width: 14px;
+  height: 14px;
+  opacity: 0.8;
+}
+.nf-cross::before,
+.nf-cross::after {
+  content: "";
+  position: absolute;
+  background: var(--rose);
+}
+.nf-cross::before { left: 50%; top: 0; width: 1.5px; height: 100%; transform: translateX(-50%); }
+.nf-cross::after  { top: 50%; left: 0; height: 1.5px; width: 100%; transform: translateY(-50%); }
+
+.nf-label {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  color: rgba(16, 12, 13, 0.55);
+}
+
+.nf-giant {
+  font-weight: 900;
+  font-size: clamp(5rem, 18vw, 14rem);
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  margin: 0 0 clamp(20px, 3vw, 32px);
+}
+.nf-giant .ac { color: var(--rose); }
+
+.nf-sub {
+  font-family: var(--font-he-display);
+  font-size: clamp(1.1rem, 1.5vw, 1.35rem);
+  line-height: 1.75;
+  color: rgba(16, 12, 13, 0.6);
+  max-width: 38ch;
+  margin: 0 0 clamp(30px, 4vw, 44px);
+}
+
+.nf-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--rose);
+  color: #241b1b;
+  border-radius: 999px;
+  padding: 1rem 2.4rem;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background 0.3s var(--ease-brand), transform 0.3s var(--ease-brand);
+}
+.nf-home:hover {
+  background: var(--rose-deep);
+  transform: translateY(-2px);
+}

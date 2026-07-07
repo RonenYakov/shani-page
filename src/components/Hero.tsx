@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { socials } from "@/content/socials";
+import RotatingBadge from "./RotatingBadge";
 import "./Hero.css";
 
 /**
@@ -168,28 +169,7 @@ const Hero = () => {
 
         {/* rotating badge */}
         <div className="badge anim d6" aria-hidden="true">
-          <svg viewBox="0 0 120 120">
-            <g className="ring">
-              <defs>
-                <path id="circlePath" d="M60,60 m-44,0 a44,44 0 1,1 88,0 a44,44 0 1,1 -88,0" />
-              </defs>
-              <text>
-                <textPath href="#circlePath" startOffset="0%">
-                  Strategy • Content • Growth •&nbsp;
-                </textPath>
-              </text>
-            </g>
-            <circle className="core" cx="60" cy="60" r="33" />
-            <g className="flower-mark" transform="translate(48,48) scale(0.42)">
-              <ellipse cx="12" cy="5.4" rx="2.5" ry="3.6" />
-              <ellipse cx="12" cy="18.6" rx="2.5" ry="3.6" />
-              <ellipse cx="5.4" cy="12" rx="3.6" ry="2.5" />
-              <ellipse cx="18.6" cy="12" rx="3.6" ry="2.5" />
-              <ellipse cx="7.2" cy="7.2" rx="2.7" ry="2.7" />
-              <ellipse cx="16.8" cy="16.8" rx="2.7" ry="2.7" />
-              <circle cx="12" cy="12" r="2.4" fill="#1a1314" />
-            </g>
-          </svg>
+          <RotatingBadge pathId="circlePath" centerFill="#1a1314" />
         </div>
       </div>
 

@@ -49,11 +49,6 @@
   --color-ink:          #141414;   /* onyx — headings, body, borders */
   --color-ink-muted:    #6E6C72;   /* secondary copy */
 
-  /* Accent (10%) — lavender grey replaces orange */
-  --color-orange:       #9B8FA8;   /* renamed role kept for var compat */
-  --color-accent:       #BFB5CC;   /* lighter mauve, hover states */
-  --color-accent-dark:  #7A6E88;   /* deeper mauve, active states */
-
   /* Utility */
   --color-line:         rgba(20, 20, 20, 0.06);
 
@@ -134,7 +129,7 @@ body {
   color: var(--color-ink);
   background-color: var(--color-cream);
   background-image:
-    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(155,143,168,0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(242,177,177,0.07) 0%, transparent 70%),
     repeating-linear-gradient(
       88deg,
       var(--color-line) 0px,
@@ -166,43 +161,6 @@ html::-webkit-scrollbar-corner  { background: transparent; }
   mix-blend-mode: multiply;
   opacity: 0.038;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.68' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-}
-
-/* ── Section padding ────────────────────────────────────────────────────────── */
-.section-padding {
-  padding: clamp(80px, 12vw, 160px) var(--base-padding-x);
-}
-
-/* ── Section title utility ──────────────────────────────────────────────────── */
-.section-title {
-  font-family: var(--font-display-en-hero);
-  font-weight: 400;
-  letter-spacing: -0.03em;
-  font-size: clamp(2.5rem, 5vw, 4.5rem);
-  line-height: 1.05;
-  color: var(--color-ink);
-}
-.section-title--light {
-  font-family: var(--font-display-en-hero);
-  font-weight: 400;
-  letter-spacing: -0.03em;
-  font-size: clamp(2.5rem, 5vw, 4.5rem);
-  line-height: 1.05;
-  color: var(--color-cream);
-}
-.cinematic-text {
-  font-size: clamp(1.05rem, 1.5vw, 1.35rem);
-  line-height: 1.75;
-  color: var(--color-accent);
-}
-
-/* ── CTA pulse — mauve glow ─────────────────────────────────────────────────── */
-@keyframes ctaPulse {
-  0%, 100% { box-shadow: 0 8px 32px rgba(155,143,168,0.30); }
-  50%       { box-shadow: 0 8px 48px rgba(155,143,168,0.55), 0 0 0 6px rgba(155,143,168,0.10); }
-}
-.cta-pulse {
-  animation: ctaPulse 2.8s ease-in-out infinite;
 }
 
 /* ── Focus visibility — rose ring, keyboard only ─────────────────────────────── */

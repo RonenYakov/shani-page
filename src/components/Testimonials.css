@@ -183,17 +183,6 @@
   30% { transform: translateY(-4px); opacity: 1; }
 }
 
-/* bottom note */
-.st-note {
-  margin: clamp(44px, 5vw, 64px) 0 0;
-  text-align: center;
-  font-family: var(--font-he-display);
-  font-size: 0.95rem;
-  letter-spacing: 0.04em;
-  color: var(--t-muted);
-}
-.st-note .dot { color: var(--rose); }
-
 /* ── responsive ── */
 @media (max-width: 767px) {
   .st-top { flex-direction: column; gap: 22px; }

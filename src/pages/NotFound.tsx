@@ -1,16 +1,25 @@
-const NotFound = () => {
+import { Link } from "react-router-dom";
+import "./NotFound.css";
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">404</h1>
-        <p className="text-xl text-gray-600 mb-4">Oops! Page not found</p>
-        <a href="/" className="text-blue-500 hover:text-blue-700 underline">
-          Return to Home
-        </a>
-      </div>
+const NotFound = () => (
+  <main className="shani-404">
+    <div className="nf-labelwrap">
+      <i className="nf-cross" aria-hidden="true" />
+      <span className="nf-label">Page not found</span>
     </div>
-  );
-};
+
+    <h1 className="nf-giant">
+      4<span className="ac">0</span>4
+    </h1>
+
+    <p className="nf-sub" dir="rtl">
+      העמוד שחיפשתם לא נמצא כאן — אולי הקישור השתנה, ואולי הוא פשוט עוד בעריכה.
+    </p>
+
+    <Link to="/" className="nf-home">
+      Back to Home
+    </Link>
+  </main>
+);
 
 export default NotFound;

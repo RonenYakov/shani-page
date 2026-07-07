@@ -56,7 +56,7 @@ const ChatColumn = ({ chat, index }: { chat: Chat; index: number }) => {
         </div>
         <div>
           <div className="st-name">לקוחה מרוצה</div>
-          <div className="st-role">   WhatsApp</div>
+          <div className="st-role">WhatsApp</div>
         </div>
       </motion.div>
 
@@ -132,7 +132,7 @@ const Testimonials = () => {
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.7, delay: 0.12, ease: EASE }}
             >
-              אין פרסומת טובה יותר מהודעה   שקיבלתי מלקוח מרוצה אחרי שהתוכן עלה, בדיוק כמו שהן הגיעו.
+              אין פרסומת טובה יותר מהודעה שקיבלתי מלקוח מרוצה אחרי שהתוכן עלה, בדיוק כמו שהן הגיעו.
             </motion.p>
           </div>
 
@@ -158,10 +158,6 @@ const Testimonials = () => {
             <ChatColumn key={i} chat={chat} index={i} />
           ))}
         </div>
-
-        <p className="st-note">
-          <span className="dot">◆</span>
-        </p>
       </div>
     </section>
   );

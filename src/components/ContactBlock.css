@@ -91,6 +91,14 @@
   color: var(--rose-bright);
   margin: 0 0 clamp(18px, 2.4vw, 28px);
 }
+.ct-kicker .dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--rose-bright);
+  vertical-align: 1px;
+}
 
 .ct-giant {
   font-weight: 900;

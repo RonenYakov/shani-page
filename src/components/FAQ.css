@@ -130,7 +130,14 @@
   letter-spacing: 0.16em;
   color: var(--faq-muted);
 }
-.fq-note .dot { color: var(--rose); }
+.fq-note .dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--rose);
+  vertical-align: 1px;
+}
 
 @media (max-width: 767px) {
   .fq-top { flex-direction: column; gap: 22px; }

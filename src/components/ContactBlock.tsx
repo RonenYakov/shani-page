@@ -1,8 +1,21 @@
 import { useRef, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
-import { MessageCircle, Calendar } from "lucide-react";
 import { socials } from "@/content/socials";
+import RotatingBadge from "./RotatingBadge";
 import "./ContactBlock.css";
+
+/* inline icons — same hairline stroke style as the rest of the site's SVGs */
+const ChatIcon = ({ size = 17 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5c-1.5 0-2.9-.36-4.1-1L3 20l1-5.4A8.5 8.5 0 1 1 21 11.5z" />
+  </svg>
+);
+const CalendarIcon = ({ size = 17 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <rect x="3.5" y="5" width="17" height="16" rx="2.5" />
+    <path d="M8 3v4M16 3v4M3.5 10.5h17" />
+  </svg>
+);
 
 const EASE: [number, number, number, number] = [0.35, 0, 0, 1];
 
@@ -106,7 +119,7 @@ const ContactBlock = () => {
           <div className="ct-marquee-inner" key={half}>
             {[...MARQUEE_WORDS, ...MARQUEE_WORDS].map((w, i) => (
               <span key={i}>
-                {w} <i>✦</i>
+                {w} <i>+</i>
               </span>
             ))}
           </div>
@@ -120,7 +133,7 @@ const ContactBlock = () => {
         viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.6, ease: EASE }}
       >
-        ◆ צעד אחד מסיפור שעוצר את הגלילה
+        <span className="dot" aria-hidden="true" /> צעד אחד מסיפור שעוצר את הגלילה
       </motion.p>
 
       <h2 className="ct-giant" ref={headRef}>
@@ -157,11 +170,12 @@ const ContactBlock = () => {
         transition={{ duration: 0.7, delay: 0.4, ease: EASE }}
       >
         <MagneticButton onClick={handleWhatsApp}>
-          <MessageCircle size={17} />
-          לפניות לחצו        </MagneticButton>
+          <ChatIcon />
+          לפניות לחצו
+        </MagneticButton>
         {socials.calendlyUrl && (
           <button className="ct-ghost" onClick={handleCalendly}>
-            <Calendar size={17} />
+            <CalendarIcon />
             קבעו שיחת היכרות
           </button>
         )}
@@ -220,28 +234,7 @@ const ContactBlock = () => {
 
       {/* rotating badge — echoes the hero */}
       <div className="ct-badge" aria-hidden="true">
-        <svg viewBox="0 0 120 120">
-          <g className="ring">
-            <defs>
-              <path id="ctCirclePath" d="M60,60 m-44,0 a44,44 0 1,1 88,0 a44,44 0 1,1 -88,0" />
-            </defs>
-            <text>
-              <textPath href="#ctCirclePath" startOffset="0%">
-                Strategy • Content • Growth •&nbsp;
-              </textPath>
-            </text>
-          </g>
-          <circle className="core" cx="60" cy="60" r="33" />
-          <g className="flower-mark" transform="translate(48,48) scale(0.42)">
-            <ellipse cx="12" cy="5.4" rx="2.5" ry="3.6" />
-            <ellipse cx="12" cy="18.6" rx="2.5" ry="3.6" />
-            <ellipse cx="5.4" cy="12" rx="3.6" ry="2.5" />
-            <ellipse cx="18.6" cy="12" rx="3.6" ry="2.5" />
-            <ellipse cx="7.2" cy="7.2" rx="2.7" ry="2.7" />
-            <ellipse cx="16.8" cy="16.8" rx="2.7" ry="2.7" />
-            <circle cx="12" cy="12" r="2.4" fill="#0D0A0B" />
-          </g>
-        </svg>
+        <RotatingBadge pathId="ctCirclePath" centerFill="#0D0A0B" />
       </div>
       <i className="ct-cross" aria-hidden="true" />
     </section>
