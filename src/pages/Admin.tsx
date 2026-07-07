@@ -250,6 +250,7 @@ export default function Admin() {
       <button className="admin-btn" onClick={handleUpload} disabled={!file || converting}>
         {converting ? `Converting… ${Math.round(convertProgress * 100)}%` : "Upload"}
       </button>
+      {error && <p className="admin-error">{error}</p>}
 
       <section className="admin-group">
         <h2 className="admin-group-title">Photos </h2>
