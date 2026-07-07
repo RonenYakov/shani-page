@@ -405,21 +405,56 @@ const VideoLightbox = ({ src, onClose }: { src: string; onClose: () => void }) =
   )
 }
 
+// A connection this constrained shouldn't get extra, unrequested downloads —
+// keep today's exact on-demand behaviour for those users instead of prefetching ahead.
+function hasSlowConnection() {
+  const conn = (navigator as unknown as {
+    connection?: { saveData?: boolean; effectiveType?: string }
+  }).connection
+  if (!conn) return false
+  return !!conn.saveData || ['slow-2g', '2g', '3g'].includes(conn.effectiveType ?? '')
+}
+
 // ─── Lazy video — plays only while on-screen (keeps scroll smooth) ──────────────
 const LazyVideo = ({ src, style }: { src: string; style: React.CSSProperties }) => {
   const ref = useRef<HTMLVideoElement>(null)
   useEffect(() => {
     const el = ref.current
     if (!el) return
-    const io = new IntersectionObserver(
+    // Never competes with anything more urgent already in flight — yields on contention.
+    el.setAttribute('fetchpriority', 'low')
+
+    // Unchanged: play/pause exactly at the same visibility threshold as before.
+    const visibilityIo = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) { el.play().catch(() => { }) }
         else { el.pause() }
       },
       { threshold: 0.25 },
     )
-    io.observe(el)
-    return () => io.disconnect()
+    visibilityIo.observe(el)
+
+    // New: on fast connections, start fetching bytes slightly before the tile is on
+    // screen so playback is instant once it actually becomes visible. Purely a
+    // buffering head start — it never plays or shows anything early.
+    let prefetchIo: IntersectionObserver | undefined
+    if (!hasSlowConnection()) {
+      prefetchIo = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            el.preload = 'auto'
+            prefetchIo?.disconnect()
+          }
+        },
+        { rootMargin: '300px' },
+      )
+      prefetchIo.observe(el)
+    }
+
+    return () => {
+      visibilityIo.disconnect()
+      prefetchIo?.disconnect()
+    }
   }, [])
   return <video ref={ref} src={src} muted loop playsInline preload="none" style={style} />
 }

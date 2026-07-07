@@ -3,7 +3,6 @@ import express from 'express'
 import fs from 'node:fs/promises' //file heandling system we use promises syntax
 import path from 'node:path' // tool for buliding paths
 import { fileURLToPath } from 'node:url'
-import multer from 'multer'
 import { randomUUID } from 'node:crypto' // for generating random strings/ids
 import { createClient } from "@supabase/supabase-js";// this allows us to reach to supabase 
 
@@ -67,20 +66,6 @@ function requireAuth(req, res, next) { // the auth token by defult comes with an
     next() // token is valid — let the request continue to the upload/delete handler
 }
 
-function fileFilter(req, file, cb) {
-    const ext = path.extname(file.originalname).toLowerCase() // extname extracts the file type .jpg .mp4 and such, tolower makes it lowercase so it match the mpa
-    // extension must be known AND its expected MIME must match what the client claims
-    if (ALLOWED[ext] && ALLOWED[ext] === file.mimetype) {
-        cb(null, true)
-    } else {
-        cb(null, false)   // multer silently drops it → req.file is undefined → your route returns 400
-    }
-}
-
-const storage = multer.memoryStorage() // we use memory storage becuse we are uploading to the supbase not the hard disk
-
-
-const upload = multer({ storage, fileFilter, limits: { fileSize: 50 * 1024 * 1024 } }) // this are the upload rules we will use on post req
 app.get('/api/auth/check', requireAuth, (req, res) => {
     res.json({ ok: true })
     // we have to use a get here becuse the fron must use a url fetch to talk to the server and the get right away calls the auth func and returns just true of false
@@ -113,24 +98,36 @@ app.get('/api/media/:category', validateCategory, async (req, res) => {
 //" 1-Read which category they asked for >2 build the folder paths >3 list the files in those folders 
 // >4 turn the filenames into web URLs > send the list back."
 
-app.post('/api/media/:category', validateCategory, requireAuth, upload.single('file'), async (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({ error: 'No file uploaded' })
-    }
-
+// Uploads no longer pipe file bytes through this server (Render's free tier is too slow/asleep
+// for that). Instead: the browser asks here for a signed Storage URL, uploads the bytes straight
+// to Supabase itself, then calls /confirm so we can record the row. Render only ever sees small JSON.
+app.post('/api/media/:category/sign', validateCategory, requireAuth, async (req, res) => {
     const category = req.params.category
-    const ext = path.extname(req.file.originalname).toLowerCase()
-    const filename = `${randomUUID()}${ext}`
-    const type = req.file.mimetype.startsWith('video/') ? 'video' : 'photo'
-
-    // 1) put the BYTES in Storage
-    const { error: uploadError } = await supabase.storage
-        .from('work-media')
-        .upload(`${category}/${filename}`, req.file.buffer, { contentType: req.file.mimetype })
-
-    if (uploadError) {
-        return res.status(500).json({ error: uploadError.message })
+    const ext = typeof req.body.ext === 'string' ? req.body.ext.toLowerCase() : ''
+    if (!ALLOWED[ext]) {
+        return res.status(400).json({ error: 'Unknown or missing file extension' })
     }
+
+    const filename = `${randomUUID()}${ext}`
+    const { data, error } = await supabase.storage
+        .from('work-media')
+        .createSignedUploadUrl(`${category}/${filename}`)
+
+    if (error) {
+        return res.status(500).json({ error: error.message })
+    }
+
+    res.json({ filename, token: data.token, path: data.path })
+})
+
+app.post('/api/media/:category/confirm', validateCategory, requireAuth, async (req, res) => {
+    const category = req.params.category
+    const { filename, type } = req.body
+    const ext = typeof filename === 'string' ? path.extname(filename).toLowerCase() : ''
+    if (!ALLOWED[ext] || !['video', 'photo'].includes(type)) {
+        return res.status(400).json({ error: 'filename (with a known extension) and type are required' })
+    }
+
     const { data: last } = await supabase
         .from('media')
         .select('sort_order')
@@ -139,7 +136,6 @@ app.post('/api/media/:category', validateCategory, requireAuth, upload.single('f
         .limit(1)
 
     const nextOrder = last && last.length ? last[0].sort_order + 1 : 0
-    // 2) record the FACTS in the table
     const { error: dbError } = await supabase
         .from('media')
         .insert({ category, filename, type, sort_order: nextOrder })
@@ -194,16 +190,16 @@ app.post('/api/media/:category/reorder', validateCategory, requireAuth, async (r
         return res.status(400).json({ error: 'filenames must be an array' })
     }
 
-    // set each row's sort_order to its position in the list
-    for (let i = 0; i < filenames.length; i++) {
-        const { error } = await supabase
-            .from('media')
-            .update({ sort_order: i })
-            .eq('category', category)
-            .eq('filename', filenames[i])
-        if (error) {
-            return res.status(500).json({ error: error.message })
-        }
+    // set each row's sort_order to its position in the list — in parallel, since each
+    // update targets its own row (distinct filename) so there's no race between them
+    const results = await Promise.all(
+        filenames.map((filename, i) =>
+            supabase.from('media').update({ sort_order: i }).eq('category', category).eq('filename', filename)
+        )
+    )
+    const failed = results.find((r) => r.error)
+    if (failed) {
+        return res.status(500).json({ error: failed.error.message })
     }
 
     res.json({ ok: true })

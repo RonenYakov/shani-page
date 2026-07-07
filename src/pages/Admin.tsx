@@ -4,6 +4,9 @@ import { SortableTile } from "./SortableTile"
 import { DndContext, closestCenter, PointerSensor, TouchSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, arrayMove, rectSortingStrategy } from "@dnd-kit/sortable";
 import { API_URL } from "../lib/api";
+import { getMedia, uploadToSignedUrl } from "../lib/supabase";
+import { convertVideoForUpload } from "../lib/videoConvert";
+import { compressImageForUpload } from "../lib/imageCompress";
 
 // the name we store the token under in the browser. one constant so login,
 // logout, and the API calls (later) all agree on the same key.
@@ -23,10 +26,11 @@ export default function Admin() {
     useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 5 } })
   );
   function loadMedia() {
-    fetch(`${API_URL}/api/media/${category}`, { cache: "no-store" })//the cache it syes to the browser not to trust its cache but to reach for the data on the server each time
-      //we approach the get on server he rturns a json file with the data we change the setdata and page rernders
-      .then((res) => res.json())
-      .then((data) => setMedia(data));
+    // reads go straight to Supabase (same source the live site uses) — no need to
+    // wake up the Render server or wait on it just to list files
+    getMedia(category)
+      .then((data) => setMedia(data))
+      .catch(() => setError("cant reach the server"));
   }
 
   useEffect(() => {
@@ -38,6 +42,8 @@ export default function Admin() {
   const [input, setInput] = useState("");
   const [error, setError] = useState("");
   const [file, setFile] = useState<File | null>(null); //we tell state what type it should hold file or null only
+  const [converting, setConverting] = useState(false);
+  const [convertProgress, setConvertProgress] = useState(0);
   async function handleDragEnd(event: DragEndEvent, type: "videos" | "photos") {
     const { active, over } = event;
     if (!over || active.id === over.id) return; // dropped nowhere / same spot → do nothing
@@ -118,15 +124,51 @@ export default function Admin() {
   }
   async function handleUpload() {
     if (!file) return
-    const body = new FormData()// this is how we transfer files not in json
-    body.append("file", file)
+    setError("");
+
+    let toUpload = file;
+    if (file.type.startsWith("video/") || file.name.toLowerCase().endsWith(".mov")) {
+      // convert in the browser first: MOV → MP4, capped at ~1080p/50MB, so it plays
+      // everywhere and never touches Render or Supabase as a giant raw phone file
+      setConverting(true);
+      setConvertProgress(0);
+      try {
+        toUpload = await convertVideoForUpload(file, setConvertProgress);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "המרת הווידאו נכשלה");
+        setConverting(false);
+        return;
+      }
+      setConverting(false);
+    } else {
+      toUpload = await compressImageForUpload(file);
+    }
+
+    // 1) ask the server for a signed Storage URL — a small JSON round trip, not a file upload
+    const ext = "." + toUpload.name.split(".").pop();
+    const type = toUpload.type.startsWith("video/") ? "video" : "photo";
     try {
-      const res = await fetch(`${API_URL}/api/media/${category}`, {
+      const signRes = await fetch(`${API_URL}/api/media/${category}/sign`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body,
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ ext }),
       });
-      if (res.ok) {
+      if (!signRes.ok) {
+        setError("upload failed");
+        return;
+      }
+      const { filename, token: uploadToken, path: storagePath } = await signRes.json();
+
+      // 2) bytes go straight from the browser to Supabase Storage — Render never sees them
+      await uploadToSignedUrl(storagePath, uploadToken, toUpload);
+
+      // 3) tell the server the upload is done so it can record the row
+      const confirmRes = await fetch(`${API_URL}/api/media/${category}/confirm`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ filename, type }),
+      });
+      if (confirmRes.ok) {
         setFile(null);
         loadMedia()
       } else {
@@ -199,9 +241,14 @@ export default function Admin() {
 
         }
       </nav>
-      <input type="file" accept="image/*,video/*" onChange={(e) => setFile(e.target.files?.[0] || null)} />
-      <button className="admin-btn" onClick={handleUpload} disabled={!file}>
-        Upload
+      <input
+        type="file"
+        accept="image/*,video/*,.mov"
+        disabled={converting}
+        onChange={(e) => setFile(e.target.files?.[0] || null)}
+      />
+      <button className="admin-btn" onClick={handleUpload} disabled={!file || converting}>
+        {converting ? `Converting… ${Math.round(convertProgress * 100)}%` : "Upload"}
       </button>
 
       <section className="admin-group">

@@ -4,13 +4,16 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { MotionConfig, motion } from "framer-motion";
 import { ReactLenis, useLenis } from "lenis/react";
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import "lenis/dist/lenis.css";
 import IndexTest from "./pages/IndexTest";
 import Process from "./pages/Process";
 import Faq from "./pages/Faq";
-import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
+
+// code-split: visitors to the marketing site never download the admin
+// dashboard's JS (dnd-kit, drag/reorder UI) — it's fetched only on /admin
+const Admin = lazy(() => import("./pages/Admin"));
 
 const EASE: [number, number, number, number] = [0.35, 0, 0, 1];
 
@@ -48,7 +51,14 @@ const AppRoutes = () => {
           <Route path="/" element={<IndexTest />} />
           <Route path="/process" element={<Process />} />
           <Route path="/faq" element={<Faq />} />
-          <Route path="/admin" element={<Admin />} />
+          <Route
+            path="/admin"
+            element={
+              <Suspense fallback={null}>
+                <Admin />
+              </Suspense>
+            }
+          />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

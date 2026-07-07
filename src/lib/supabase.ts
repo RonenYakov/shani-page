@@ -36,3 +36,14 @@ export async function getMedia(
   const photos = data.filter((r) => r.type === "photo").map(urlFor);
   return { videos, photos };
 }
+
+/**
+ * Uploads bytes straight from the browser to Storage using a signed URL minted by
+ * the admin server (see `server/index.js` `/sign`). Render never sees the file.
+ */
+export async function uploadToSignedUrl(path: string, token: string, file: File) {
+  const { error } = await supabase.storage
+    .from(BUCKET)
+    .uploadToSignedUrl(path, token, file, { contentType: file.type });
+  if (error) throw error;
+}
