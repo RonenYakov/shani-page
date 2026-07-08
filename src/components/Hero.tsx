@@ -108,8 +108,8 @@ const Hero = () => {
       <div className="layer figure" ref={figureRef}>
         <div className="figure-wrap">
           <img
-            src="/shani-cut3.webp"
-            alt="Shani, social media manager, holding a Canon camera"
+            src="/shani-cut4.webp"
+            alt="Shani, social media manager, taking a photo with her Canon camera"
             fetchPriority="high"
           />
         </div>
@@ -162,25 +162,30 @@ const Hero = () => {
           </button>
         </header>
 
-        {/* bottom-left caption */}
-        <div className="caption anim d6">
-          <div className="lead">Styled<br />to <em>Perfection</em></div>
-        </div>
+        {/* bottom band: caption · scroll cue · badge
+            (desktop keeps each absolutely placed; mobile flexes them into one
+            evenly-spaced row — see .hero-bottom in Hero.css) */}
+        <div className="hero-bottom">
+          {/* bottom-left caption */}
+          <div className="caption anim d6">
+            <div className="lead">Styled<br />to <em>Perfection</em></div>
+          </div>
 
-        {/* rotating badge */}
-        <div className="badge anim d6" aria-hidden="true">
-          <RotatingBadge pathId="circlePath" centerFill="#1a1314" />
+          {/* mobile scroll hint */}
+          <div className="scroll-hint anim d6" aria-hidden="true">
+            <span className="sh-txt">scroll</span>
+            <span className="sh-line" />
+          </div>
+
+          {/* rotating badge */}
+          <div className="badge anim d6" aria-hidden="true">
+            <RotatingBadge pathId="circlePath" centerFill="#1a1314" />
+          </div>
         </div>
       </div>
 
       {/* corner hairline cross */}
       <i className="cross br" />
-
-      {/* mobile scroll hint */}
-      <div className="scroll-hint anim d6" aria-hidden="true">
-        <span className="sh-txt">scroll</span>
-        <span className="sh-line" />
-      </div>
 
       {/* mobile full-screen menu */}
       <div className={`mobile-menu${menuOpen ? " open" : ""}`} aria-hidden={!menuOpen}>

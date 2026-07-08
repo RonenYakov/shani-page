@@ -21,7 +21,7 @@
   --grain-opacity: 0.08;
   --grain-blend: multiply;
   --img-filter: contrast(1.14) brightness(1) saturate(1.12);
-  --fig-w: min(58vw, 720px);
+  --fig-w: min(72vw, 900px);
 
   /* the design is built LTR — keep it LTR even though the site is RTL */
   direction: ltr;
@@ -309,6 +309,12 @@
 }
 
 /* bottom-left caption */
+/* wrapper is inert on desktop — each child keeps its own absolute placement.
+   On mobile it becomes a flex row (see the 860px block) for even spacing. */
+.shani-hero .hero-bottom {
+  display: contents;
+}
+
 .shani-hero .caption {
   position: absolute;
   left: 5.5vw;
@@ -962,24 +968,45 @@
     max-width: 64vw;
   }
 
-  /* --- bottom band: caption left + badge right share a low baseline,
-     the scroll cue lifts to center-above them so nothing collides
-     (the sticky WhatsApp bar is hidden on the hero, so this space is free) --- */
-  .shani-hero .caption {
-    left: 6vw;
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 32px);
+  /* --- bottom band: caption · scroll cue · badge laid out as ONE flex row so
+     the gaps between the three are equal and their centres share one line.
+     space-between splits the leftover width into two identical gaps; the
+     children drop their individual absolute placement and flow in the row. --- */
+  .shani-hero .hero-bottom {
+    display: flex;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 28px);
+    padding: 0 6vw;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    z-index: 4;
+    pointer-events: none;
+  }
+
+  .shani-hero .hero-bottom .caption,
+  .shani-hero .hero-bottom .scroll-hint,
+  .shani-hero .hero-bottom .badge {
+    position: static;
+    left: auto;
+    right: auto;
+    top: auto;
+    bottom: auto;
+    transform: none;
+    flex: 0 0 auto;
   }
 
   .shani-hero .badge {
     width: 72px;
     height: 72px;
-    right: 6vw;
-    top: auto;
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 32px);
   }
 
-  .shani-hero .scroll-hint {
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 32px);
+  /* shorter cue line keeps the scroll motif compact so it centres cleanly
+     against the caption pill and badge instead of towering over them */
+  .shani-hero .hero-bottom .scroll-hint .sh-line {
+    height: 22px;
   }
 }
 
@@ -998,8 +1025,6 @@
   .shani-hero .badge {
     width: 68px;
     height: 68px;
-    top: auto;
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 32px);
   }
 
   .shani-hero .headline {
