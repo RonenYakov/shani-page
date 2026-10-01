@@ -34,7 +34,8 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 const app = express() //we make the server appliaction and store it as app
 const ALLOWED_ORIGINS = [
     'http://localhost:8080',            // your dev frontend
-    'https://shani-page.vercel.app',    // your live site
+    'https://shani-page.vercel.app',
+    'https://www.socialshani.com'    // your live site
 ]
 app.use((req, res, next) => {
     const origin = req.headers.origin
