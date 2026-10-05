@@ -22,6 +22,15 @@ const Hero = () => {
     return () => { document.body.style.overflow = ""; };
   }, [menuOpen]);
 
+  // Escape closes the mobile menu — a full-screen overlay has to be dismissable
+  // without a mouse.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setMenuOpen(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
+
   useEffect(() => {
     const hero = heroRef.current;
     const headline = headlineRef.current;
@@ -86,7 +95,7 @@ const Hero = () => {
   }, []);
 
   return (
-    <main className="shani-hero" id="hero" ref={heroRef}>
+    <section className="shani-hero" id="hero" ref={heroRef} aria-label="Hero">
       {/* giant headline behind subject */}
       <div className="layer headline" ref={headlineRef}>
         <div className="giant-wrap">
@@ -219,7 +228,7 @@ const Hero = () => {
       {/* cinematic vignette + grain on top */}
       <div className="vignette" />
       <div className="grain" />
-    </main>
+    </section>
   );
 };
 

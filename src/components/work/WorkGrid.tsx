@@ -3,6 +3,7 @@ import { motion, AnimatePresence, useInView } from 'framer-motion'
 import { createPortal } from 'react-dom'
 import { useLenis } from 'lenis/react'
 import { useTilt } from '@/hooks/useTilt'
+import { useVideosPaused } from '@/hooks/useVideosPaused'
 import './WorkGrid.css'
 import { WorkMedia, WORK_MEDIA } from '@/content/workMedia'
 import { getMedia } from "../../lib/supabase";
@@ -26,10 +27,10 @@ const PALETTES: Record<string, NichePalette> = {
     bg: '#FAF6F1',
     cardBg: '#F1E9DF',
     accent: '#B08D6A',
-    accentText: '#fff',
+    accentText: '#352A20', // deep ink: #fff on this tan was only 3.06:1
     heading: '#2E2218',
     body: '#5A4A39',
-    muted: '#9A8A78',
+    muted: '#7B6E60',
     divider: 'rgba(46,34,24,0.1)',
     scrollbar: 'rgba(176,141,106,0.4)',
   },
@@ -37,10 +38,10 @@ const PALETTES: Record<string, NichePalette> = {
     bg: '#FBF4F0',
     cardBg: '#F5EBE6',
     accent: '#C4899A',
-    accentText: '#fff',
+    accentText: '#3F2C31', // deep ink: #fff on this rose was only 2.84:1
     heading: '#3A1520',
     body: '#5C2E3A',
-    muted: '#9C6B77',
+    muted: '#91646F',
     divider: 'rgba(58,21,32,0.12)',
     scrollbar: 'rgba(196,137,154,0.4)',
   },
@@ -60,10 +61,10 @@ const PALETTES: Record<string, NichePalette> = {
     bg: '#F8F2F5',
     cardBg: '#F1E7EC',
     accent: '#E08F8F',
-    accentText: '#fff',
+    accentText: '#3A2424', // deep ink: #fff on this rose was only 2.47:1
     heading: '#2E1B26',
     body: '#5A4150',
-    muted: '#9A7A8B',
+    muted: '#836876',
     divider: 'rgba(46,27,38,0.1)',
     scrollbar: 'rgba(224,143,143,0.4)',
   },
@@ -301,6 +302,13 @@ const WorkCard = ({ card, item, index, onClick }: WorkCardProps) => {
     >
       <motion.div
         className="wg-cat"
+        /* The whole card is the hit target, so it has to be a real control:
+           focusable, announced as a button, and openable with Enter/Space.
+           role+tabIndex rather than <button> because the card's content (h4, p)
+           isn't valid inside a button element. */
+        role="button"
+        tabIndex={0}
+        aria-label={`${card.title} — View Work`}
         style={{ rotateX: tilt.rotateX, rotateY: tilt.rotateY, y: tilt.y }}
         onMouseMove={tilt.onMouseMove}
         onMouseEnter={tilt.onMouseEnter}
@@ -308,6 +316,13 @@ const WorkCard = ({ card, item, index, onClick }: WorkCardProps) => {
         onClick={() => {
           tilt.reset() // flatten before the shared-element transition measures the card
           onClick()
+        }}
+        onKeyDown={e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault() // Space would otherwise scroll the page
+            tilt.reset()
+            onClick()
+          }
         }}
       >
         <motion.div className="wg-cat-media" layoutId={`card-img-${item.id}`}>
@@ -358,6 +373,9 @@ const VideoLightbox = ({ src, onClose }: { src: string; onClose: () => void }) =
       exit={{ opacity: 0 }}
       transition={{ duration: 0.25 }}
       onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label="נגן וידאו"
       style={{
         position: 'fixed', inset: 0, zIndex: 400,
         background: 'rgba(0,0,0,0.92)',
@@ -390,6 +408,8 @@ const VideoLightbox = ({ src, onClose }: { src: string; onClose: () => void }) =
         />
         <button
           onClick={onClose}
+          aria-label="סגור את הסרטון"
+          autoFocus
           style={{
             position: 'absolute', top: '1rem', right: '1rem',
             width: 36, height: 36, borderRadius: '50%',
@@ -419,6 +439,12 @@ function hasSlowConnection() {
 // ─── Lazy video — plays only while on-screen (keeps scroll smooth) ──────────────
 const LazyVideo = ({ src, style }: { src: string; style: React.CSSProperties }) => {
   const ref = useRef<HTMLVideoElement>(null)
+  const videosPaused = useVideosPaused()
+  const pausedRef = useRef(videosPaused)
+  pausedRef.current = videosPaused
+  useEffect(() => {
+    if (videosPaused) ref.current?.pause()
+  }, [videosPaused])
   useEffect(() => {
     const el = ref.current
     if (!el) return
@@ -428,7 +454,7 @@ const LazyVideo = ({ src, style }: { src: string; style: React.CSSProperties }) 
     // Unchanged: play/pause exactly at the same visibility threshold as before.
     const visibilityIo = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) { el.play().catch(() => { }) }
+        if (entry.isIntersecting) { if (!pausedRef.current) el.play().catch(() => { }) }
         else { el.pause() }
       },
       { threshold: 0.25 },
@@ -502,6 +528,38 @@ const DetailView = ({ item, onClose, onWhatsApp }: DetailViewProps) => {
     return () => { lenis?.start() }
   }, [lenis])
 
+  // ── Modal keyboard contract ────────────────────────────────────────────────
+  // The overlay is a portal painted over the page, but the page behind it stays in
+  // the tab order, so without this a keyboard user tabs straight into invisible
+  // controls under the overlay. Escape closes, Tab cycles inside, and focus goes
+  // back to the card that opened it.
+  const overlayRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const opener = document.activeElement as HTMLElement | null
+    overlayRef.current?.querySelector<HTMLElement>('button')?.focus()
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { onClose(); return }
+      if (e.key !== 'Tab') return
+      const root = overlayRef.current
+      if (!root) return
+      const focusable = [...root.querySelectorAll<HTMLElement>(
+        'a[href], button, video[controls], [tabindex]:not([tabindex="-1"])'
+      )].filter(el => el.offsetParent !== null)
+      if (!focusable.length) return
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus() }
+      else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus() }
+      else if (!root.contains(document.activeElement)) { e.preventDefault(); first.focus() }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      opener?.focus?.()
+    }
+  }, [onClose])
+
   useEffect(() => {
     const fallback = WORK_MEDIA[item.id] ?? { videos: [], photos: [] }
     // Public read: query Supabase DIRECTLY (always-on), so visitors always see the
@@ -528,6 +586,10 @@ const DetailView = ({ item, onClose, onWhatsApp }: DetailViewProps) => {
 
   return createPortal(
     <motion.div
+      ref={overlayRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label={item.title}
       initial={{ y: '100%' }}
       animate={{ y: 0 }}
       exit={{ y: '100%' }}
@@ -865,7 +927,16 @@ const DetailView = ({ item, onClose, onWhatsApp }: DetailViewProps) => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.55, delay: i * 0.1, ease: EASE }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`נגן סרטון ${i + 1} מתוך ${videos.length}`}
                   onClick={() => setLightboxSrc(src)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      setLightboxSrc(src)
+                    }
+                  }}
                   style={{
                     flexShrink: 0,
                     width: 'clamp(160px, 22vw, 300px)',
@@ -927,7 +998,7 @@ const DetailView = ({ item, onClose, onWhatsApp }: DetailViewProps) => {
                 >
                   <img
                     src={src}
-                    alt=""
+                    alt={`${item.title} — תמונה ${i + 1} מתוך ${galleryItems.length}`}
                     loading="lazy"
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />

@@ -43,7 +43,7 @@
 
 .shani-footer .ft-nav a {
   position: relative;
-  color: rgba(16, 12, 13, 0.55);
+  color: rgba(16, 12, 13, 0.62);
   text-decoration: none;
   padding-bottom: 3px;
   transition: color 0.3s var(--ease-brand);
@@ -70,6 +70,6 @@
 .shani-footer .ft-copy {
   font-family: var(--font-body);
   font-size: 0.72rem;
-  color: rgba(16, 12, 13, 0.5);
+  color: rgba(16, 12, 13, 0.62);
   margin: 0;
 }

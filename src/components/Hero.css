@@ -130,7 +130,7 @@
 
 .shani-hero .kicker .line2 {
   display: block;
-  color: var(--rose);
+  color: var(--rose-text-large);
 }
 
 .shani-hero .headline .giant {
@@ -146,7 +146,7 @@
 }
 
 .shani-hero .headline .giant span {
-  color: var(--rose);
+  color: var(--rose-text-large);
 }
 
 /* Subject (transparent cutout, grounded to bottom) */
@@ -335,7 +335,7 @@
   font-weight: 800;
   font-size: 1.18em;
   text-transform: none;
-  color: var(--rose-deep);
+  color: var(--rose-text);
 }
 
 /* tagline cluster — anchored to the right edge below MANAGER */
@@ -650,12 +650,19 @@
   backdrop-filter: blur(14px);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.5s cubic-bezier(0.35, 0, 0, 1);
+  /* visibility, not just opacity: an opacity-0 menu still keeps its 6 links and the
+     close button in the tab order, so keyboard users were tabbing through invisible
+     controls. visibility:hidden takes them out; the 0.5s delay lets the fade finish
+     on close before it applies. */
+  visibility: hidden;
+  transition: opacity 0.5s cubic-bezier(0.35, 0, 0, 1), visibility 0s linear 0.5s;
 }
 
 .shani-hero .mobile-menu.open {
   opacity: 1;
   pointer-events: auto;
+  visibility: visible;
+  transition: opacity 0.5s cubic-bezier(0.35, 0, 0, 1), visibility 0s linear 0s;
 }
 
 .shani-hero .mm-close {

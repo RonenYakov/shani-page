@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { socials } from "@/content/socials";
+import { useVideosPaused } from "@/hooks/useVideosPaused";
 import "./ResultsReel.css";
 
 /* inline speaker icons — same hairline stroke style as the site's other SVGs */
@@ -50,10 +51,17 @@ const ResultsReel = () => {
     return () => window.removeEventListener("resize", check);
   }, []);
 
+  const videosPaused = useVideosPaused();
   const outerRef = useRef<HTMLDivElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (videosPaused) v.pause();
+    else v.play().catch(() => {});
+  }, [videosPaused]);
 
   // ── scroll driver: spine draws, then the video frame rises ──
   useEffect(() => {
@@ -175,7 +183,7 @@ const ResultsReel = () => {
             <video
               ref={videoRef}
               src="/recomendations.mp4"
-              autoPlay
+              autoPlay={!videosPaused}
               muted={isMuted}
               loop
               playsInline

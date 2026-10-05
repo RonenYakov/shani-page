@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView, useScroll, useTransform, useReducedMotion, MotionValue } from "framer-motion";
+import { useVideosPaused } from "@/hooks/useVideosPaused";
 import "./About.css";
 
 const EASE: [number, number, number, number] = [0.35, 0, 0, 1];
@@ -47,6 +48,14 @@ const Tile = ({
   factor: number;
 }) => {
   const reduceMotion = useReducedMotion();
+  const videosPaused = useVideosPaused();
+  const videoRef = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (videosPaused) v.pause();
+    else v.play().catch(() => {});
+  }, [videosPaused]);
   const y = useTransform(progress, [0, 1], [tile.speed * factor, -tile.speed * factor]);
 
   return (
@@ -62,9 +71,10 @@ const Tile = ({
       >
         {tile.video ? (
           <video
+            ref={videoRef}
             src={tile.video}
             poster={tile.src}
-            autoPlay
+            autoPlay={!videosPaused}
             muted
             loop
             playsInline

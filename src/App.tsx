@@ -9,6 +9,7 @@ import "lenis/dist/lenis.css";
 import IndexTest from "./pages/IndexTest";
 import Process from "./pages/Process";
 import Faq from "./pages/Faq";
+import Accessibility from "./pages/Accessibility";
 import NotFound from "./pages/NotFound";
 
 // code-split: visitors to the marketing site never download the admin
@@ -51,6 +52,7 @@ const AppRoutes = () => {
           <Route path="/" element={<IndexTest />} />
           <Route path="/process" element={<Process />} />
           <Route path="/faq" element={<Faq />} />
+          <Route path="/accessibility" element={<Accessibility />} />
           <Route
             path="/admin"
             element={

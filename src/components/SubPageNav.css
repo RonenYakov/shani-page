@@ -37,12 +37,12 @@
   text-transform: uppercase;
 }
 .shani-subnav .sn-back svg {
-  color: var(--rose);
+  color: var(--rose-text-large);
   transition: transform 0.35s var(--ease-brand), color 0.3s var(--ease-brand);
 }
 .shani-subnav .sn-back:hover svg {
   transform: translateX(-3px);
-  color: var(--rose-deep);
+  color: var(--rose-text);
 }
 .shani-subnav .sn-back span {
   position: relative;

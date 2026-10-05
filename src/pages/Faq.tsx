@@ -6,8 +6,11 @@ import Footer from "@/components/Footer";
 const Faq = () => {
   return (
     <div className="min-h-screen" style={{ background: "#fff" }}>
+      <a href="#main" className="skip-link">דלג לתוכן העיקרי</a>
       <SubPageNav label="Questions" />
-      <FAQ />
+      <main id="main">
+        <FAQ />
+      </main>
       <StickyWhatsApp />
       <Footer />
     </div>

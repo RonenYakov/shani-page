@@ -34,6 +34,7 @@ const Footer = () => {
         <Link to="/process">Process</Link>
         <Link to="/faq">FAQ</Link>
         <a href="/#contact">Contact</a>
+        <Link to="/accessibility">Accessibility</Link>
       </nav>
       <p className="ft-copy" dir="rtl">
         © {year} כל הזכויות על כל התוכן באתר שייכות לשני בסה

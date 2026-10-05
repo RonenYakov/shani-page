@@ -56,6 +56,10 @@
   --rose:               #F2B1B1;   /* THE accent everywhere */
   --rose-deep:          #E08F8F;   /* hover / active / small-text contrast on white */
   --rose-soft:          rgba(242, 177, 177, 0.14);   /* tints, rings, washes */
+  /* rose for TEXT on white: #F2B1B1 is only 1.79:1 there. Large display type needs
+     3:1, small text 4.5:1 (WCAG 1.4.3). Use these instead of --rose on light bg. */
+  --rose-text-large:    #BA8888;   /* 3.00:1 on white, headlines 24px+ and icons */
+  --rose-text:          #946C6C;   /* 4.55:1 on white, any size */
 
   /* ── Tailwind / shadcn HSL system (kept for UI components) ───────────────── */
   --background:              40 28% 94%;
@@ -163,14 +167,39 @@ html::-webkit-scrollbar-corner  { background: transparent; }
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.68' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
 }
 
-/* ── Focus visibility — rose ring, keyboard only ─────────────────────────────── */
+/* ── Focus visibility — keyboard only ────────────────────────────────────────
+   Two-tone ring on purpose: rose alone is only 2.47:1 on white, which fails the
+   3:1 WCAG 1.4.11 minimum for a focus indicator. The ink ring carries contrast on
+   the light sections (19:1), the rose halo carries it on the dark ones (11:1), so
+   the indicator is always visible without needing a per-section override. */
 :focus-visible {
-  outline: 2px solid var(--rose-deep);
-  outline-offset: 3px;
+  outline: 3px solid var(--color-ink);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px var(--rose);
   border-radius: 2px;
 }
 :focus:not(:focus-visible) {
   outline: none;
+}
+
+/* Skip link — first thing in the tab order, visible only once focused. */
+.skip-link {
+  position: fixed;
+  top: 10px;
+  inset-inline-start: 10px;
+  z-index: 999;
+  transform: translateY(-200%);
+  padding: 0.7rem 1.2rem;
+  border-radius: 9999px;
+  background: var(--color-ink);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: transform 0.2s var(--ease-brand);
+}
+.skip-link:focus-visible {
+  transform: translateY(0);
 }
 
 /* ── Reduced motion — kill CSS-driven decoration (marquees, spins, grain jitter,

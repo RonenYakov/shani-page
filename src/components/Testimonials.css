@@ -68,7 +68,7 @@
   margin: clamp(26px, 3.4vw, 50px) 0 0;
   color: var(--t-ink);
 }
-.st-giant .ac { color: var(--rose); }
+.st-giant .ac { color: var(--rose-text-large); }
 .st-word { display: inline-block; overflow: hidden; vertical-align: bottom; padding-bottom: 0.06em; margin-bottom: -0.06em; }
 .st-word:not(:last-child) { margin-right: 0.24em; }
 .st-word > span { display: inline-block; }

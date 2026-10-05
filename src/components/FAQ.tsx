@@ -104,7 +104,7 @@ const FAQ = () => {
         </motion.p>
       </div>
 
-      <h2 className="fq-giant" ref={headRef}>
+      <h1 className="fq-giant" ref={headRef}>
         <span className="fq-word">
           <motion.span
             initial={{ y: "110%" }}
@@ -124,7 +124,7 @@ const FAQ = () => {
             ?
           </motion.span>
         </span>
-      </h2>
+      </h1>
 
       {/* ── accordion ── */}
       <div className="fq-list">

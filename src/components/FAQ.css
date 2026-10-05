@@ -47,7 +47,7 @@
   font-size: clamp(2.8rem, 8.4vw, 7.8rem);
   margin: clamp(26px, 3.4vw, 50px) 0 0;
 }
-.fq-giant .ac { color: var(--rose); }
+.fq-giant .ac { color: var(--rose-text-large); }
 .fq-word { display: inline-block; overflow: hidden; vertical-align: bottom; padding-bottom: 0.06em; margin-bottom: -0.06em; }
 .fq-word > span { display: inline-block; }
 
@@ -88,7 +88,7 @@
   line-height: 1.35;
   transition: color 0.3s ease, transform 0.45s cubic-bezier(0.35, 0, 0, 1);
 }
-.fq-row.open .fq-qtext { color: var(--rose-deep); } /* deeper rose — open question must stay readable on white */
+.fq-row.open .fq-qtext { color: var(--rose-text); } /* deeper rose — open question must stay readable on white */
 .fq-q:hover .fq-qtext { transform: translateX(var(--fq-shift, 6px)); }
 
 .fq-toggle {

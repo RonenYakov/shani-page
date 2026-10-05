@@ -73,7 +73,7 @@
   font-size: clamp(2.4rem, 5.6vw, 5.2rem);
   margin: clamp(16px, 2.4vh, 28px) 0 0;
 }
-.sp-giant .ac { color: var(--rose); }
+.sp-giant .ac { color: var(--rose-text-large); }
 .sp-word { display: inline-block; overflow: hidden; vertical-align: bottom; padding-bottom: 0.06em; margin-bottom: -0.06em; }
 .sp-word:not(:last-child) { margin-right: 0.24em; }
 .sp-word > span { display: inline-block; }
@@ -166,7 +166,7 @@
   letter-spacing: 0.16em;
   white-space: nowrap;
 }
-.sp-counter .cur { color: var(--rose); }
+.sp-counter .cur { color: var(--rose-text); }
 .sp-bar { position: relative; flex: 1; height: 1.5px; background: var(--proc-line); overflow: hidden; }
 .sp-bar-fill {
   position: absolute;

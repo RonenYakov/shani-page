@@ -6,8 +6,11 @@ import Footer from "@/components/Footer";
 const Process = () => {
   return (
     <div className="min-h-screen" style={{ background: "#fff" }}>
+      <a href="#main" className="skip-link">דלג לתוכן העיקרי</a>
       <SubPageNav label="The Process" />
-      <ProcessTimeline />
+      <main id="main">
+        <ProcessTimeline />
+      </main>
       <StickyWhatsApp />
       <Footer />
     </div>

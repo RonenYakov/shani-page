@@ -1,0 +1,25 @@
+.shani-a11y {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: clamp(110px, 14vw, 170px) var(--base-padding-x) var(--section-pad-y);
+  font-family: var(--font-body);
+  font-size: 1.02rem;
+  line-height: 1.85;
+  color: #100c0d;
+}
+.shani-a11y h1 {
+  font-family: var(--font-he-display);
+  font-size: clamp(2.4rem, 5vw, 3.6rem);
+  line-height: 1.1;
+  margin: 0 0 0.4rem;
+}
+.shani-a11y h2 {
+  font-family: var(--font-he-display);
+  font-size: clamp(1.4rem, 2.4vw, 1.8rem);
+  margin: 2.4rem 0 0.6rem;
+}
+.shani-a11y .a11y-updated { color: #6a605f; font-size: 0.88rem; margin: 0 0 1.6rem; }
+.shani-a11y ul { padding-inline-start: 1.3rem; margin: 0.6rem 0 1rem; }
+.shani-a11y li { margin-bottom: 0.4rem; }
+.shani-a11y .a11y-contact { list-style: none; padding: 0; }
+.shani-a11y a { color: #100c0d; text-decoration: underline; text-underline-offset: 3px; }
