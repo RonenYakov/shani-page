@@ -192,7 +192,7 @@ const ContactBlock = () => {
         {chips.map((c) => (
           <span className="ct-chip" key={c.k}>
             <span className="dot" />
-            <b>{c.k}</b> — {c.v}
+            <b>{c.k}</b>: {c.v}
           </span>
         ))}
       </motion.div>

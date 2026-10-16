@@ -57,7 +57,7 @@ async function runConversion(file: File, forceBitrate: number | undefined, onPro
   await conversion.execute();
 
   const buffer = (output.target as BufferTarget).buffer;
-  if (!buffer) throw new Error("ההמרה נכשלה — נסי שוב.");
+  if (!buffer) throw new Error("ההמרה נכשלה. נסי שוב.");
   return buffer;
 }
 

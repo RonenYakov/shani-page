@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView, useScroll, useTransform, useReducedMotion, MotionValue } from "framer-motion";
-import { useVideosPaused } from "@/hooks/useVideosPaused";
+import { useVideosPaused, getVideosPaused } from "@/hooks/useVideosPaused";
 import "./About.css";
 
 const EASE: [number, number, number, number] = [0.35, 0, 0, 1];
@@ -50,11 +50,24 @@ const Tile = ({
   const reduceMotion = useReducedMotion();
   const videosPaused = useVideosPaused();
   const videoRef = useRef<HTMLVideoElement>(null);
+  // Play only while on screen: autoPlay + preload would fetch the whole clip at page load.
+  const inViewRef = useRef(false);
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    const io = new IntersectionObserver(([e]) => {
+      inViewRef.current = e.isIntersecting;
+      if (e.isIntersecting && !getVideosPaused()) v.play().catch(() => {});
+      else v.pause();
+    }, { rootMargin: "200px" });
+    io.observe(v);
+    return () => io.disconnect();
+  }, []);
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
     if (videosPaused) v.pause();
-    else v.play().catch(() => {});
+    else if (inViewRef.current) v.play().catch(() => {});
   }, [videosPaused]);
   const y = useTransform(progress, [0, 1], [tile.speed * factor, -tile.speed * factor]);
 
@@ -74,11 +87,10 @@ const Tile = ({
             ref={videoRef}
             src={tile.video}
             poster={tile.src}
-            autoPlay={!videosPaused}
             muted
             loop
             playsInline
-            preload="metadata"
+            preload="none"
             tabIndex={-1}
             aria-label={tile.label}
             style={{ objectPosition: tile.pos, pointerEvents: "none" }}

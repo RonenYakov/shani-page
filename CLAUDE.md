@@ -110,14 +110,13 @@ Orange is an accent — not a theme. Use for: headline first line, CTA buttons, 
 ### Typography
 | Variable | Font | Use |
 |---|---|---|
-| `--font-display-en-hero` | Abril Fatface | EN section h2s — bold/impactful |
-| `--font-display` | Frank Ruhl Libre 900 | HE section h2s |
-| `--font-display-en` | Cormorant Garamond | EN elegant sub-headings |
+| `--font-display-archivo` | Archivo 800/900 | EN section h2s (uppercase) |
+| `--font-display-en` | Cormorant Garamond | Hero kicker/MANAGER/caption, mobile menu |
+| `--font-he-display` / `--font-display` | Noa Shalev (local) | Hebrew display: About lead, Contact sub, FAQ questions |
 | `--font-body` | DM Sans | All body text, buttons |
 | `--font-mono` | IBM Plex Mono | Section labels, tags, metadata |
 
-**h2 rule:** EN → `var(--font-display-en-hero)` weight 400; HE → Frank Ruhl Libre weight 900.
-Sizes: `clamp(2.2rem, 4.5vw, 4.5rem)` mid-sections · `clamp(3rem, 7vw, 7rem)` large hero-style.
+Abril Fatface, Frank Ruhl Libre and Rubik are no longer loaded (unused). Google Fonts loads non-blocking from `index.html`.
 
 ### Motion & Easing
 - **Signature easing:** `cubic-bezier(0.35, 0, 0, 1)` — everywhere

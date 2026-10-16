@@ -8,20 +8,20 @@ const STEPS = [
   {
     n: "01",
     title: "Discovery",
-    he: "שיחת היכרות — מותג, קהל ומטרות. מבינים מי אתם ולאן אתם רוצים להגיע.",
-    en: "Intro call — brand, audience & goals. We learn who you are and where you're headed.",
+    he: "שיחת היכרות: מותג, קהל ומטרות. מבינים מי אתם ולאן אתם רוצים להגיע.",
+    en: "Intro call: brand, audience & goals. We learn who you are and where you're headed.",
   },
   {
     n: "02",
     title: "Concepts",
-    he: "אסטרטגיה ולוח תוכן מותאם אישית — קונספטים שמרגישים כמו המותג שלכם.",
-    en: "Strategy & a tailored content calendar — concepts that feel like your brand.",
+    he: "אסטרטגיה ולוח תוכן מותאם אישית, קונספטים שמרגישים כמו המותג שלכם.",
+    en: "Strategy & a tailored content calendar, concepts that feel like your brand.",
   },
   {
     n: "03",
     title: "Production",
-    he: "ימי צילום, עריכה ועיצוב — תוכן ברמה הכי גבוהה בשוק.",
-    en: "Shoot days, editing & design — content at the highest level in the market.",
+    he: "ימי צילום, עריכה ועיצוב: תוכן ברמה הכי גבוהה בשוק.",
+    en: "Shoot days, editing & design: content at the highest level in the market.",
   },
   {
     n: "04",
@@ -32,8 +32,8 @@ const STEPS = [
   {
     n: "05",
     title: "Report & Iterate",
-    he: "נתונים שמובילים להחלטות — משפרים, מדייקים וצומחים כל חודש.",
-    en: "Data that drives decisions — refining, sharpening and growing every month.",
+    he: "נתונים שמובילים להחלטות: משפרים, מדייקים וצומחים כל חודש.",
+    en: "Data that drives decisions: refining, sharpening and growing every month.",
   },
 ];
 
@@ -70,7 +70,7 @@ const SectionHeader = () => {
         viewport={{ once: true, margin: "-40px" }}
         transition={{ duration: 0.7, delay: 0.12, ease: EASE }}
       >
-        חמישה שלבים פשוטים — <b>מהיכרות ראשונה ועד פיד שעובד בשבילכם</b>. בלי קסמים, רק
+        חמישה שלבים פשוטים: <b>מהיכרות ראשונה ועד פיד שעובד בשבילכם</b>. בלי קסמים, רק
         שיטה שמוכיחה את עצמה.
       </motion.p>
     </div>

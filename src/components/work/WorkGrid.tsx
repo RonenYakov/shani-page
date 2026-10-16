@@ -190,6 +190,15 @@ const WorkGrid = () => {
   const [selected, setSelected] = useState<WorkItem | null>(null)
   const headRef = useRef<HTMLHeadingElement>(null)
   const headInView = useInView(headRef, { once: true, margin: '-60px' })
+  // mobile carousel: which card is centred (drives the dots + hides the swipe hint)
+  const cardsRef = useRef<HTMLDivElement>(null)
+  const [activeCard, setActiveCard] = useState(0)
+  const onCardsScroll = () => {
+    const el = cardsRef.current
+    if (!el || !el.children.length) return
+    const step = (el.children[0] as HTMLElement).offsetWidth + 14
+    setActiveCard(Math.min(el.children.length - 1, Math.max(0, Math.round(el.scrollLeft / step))))
+  }
 
   const handleWhatsApp = () => {
     window.open('https://wa.me/message/D4AOECDSG35YE1', '_blank')
@@ -245,7 +254,7 @@ const WorkGrid = () => {
         </h2>
 
         {/* ── 4 staggered cards ── */}
-        <div className="wg-cards">
+        <div className="wg-cards" ref={cardsRef} onScroll={onCardsScroll}>
           {FEATURED.map((card, i) => {
             const item = WORK_ITEMS.find(w => w.id === card.itemId)
             if (!item) return null
@@ -262,9 +271,15 @@ const WorkGrid = () => {
         </div>
 
         {/* mobile-only hint: the cards scroll sideways to reveal more categories */}
-        <div className="wg-swipe" aria-hidden="true">
+        <div className={`wg-swipe${activeCard > 0 ? ' done' : ''}`} aria-hidden="true">
           <span className="wg-swipe-label">Swipe for more</span>
           <span className="wg-swipe-arrow">→</span>
+        </div>
+        <div className="wg-dots" aria-hidden="true">
+          {FEATURED.map((c, i) => (
+            <i key={c.itemId} className={i === activeCard ? 'on' : undefined} />
+          ))}
+          <span className="wg-count">{String(activeCard + 1).padStart(2, '0')} / {String(FEATURED.length).padStart(2, '0')}</span>
         </div>
       </section>
 
@@ -292,10 +307,14 @@ interface WorkCardProps {
 
 const WorkCard = ({ card, item, index, onClick }: WorkCardProps) => {
   const tilt = useTilt(4, -6)
+  // In the mobile sideways carousel the off-screen cards never "enter the view",
+  // so the whileInView fade would keep the peeking next card invisible and hide
+  // the only visual cue that there is more to swipe to.
+  const [isCarousel] = useState(() => window.matchMedia('(max-width: 767px)').matches)
   return (
     <motion.div
       className="wg-slot"
-      initial={{ opacity: 0, y: 48 }}
+      initial={isCarousel ? { opacity: 1, y: 0 } : { opacity: 0, y: 48 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
       transition={{ duration: 0.9, delay: index * 0.12, ease: EASE }}
@@ -308,7 +327,7 @@ const WorkCard = ({ card, item, index, onClick }: WorkCardProps) => {
            isn't valid inside a button element. */
         role="button"
         tabIndex={0}
-        aria-label={`${card.title} — View Work`}
+        aria-label={`${card.title}, View Work`}
         style={{ rotateX: tilt.rotateX, rotateY: tilt.rotateY, y: tilt.y }}
         onMouseMove={tilt.onMouseMove}
         onMouseEnter={tilt.onMouseEnter}
@@ -998,7 +1017,7 @@ const DetailView = ({ item, onClose, onWhatsApp }: DetailViewProps) => {
                 >
                   <img
                     src={src}
-                    alt={`${item.title} — תמונה ${i + 1} מתוך ${galleryItems.length}`}
+                    alt={`${item.title}, תמונה ${i + 1} מתוך ${galleryItems.length}`}
                     loading="lazy"
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />

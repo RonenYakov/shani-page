@@ -154,9 +154,8 @@
   width: 2.75rem;
   height: 2.75rem;
   border-radius: 50%;
-  background: rgba(16, 12, 13, 0.5);
+  background: rgba(16, 12, 13, 0.62);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;

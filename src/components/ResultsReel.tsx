@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { socials } from "@/content/socials";
-import { useVideosPaused } from "@/hooks/useVideosPaused";
+import { useVideosPaused, getVideosPaused } from "@/hooks/useVideosPaused";
 import "./ResultsReel.css";
 
 /* inline speaker icons — same hairline stroke style as the site's other SVGs */
@@ -56,11 +56,24 @@ const ResultsReel = () => {
   const pathRef = useRef<SVGPathElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  // Play only while on screen: autoPlay + preload would fetch the whole clip at page load.
+  const inViewRef = useRef(false);
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    const io = new IntersectionObserver(([e]) => {
+      inViewRef.current = e.isIntersecting;
+      if (e.isIntersecting && !getVideosPaused()) v.play().catch(() => {});
+      else v.pause();
+    }, { rootMargin: "200px" });
+    io.observe(v);
+    return () => io.disconnect();
+  }, []);
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
     if (videosPaused) v.pause();
-    else v.play().catch(() => {});
+    else if (inViewRef.current) v.play().catch(() => {});
   }, [videosPaused]);
 
   // ── scroll driver: spine draws, then the video frame rises ──
@@ -183,11 +196,10 @@ const ResultsReel = () => {
             <video
               ref={videoRef}
               src="/recomendations.mp4"
-              autoPlay={!videosPaused}
               muted={isMuted}
               loop
               playsInline
-              preload="metadata"
+              preload="none"
             />
             <div className="rr-grad" />
 

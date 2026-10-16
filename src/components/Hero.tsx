@@ -65,33 +65,7 @@ const Hero = () => {
       };
     }
 
-    let tx = 0, ty = 0, cx = 0, cy = 0;
-    let raf = 0;
-
-    const onMove = (e: MouseEvent) => {
-      const r = hero.getBoundingClientRect();
-      tx = e.clientX / r.width - 0.5;
-      ty = e.clientY / r.height - 0.5;
-    };
-    const onLeave = () => { tx = 0; ty = 0; };
-
-    const tick = () => {
-      cx += (tx - cx) * 0.06;
-      cy += (ty - cy) * 0.06;
-      headline.style.transform = `translate(${cx * 22}px, ${cy * 12}px)`;
-      figure.style.transform = `translate(${cx * -14}px, ${cy * -7}px)`;
-      raf = requestAnimationFrame(tick);
-    };
-
-    hero.addEventListener("mousemove", onMove);
-    hero.addEventListener("mouseleave", onLeave);
-    tick();
-
-    return () => {
-      hero.removeEventListener("mousemove", onMove);
-      hero.removeEventListener("mouseleave", onLeave);
-      cancelAnimationFrame(raf);
-    };
+    // desktop: no mouse parallax — the headline-behind-subject layering is the hero's one move
   }, []);
 
   return (
@@ -225,9 +199,8 @@ const Hero = () => {
         </button>
       </div>
 
-      {/* cinematic vignette + grain on top */}
+      {/* cinematic vignette (page-wide grain overlay already covers texture) */}
       <div className="vignette" />
-      <div className="grain" />
     </section>
   );
 };

@@ -165,14 +165,12 @@
   gap: 6px;
   padding: 5px 11px;
   border-radius: 999px;
-  background: rgba(8, 6, 6, 0.5);
+  background: rgba(8, 6, 6, 0.62);
   color: #efe7e6;
   font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
   font-size: 10.5px;
   letter-spacing: 0.03em;
   white-space: nowrap;
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
 }
 .wg-chip .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--rose-bright); }
 
@@ -246,15 +244,24 @@
 
   .wg-slot,
   .wg-slot:nth-child(n) {
-    flex: 0 0 78vw;
-    height: 440px;
+    flex: 0 0 74vw;
+    height: min(440px, 62svh);
     scroll-snap-align: center;
   }
   .wg-idx { font-size: 64px; }
+  /* "View Work" reads as a tappable pill on touch, not as a caption */
+  .wg-view {
+    padding: 9px 16px;
+    border: 1px solid var(--rose-bright);
+    border-radius: 999px;
+    background: rgba(20, 20, 20, 0.28);
+    font-size: 12px;
+    min-height: 40px;
+  }
 }
 
 /* ── mobile carousel "swipe for more" hint ── */
-.wg-swipe { display: none; }
+.wg-swipe, .wg-dots { display: none; }
 
 @media (max-width: 767px) {
   .wg-swipe {
@@ -264,9 +271,34 @@
     gap: 8px;
     margin-top: 16px;
     font-family: var(--font-mono, 'IBM Plex Mono', monospace);
-    font-size: 0.64rem;
-    letter-spacing: 0.22em;
+    font-size: 0.74rem;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
+    color: var(--color-ink, #141414);
+    transition: opacity 0.4s ease;
+  }
+  .wg-swipe.done { opacity: 0; }
+  .wg-dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .wg-dots i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--color-ink, #141414);
+    opacity: 0.2;
+    transition: width 0.3s var(--ease-brand), opacity 0.3s;
+  }
+  .wg-dots i.on { width: 22px; border-radius: 999px; opacity: 0.85; background: var(--rose-text, #946C6C); }
+  .wg-count {
+    margin-inline-start: 8px;
+    font-family: var(--font-mono, 'IBM Plex Mono', monospace);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
     color: var(--color-ink-muted, #6E6C72);
   }
   .wg-swipe-arrow {
