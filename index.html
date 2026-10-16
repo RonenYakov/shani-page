@@ -32,22 +32,7 @@
   <meta name="twitter:description" content="ניהול סושיאל מדיה מקצועי + סרטוני UGC אותנטיים" />
   <meta name="twitter:image" content="/images/og.webp" />
 
-  <!-- Security: Content Security Policy -->
-  <meta http-equiv="Content-Security-Policy" content="
-      default-src 'self';
-      script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://connect.facebook.net https://analytics.tiktok.com;
-      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-      font-src 'self' https://fonts.gstatic.com;
-      img-src 'self' data: https://www.facebook.com https://www.googletagmanager.com https://xquupkgtoiaeyirfhymb.supabase.co;
-      media-src 'self' https://xquupkgtoiaeyirfhymb.supabase.co;
-
-      connect-src 'self' http://localhost:3001 https://shani-page.onrender.com https://xquupkgtoiaeyirfhymb.supabase.co https://www.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://analytics.tiktok.com;
-      frame-src 'none';
-      object-src 'none';
-      base-uri 'self';
-    " />
-  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-  <meta http-equiv="X-Frame-Options" content="DENY" />
+  <!-- Security headers (CSP, X-Frame-Options, nosniff) are sent by vercel.json: meta tags cannot set frame-ancestors/XFO -->
   <meta name="referrer" content="strict-origin-when-cross-origin" />
 
   <!-- Favicon -->
