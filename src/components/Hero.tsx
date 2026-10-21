@@ -91,7 +91,12 @@ const Hero = () => {
       <div className="layer figure" ref={figureRef}>
         <div className="figure-wrap">
           <img
-            src="/shani-cut4.webp"
+            src="/shani-cut4-1100.webp"
+            srcSet="/shani-cut4-640.webp 640w, /shani-cut4-1100.webp 1100w, /shani-cut4.webp 2390w"
+            sizes="min(72vw, 900px)"
+            width={2390}
+            height={1792}
+            decoding="async"
             alt="Shani, social media manager, taking a photo with her Canon camera"
             fetchPriority="high"
           />

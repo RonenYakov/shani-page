@@ -4,17 +4,18 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { MotionConfig, motion } from "framer-motion";
 import { ReactLenis, useLenis } from "lenis/react";
-import { useEffect, lazy, Suspense } from "react";
+import { useEffect, useRef, lazy, Suspense } from "react";
 import "lenis/dist/lenis.css";
 import IndexTest from "./pages/IndexTest";
-import Process from "./pages/Process";
-import Faq from "./pages/Faq";
-import Accessibility from "./pages/Accessibility";
-import NotFound from "./pages/NotFound";
 
 // code-split: visitors to the marketing site never download the admin
 // dashboard's JS (dnd-kit, drag/reorder UI) — it's fetched only on /admin
 const Admin = lazy(() => import("./pages/Admin"));
+// secondary pages are only fetched when visited
+const Process = lazy(() => import("./pages/Process"));
+const Faq = lazy(() => import("./pages/Faq"));
+const Accessibility = lazy(() => import("./pages/Accessibility"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 const EASE: [number, number, number, number] = [0.35, 0, 0, 1];
 
@@ -37,6 +38,10 @@ const ScrollToTop = () => {
 const AppRoutes = () => {
   const location = useLocation();
   const isAdmin = location.pathname.startsWith("/admin");
+  // The very first paint must not start at opacity 0 (it delays FCP/LCP);
+  // only later route changes fade in.
+  const firstRender = useRef(true);
+  useEffect(() => { firstRender.current = false; }, []);
 
   return (
     <>
@@ -44,26 +49,21 @@ const AppRoutes = () => {
       <ScrollToTop />
       <motion.div
         key={location.pathname}
-        initial={{ opacity: 0, y: 12 }}
+        initial={firstRender.current ? false : { opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45, ease: EASE }}
       >
+        <Suspense fallback={null}>
         <Routes location={location}>
           <Route path="/" element={<IndexTest />} />
           <Route path="/process" element={<Process />} />
           <Route path="/faq" element={<Faq />} />
           <Route path="/accessibility" element={<Accessibility />} />
-          <Route
-            path="/admin"
-            element={
-              <Suspense fallback={null}>
-                <Admin />
-              </Suspense>
-            }
-          />
+          <Route path="/admin" element={<Admin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        </Suspense>
       </motion.div>
     </>
   );

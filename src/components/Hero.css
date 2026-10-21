@@ -527,9 +527,9 @@
     animation: shaniRise 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
   }
 
+  /* rise only, never opacity:0 — the figure is the LCP element */
   .shani-hero .figure {
-    opacity: 0;
-    animation: shaniFadeUp 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.15s forwards;
+    animation: shaniFadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
   }
 
   .shani-hero .d1 {
@@ -565,12 +565,10 @@
 
   @keyframes shaniFadeUp {
     from {
-      opacity: 0;
       transform: translateY(26px) scale(1.01);
     }
 
     to {
-      opacity: 1;
       transform: none;
     }
   }

@@ -40,7 +40,10 @@
   <link rel="apple-touch-icon" href="/favicon-192.png" />
 
   <!-- Preload critical assets -->
-  <link rel="preload" href="/shani-cut4.webp" as="image" type="image/webp" fetchpriority="high" />
+  <link rel="preload" as="image" type="image/webp" fetchpriority="high"
+    href="/shani-cut4-1100.webp"
+    imagesrcset="/shani-cut4-640.webp 640w, /shani-cut4-1100.webp 1100w, /shani-cut4.webp 2390w"
+    imagesizes="min(72vw, 900px)" />
 
   <!-- Schema.org structured data -->
   <script type="application/ld+json">
