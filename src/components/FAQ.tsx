@@ -70,6 +70,24 @@ const FaqRow = ({
 const FAQ = () => {
   const [openId, setOpenId] = useState<string | null>(null);
 
+  // FAQPage structured data, so search and AI answers can quote the Q&A
+  useEffect(() => {
+    const el = document.createElement("script");
+    el.type = "application/ld+json";
+    el.text = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      inLanguage: "he",
+      mainEntity: (faqData as FaqItem[]).map((i) => ({
+        "@type": "Question",
+        name: i.question.he,
+        acceptedAnswer: { "@type": "Answer", text: i.answer.he },
+      })),
+    });
+    document.head.appendChild(el);
+    return () => { el.remove(); };
+  }, []);
+
   const headRef = useRef<HTMLHeadingElement>(null);
   const headInView = useInView(headRef, { once: true, margin: "-60px" });
 
@@ -105,6 +123,8 @@ const FAQ = () => {
       </div>
 
       <h1 className="fq-giant" ref={headRef}>
+<span className="sr-only">שאלות נפוצות על ניהול סושיאל ויצירת תוכן וידאו</span>
+<span aria-hidden="true" style={{ display: "contents" }}>
         <span className="fq-word">
           <motion.span
             initial={{ y: "110%" }}
@@ -124,7 +144,8 @@ const FAQ = () => {
             ?
           </motion.span>
         </span>
-      </h1>
+      </span>
+</h1>
 
       {/* ── accordion ── */}
       <div className="fq-list">

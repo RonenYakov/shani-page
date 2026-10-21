@@ -137,6 +137,8 @@ const ContactBlock = () => {
       </motion.p>
 
       <h2 className="ct-giant" ref={headRef}>
+<span className="sr-only">בואו נדבר: ניהול סושיאל מדיה ויצירת תוכן לעסק שלכם</span>
+<span aria-hidden="true" style={{ display: "contents" }}>
         {["Let's", "Talk"].map((word, i) => (
           <span className="ct-word" key={word}>
             <motion.span
@@ -149,7 +151,8 @@ const ContactBlock = () => {
             </motion.span>
           </span>
         ))}
-      </h2>
+      </span>
+</h2>
 
       <motion.p
         className="ct-sub"

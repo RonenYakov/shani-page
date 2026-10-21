@@ -215,9 +215,10 @@ const ResultsReel = () => {
               <p className="rr-kicker">
                 <span className="dot" aria-hidden="true" /> הוכחה, לא הבטחות
               </p>
-              <div className="rr-title" style={{ direction: "ltr" }}>
-                What Results Look Like
-              </div>
+              <h2 className="rr-title" style={{ direction: "ltr" }}>
+                <span className="sr-only">תוצאות אמיתיות מניהול סושיאל ותוכן וידאו</span>
+                <span aria-hidden="true">What Results Look Like</span>
+              </h2>
             </motion.div>
 
             {hasCalendly && (

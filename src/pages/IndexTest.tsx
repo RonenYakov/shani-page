@@ -28,7 +28,7 @@ const IndexTest = () => {
         {/* The page needs exactly one h1. The hero headline is split across
             parallax layers for the animation, so the real one is here. */}
         <h1 className="sr-only">
-          שני בסה, ניהול סושיאל מדיה ויצירת תוכן וידאו
+          שני בסה: ניהול סושיאל מדיה, יצירת תוכן וידאו וסושיאל חתונות
         </h1>
         <Hero />
         <Suspense fallback={null}>

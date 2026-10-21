@@ -239,6 +239,8 @@ const WorkGrid = () => {
 
         {/* ── giant centered headline ── */}
         <h2 className="wg-giant" ref={headRef}>
+<span className="sr-only">תיק עבודות: ניהול סושיאל, סושיאל חתונות, יום צילום ותוכן UGC</span>
+<span aria-hidden="true" style={{ display: "contents" }}>
           {['The', 'Work'].map((word, i) => (
             <span className="wg-word" key={word}>
               <motion.span
@@ -251,7 +253,8 @@ const WorkGrid = () => {
               </motion.span>
             </span>
           ))}
-        </h2>
+        </span>
+</h2>
 
         {/* ── 4 staggered cards ── */}
         <div className="wg-cards" ref={cardsRef} onScroll={onCardsScroll}>

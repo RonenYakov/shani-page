@@ -192,6 +192,8 @@ const About = () => {
 
       {/* giant headline */}
       <h2 className="sa-giant" ref={headRef}>
+<span className="sr-only">שני בסה: ניהול סושיאל ויצירת תוכן שעוצר את הגלילה</span>
+<span aria-hidden="true" style={{ display: "contents" }}>
         <RevealLine inView={headInView} baseDelay={0}>
           {["Stories", "that"]}
         </RevealLine>
@@ -204,7 +206,8 @@ const About = () => {
             </span>,
           ]}
         </RevealLine>
-      </h2>
+      </span>
+</h2>
 
       {/* staggered photo tiles */}
       <div className="sa-imgs">

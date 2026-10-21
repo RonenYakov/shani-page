@@ -75,6 +75,8 @@ const SectionHeader = () => {
       </motion.p>
     </div>
     <h1 className="sp-giant" ref={h2Ref}>
+<span className="sr-only">תהליך העבודה בניהול סושיאל מדיה: חמישה שלבים</span>
+<span aria-hidden="true" style={{ display: "contents" }}>
       {["The", "Process"].map((word, i) => (
         <span className="sp-word" key={word}>
           <motion.span
@@ -87,7 +89,8 @@ const SectionHeader = () => {
           </motion.span>
         </span>
       ))}
-    </h1>
+    </span>
+</h1>
   </>
   );
 };

@@ -137,6 +137,8 @@ const Testimonials = () => {
           </div>
 
           <h2 className="st-giant" ref={headRef}>
+<span className="sr-only">המלצות לקוחות על ניהול סושיאל ויצירת תוכן</span>
+<span aria-hidden="true" style={{ display: "contents" }}>
             {["Word", "of", "Mouth"].map((word, i) => (
               <span className="st-word" key={word}>
                 <motion.span
@@ -149,7 +151,8 @@ const Testimonials = () => {
                 </motion.span>
               </span>
             ))}
-          </h2>
+          </span>
+</h2>
         </div>
 
         {/* ── real chat conversations ── */}
